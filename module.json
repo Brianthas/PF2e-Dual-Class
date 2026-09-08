@@ -1,6 +1,6 @@
 {
-  "id": "pf2e-dual-class",
-  "title": "Dual Class (PF2e)",
+  "id": "pf2e-dual-class-items",
+  "title": "Dual Class Items (PF2e)",
   "description": "Runs the Dual-Class Characters variant rule on two real class items instead of a merged one: both classes' proficiencies at the higher rank, the better Hit Points, both class DCs, both key attribute boosts, and a separate feat ladder for each class.",
   "version": "0.1.1",
   "compatibility": {

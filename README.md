@@ -1,4 +1,4 @@
-# Dual Class (PF2e)
+# Dual Class Items (PF2e)
 
 A [Foundry VTT](https://foundryvtt.com/) module for the [Pathfinder 2e](https://github.com/foundryvtt/pf2e)
 system that runs the **Dual-Class Characters** variant rule on two real class items, instead of one
@@ -120,9 +120,8 @@ Fighter/Wizard is trained in spell attack rolls and spell DC rather than untrain
 **Each class needs its own spellcasting entry, added by hand.** This is how Pathfinder 2e works for
 everyone, not something the module takes away: the system has never created a spellcasting entry
 from a class, first or second. No class feature grants one, and the way you make one is the dialog
-on the Spellcasting tab. So add a second entry
-there, with the second class's tradition, prepared or spontaneous category, and key attribute, the
-same way the first one was made.
+on the Spellcasting tab. So add a second entry there, with the second class's tradition, prepared or
+spontaneous category, and key attribute, the same way you made the first.
 
 Both entries then work independently, which is what the rule asks for: a Sorcerer/Wizard keeps
 spontaneous and prepared casting apart and gets the full benefit of each.

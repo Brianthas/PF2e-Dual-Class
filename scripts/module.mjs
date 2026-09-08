@@ -33,7 +33,7 @@ Hooks.once("init", () => {
   if (!game.modules.get("lib-wrapper")?.active) {
     console.error(`${MODULE_ID} | the "libWrapper" module is required but is not active.`);
     ui.notifications?.error(
-      "Dual Class (PF2e) requires the \"libWrapper\" module to be installed and active. "
+      "Dual Class Items (PF2e) requires the \"libWrapper\" module to be installed and active. "
       + "Dual-class features will not work until it is enabled.",
       { permanent: true }
     );

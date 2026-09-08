@@ -21,7 +21,7 @@ export function registerLibWrapper(target, fn, type) {
   } catch (error) {
     console.error(`${MODULE_ID} | failed to patch ${target}`, error);
     ui.notifications?.error(
-      `Dual Class (PF2e) could not patch the system (${target}). Dual-class characters will not `
+      `Dual Class Items (PF2e) could not patch the system (${target}). Dual-class characters will not `
       + "work correctly - check the console (F12) and consider reporting this on the module's "
       + "GitHub issues.",
       { permanent: true }

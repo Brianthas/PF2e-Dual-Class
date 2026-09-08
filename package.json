@@ -1,5 +1,5 @@
 {
-  "name": "pf2e-dual-class",
+  "name": "pf2e-dual-class-items",
   "private": true,
   "type": "module",
   "description": "Dev tooling only. The module version lives in module.json.",

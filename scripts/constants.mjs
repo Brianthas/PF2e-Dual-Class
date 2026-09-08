@@ -1,4 +1,4 @@
-export const MODULE_ID = "pf2e-dual-class";
+export const MODULE_ID = "pf2e-dual-class-items";
 
 /**
  * Actor flag holding the item id of the class item treated as secondary.

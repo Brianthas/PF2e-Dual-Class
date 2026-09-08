@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Renamed. The module id is now `pf2e-dual-class-items` and the title is **Dual Class Items (PF2e)**.
+  The plain `pf2e-dual-class` id was already taken on Foundry's package listing by a different,
+  actively maintained module, and the two titles were close enough to be confusing.
+- **This breaks an existing install.** Foundry treats the new id as a different module, so a world
+  running the old one needs the new module enabled, its two settings turned back on, and any
+  character's second class re-picked from the Second Class slot. Feats already placed in the
+  per-class ladders are unaffected: those slots are named independently of the module id.
+
 ## 0.1.1
 
 - Fixed the Enable Dual Class setting hint, which said characters were unaffected until a second

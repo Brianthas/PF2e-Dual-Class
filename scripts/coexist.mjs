@@ -88,7 +88,7 @@ function verifyPurgeBypass(actor, expectedIds) {
   );
   notifyDualClass(
     "error",
-    `Dual Class (PF2e): adding the second class deleted the first anyway. This module has not been `
+    `Dual Class Items (PF2e): adding the second class deleted the first anyway. This module has not been `
     + `verified against pf2e ${version}. Undo with Ctrl+Z if the sheet is wrong, and report this.`
   );
 }

@@ -1,7 +1,11 @@
 # PF2e-Dual-Class
 
-Repo root **is** the module, id `pf2e-dual-class`. Implements PF2e's Dual-Class Characters variant
-rule (Gamemastery Guide) on two real class items rather than a merged one.
+Repo root **is** the module, id `pf2e-dual-class-items`, title `Dual Class Items (PF2e)`. Implements
+PF2e's Dual-Class Characters variant rule (Gamemastery Guide) on two real class items rather than a
+merged one.
+
+The plain `pf2e-dual-class` id belongs to someone else's module on Foundry's registry, which
+maintains the Workbench dual-class macro. Do not rename back to it.
 
 Root `CLAUDE.md` and `.claude/rules/standing-rules.md` apply here too. What follows is what is
 specific to this module.
@@ -15,8 +19,7 @@ binding on every project under `Code Repos`.
 - **Keep the code explainable.** A clever patch that nobody can walk through is worse than a plain
   one, because the obligation is on Bryan and not on the machine that wrote it.
 - **A request for a plain-English explanation of the code is genuine.** Write it from the current
-  code, never from an earlier conversation. Ask Bryan for
-  the link rather than putting it in a file this repo publishes.
+  code, never from an earlier conversation.
 
 ## The one thing that breaks on a PF2e upgrade
 
@@ -61,7 +64,7 @@ trusting the module. `module.json` pins `verified` to the version that check was
 
 ## Dev loop
 
-- Live copy is `AppData\Local\FoundryVTT\Data\modules\pf2e-dual-class`; the `PostToolUse` mirror
+- Live copy is `AppData\Local\FoundryVTT\Data\modules\pf2e-dual-class-items`; the `PostToolUse` mirror
   hook copies a file there after every Edit and Write, and reports which. It skips anything whose
   parent directory does not exist in the live copy, which is how `tools/` and `docs/` stay out.
   The browser still holds the old code until the page reloads, so reload before measuring a fix.
