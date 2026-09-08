@@ -86,6 +86,24 @@ feats, but the system's own check on a feat slot tests the feat's category and n
 anything that is a class feat can be dropped in either ladder. Putting a feat in the wrong one warns
 and lets it through. Archetype and dedication feats belong in both and are never flagged.
 
+### Spellcasting
+
+A dual-class caster's **spellcasting proficiency** is the better of the two classes, so a
+Fighter/Wizard is trained in spell attack rolls and spell DC rather than untrained.
+
+**Each class needs its own spellcasting entry, added by hand.** That is not this module: Pathfinder
+2e never creates one automatically, for a second class or a first. No class feature grants one - of
+the 391 item grants across the class-features compendium, none is a spellcasting entry - and the
+system's own way of making one is the manual dialog on the Spellcasting tab. So add a second entry
+there, with the second class's tradition, prepared or spontaneous category, and key attribute, the
+same way the first one was made.
+
+Both entries then work independently, which is what the rule asks for: a Sorcerer/Wizard keeps
+spontaneous and prepared casting apart and gets the full benefit of each.
+
+Focus points need nothing. Both classes' focus spells feed one shared pool, capped at three, which
+the system already enforces.
+
 ### Class features
 
 Both classes grant their features, at each class's own levels, and both are removed again if the
