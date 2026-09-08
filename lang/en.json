@@ -23,6 +23,9 @@
       "RemoveSecondClass": "Remove Second Class",
       "Removed": "Removed {class} and the features it granted."
     },
+    "Mismatch": {
+      "Warning": "{feat} is a {belongs} feat but was placed in the {placed} feat slots. It still counts; move it if that was not intended."
+    },
     "Skills": {
       "Header": "Trained Skills",
       "Count": "{actual} trained, expected {expected}",

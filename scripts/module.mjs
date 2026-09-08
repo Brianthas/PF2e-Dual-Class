@@ -7,6 +7,7 @@ import { onUpdateActor, syncSecondaryClassFeatures } from "./features.mjs";
 import { registerBoostRows } from "./boosts.mjs";
 import { registerSheet } from "./sheet.mjs";
 import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
+import { registerMismatchWarning } from "./mismatch.mjs";
 
 /**
  * Registration timing.
@@ -46,6 +47,7 @@ Hooks.once("init", () => {
   registerBoostRows();
   registerSheet();
   registerSkillCounter();
+  registerMismatchWarning();
 
   const failed = Object.entries(patched).filter(([, ok]) => !ok).map(([name]) => name);
   if (failed.length) console.error(`${MODULE_ID} | init: failed to patch ${failed.join(", ")}`);
