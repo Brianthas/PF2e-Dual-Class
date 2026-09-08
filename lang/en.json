@@ -7,6 +7,10 @@
         "Hint": "Turn on the Dual-Class Characters variant rule. Characters are unaffected until a second class is added to them."
       }
     },
+    "Sync": {
+      "UpToDate": "{class} has no class features missing.",
+      "Added": "Added {count} {class} class feature(s)."
+    },
     "Section": {
       "ClassFeats": "{class} Feats",
       "SkillFeats": "{class} Skill Feats",

@@ -3,6 +3,7 @@ import { registerSettings } from "./settings.mjs";
 import { registerCoexistence, onDeleteClassItem, armSecondClass, clearArm } from "./coexist.mjs";
 import { registerMerge } from "./merge.mjs";
 import { registerLadders, buildSections } from "./ladders.mjs";
+import { onUpdateActor, syncSecondaryClassFeatures } from "./features.mjs";
 
 /**
  * Registration timing.
@@ -45,8 +46,11 @@ Hooks.once("init", () => {
 });
 
 Hooks.on("deleteItem", onDeleteClassItem);
+Hooks.on("updateActor", onUpdateActor);
 
 Hooks.once("ready", () => {
   // Exposed so a macro or the console can drive the same entry points the sheet controls use.
-  game.modules.get(MODULE_ID).api = { armSecondClass, clearArm, buildSections };
+  game.modules.get(MODULE_ID).api = {
+    armSecondClass, clearArm, buildSections, syncSecondaryClassFeatures
+  };
 });
