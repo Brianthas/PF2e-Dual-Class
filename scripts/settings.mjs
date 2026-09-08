@@ -1,4 +1,5 @@
-import { MODULE_ID, MAX_CLASSES } from "./constants.mjs";
+import { MODULE_ID, MAX_CLASSES, THIRD_CLASS_FLAG } from "./constants.mjs";
+import { thirdClassPermissionsApp } from "./permissions.mjs";
 
 export function registerSettings() {
   game.settings.register(MODULE_ID, "moduleEnabled", {
@@ -14,6 +15,19 @@ export function registerSettings() {
   // Three classes is not a published variant rule; it applies the Dual-Class rules to one more
   // class. Off by default, and gated behind Dual Class being on, since a third class without a
   // second is not a state worth supporting.
+  //
+  // Two ways to allow it, because they answer different questions. This setting is the world's
+  // answer: every character may have three. The permissions menu below is the per-character answer,
+  // for a world that is otherwise dual-class. Either grants it; neither is required by the other.
+  game.settings.registerMenu(MODULE_ID, "thirdClassPermissions", {
+    name: "PF2EDC.Settings.ThirdClassPermissions.Name",
+    hint: "PF2EDC.Settings.ThirdClassPermissions.Hint",
+    label: "PF2EDC.Settings.ThirdClassPermissions.Label",
+    icon: "fa-solid fa-user-check",
+    type: thirdClassPermissionsApp(),
+    restricted: true
+  });
+
   game.settings.register(MODULE_ID, "tripleClass", {
     name: "PF2EDC.Settings.TripleClass.Name",
     hint: "PF2EDC.Settings.TripleClass.Hint",
@@ -48,10 +62,10 @@ export function moduleEnabled() {
  * Gated behind `moduleEnabled` as well as its own setting, so turning Dual Class off turns off
  * everything rather than leaving a third class half-supported.
  *
- * **Takes the actor even though the world setting is currently the only input.** A third class is
- * not necessarily a property of the world: content elsewhere grants one character a third class in
- * a world that is otherwise dual-class. Nothing here reads the actor yet, and every caller passes
- * one, so that can be added in this function alone rather than at each of its call sites.
+ * Two independent sources grant the third, because they answer different questions: the world
+ * setting says every character may have three, and the actor flag says this one may in a world that
+ * is otherwise dual-class. Either is enough. Content that wants to grant a third class to one
+ * character sets the same flag, so this function stays the only place that decides.
  *
  * @param {ActorPF2e} actor
  * @returns {number}
@@ -59,7 +73,9 @@ export function moduleEnabled() {
 export function maxClasses(actor) {
   if (!moduleEnabled()) return 1;
   if (actor?.type !== "character") return MAX_CLASSES.dual;
-  return game.settings.get(MODULE_ID, "tripleClass") === true ? MAX_CLASSES.triple : MAX_CLASSES.dual;
+  if (game.settings.get(MODULE_ID, "tripleClass") === true) return MAX_CLASSES.triple;
+  if (actor.getFlag(MODULE_ID, THIRD_CLASS_FLAG) === true) return MAX_CLASSES.triple;
+  return MAX_CLASSES.dual;
 }
 
 /**

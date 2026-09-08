@@ -1,6 +1,6 @@
 import { MODULE_ID, SECTION_PREFIX, SECTION_ROOT, PARAGON_SECTION, PARAGON_LEVELS } from "./constants.mjs";
 import { ancestryParagonEnabled } from "./settings.mjs";
-import { registerLibWrapper, isDualClassActor, getSecondaryClass, classSlug } from "./util.mjs";
+import { registerLibWrapper, isMultiClassActor, getSecondaryClass, classSlug } from "./util.mjs";
 
 /**
  * A second set of feat ladders, one per class.
@@ -230,7 +230,7 @@ export function buildSections(actor) {
 function withParagonLadder(actor, fn) {
   const paragon = paragonApplies(actor);
   const secondary = getSecondaryClass(actor);
-  const dual = isDualClassActor(actor);
+  const dual = isMultiClassActor(actor);
   if (!paragon && !dual) return fn();
 
   const classItem = actor.class;
@@ -331,7 +331,7 @@ function paragonSlots(base) {
  * @returns {object[]}
  */
 function buildDualClassSections(actor) {
-  if (!isDualClassActor(actor)) return [];
+  if (!isMultiClassActor(actor)) return [];
 
   const secondary = getSecondaryClass(actor);
   const slug = classSlug(secondary);

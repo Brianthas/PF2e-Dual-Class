@@ -6,6 +6,19 @@
         "Name": "Enable Dual Class",
         "Hint": "Turn on the Dual-Class Characters variant rule. Every character then needs two classes: players cannot level one past 1st until it has both, though you can as GM."
       },
+      "TripleClass": {
+        "Name": "Allow a Third Class",
+        "Hint": "Let every character take a third class, treated exactly like the second: the best of the three proficiencies, the highest Hit Points, the largest skill count rather than the sum, and a class feat ladder each. Not a published variant rule. To allow it for particular characters instead, leave this off and use Third Class Permissions."
+      },
+      "ThirdClassPermissions": {
+        "Name": "Third Class Permissions",
+        "Hint": "Allow a third class to particular characters, for a world that is otherwise dual class. Ignored while Allow a Third Class is on, which already covers everyone.",
+        "Label": "Choose Characters",
+        "Title": "Third Class Permissions",
+        "Save": "Save",
+        "None": "This world has no characters yet.",
+        "TableHint": "Ticked characters may take a third class. Unticking one does not remove a class they already have."
+      },
       "AncestryParagon": {
         "Name": "Enable Ancestry Paragon",
         "Hint": "Every character gains a second ancestry feat at 1st level and another at each odd level thereafter, eleven in total. Independent of Dual Class. Skipped if another module already provides these slots."

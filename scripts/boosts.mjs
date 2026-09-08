@@ -1,4 +1,4 @@
-import { isDualClassActor, getPrimaryClass, getSecondaryClass } from "./util.mjs";
+import { isMultiClassActor, getPrimaryClass, getSecondaryClass } from "./util.mjs";
 
 /**
  * A CLASS row per class in the Attribute Boosts window.
@@ -64,7 +64,7 @@ function refresh(app, element, actor) {
   const observer = observers.get(app);
   observer?.disconnect();
   try {
-    if (isDualClassActor(actor)) applyRows(element, actor);
+    if (isMultiClassActor(actor)) applyRows(element, actor);
     else clearRows(element);
   } finally {
     if (element.isConnected) observer?.observe(element, { childList: true, subtree: true });

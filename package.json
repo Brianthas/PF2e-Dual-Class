@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "eslint .",
     "check-lang": "node tools/check-lang.mjs",
-    "test": "node tools/test-reorder.mjs"
+    "check-imports": "node tools/check-imports.mjs",
+    "test": "node tools/check-imports.mjs && node tools/test-reorder.mjs"
   }
 }

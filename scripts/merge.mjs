@@ -1,4 +1,4 @@
-import { registerLibWrapper, isDualClassActor, getPrimaryClass, getSecondaryClass, classSlug } from "./util.mjs";
+import { registerLibWrapper, isMultiClassActor, getPrimaryClass, getSecondaryClass, classSlug } from "./util.mjs";
 
 /**
  * Merging two class items into one character.
@@ -51,7 +51,7 @@ export function registerMerge() {
  * @param {ActorPF2e} actor
  */
 function applyDualClassMerge(actor) {
-  if (!isDualClassActor(actor)) return;
+  if (!isMultiClassActor(actor)) return;
 
   const primary = getPrimaryClass(actor);
   const secondary = getSecondaryClass(actor);

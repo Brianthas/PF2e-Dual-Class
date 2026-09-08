@@ -1,6 +1,6 @@
 import { SECTION_PREFIX } from "./constants.mjs";
 import { moduleEnabled } from "./settings.mjs";
-import { getPrimaryClass, getSecondaryClass, isDualClassActor, classSlug, notifyDualClass } from "./util.mjs";
+import { getPrimaryClass, getSecondaryClass, isMultiClassActor, classSlug, notifyDualClass } from "./util.mjs";
 
 /**
  * Warn when a class feat lands in the other class's ladder.
@@ -33,7 +33,7 @@ function checkFeat(item, userId) {
   if (!moduleEnabled() || item?.type !== "feat") return;
 
   const actor = item.parent;
-  if (!isDualClassActor(actor)) return;
+  if (!isMultiClassActor(actor)) return;
 
   const location = item.system.location;
   if (typeof location !== "string") return;

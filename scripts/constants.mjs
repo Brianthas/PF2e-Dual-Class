@@ -22,8 +22,17 @@ export const EXTRA_CLASSES_FLAG = "extraClasses";
  */
 export const SECONDARY_CLASS_FLAG = "secondaryClass";
 
-/** How many classes a character may hold, by whether the third-class setting is on. */
+/** How many classes a character may hold, by whether a third is allowed. */
 export const MAX_CLASSES = { dual: 2, triple: 3 };
+
+/**
+ * Actor flag allowing this one character a third class, set from the GM's permissions screen.
+ *
+ * Separate from `EXTRA_CLASSES_FLAG`, which records the classes a character *has*. This records
+ * what they are *allowed*, so revoking it leaves the third class in place to be dealt with rather
+ * than silently unmaking a character.
+ */
+export const THIRD_CLASS_FLAG = "allowThirdClass";
 
 /**
  * Prefixes for the feat sections this module adds.

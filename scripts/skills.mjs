@@ -1,5 +1,5 @@
 import { moduleEnabled } from "./settings.mjs";
-import { getPrimaryClass, getSecondaryClass, isDualClassActor } from "./util.mjs";
+import { getPrimaryClass, getSecondaryClass, isMultiClassActor } from "./util.mjs";
 
 /**
  * How many trained skills a dual-class character should start with.
@@ -36,7 +36,7 @@ export function registerSkillCounter() {
 function onRender(sheet, element) {
   const actor = sheet?.actor;
   if (!moduleEnabled() || actor?.type !== "character") return;
-  if (!isDualClassActor(actor) || actor.level !== 1) return;
+  if (!isMultiClassActor(actor) || actor.level !== 1) return;
 
   const root = element instanceof HTMLElement ? element : element?.[0];
   const section = root?.querySelector('section[data-tab="proficiencies"], .tab[data-tab="proficiencies"]');

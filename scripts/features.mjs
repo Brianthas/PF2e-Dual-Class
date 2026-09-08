@@ -1,5 +1,5 @@
 import { MODULE_ID } from "./constants.mjs";
-import { getSecondaryClass, isDualClassActor, notifyDualClass } from "./util.mjs";
+import { getSecondaryClass, isMultiClassActor, notifyDualClass } from "./util.mjs";
 
 /**
  * Granting the second class's features.
@@ -28,7 +28,7 @@ import { getSecondaryClass, isDualClassActor, notifyDualClass } from "./util.mjs
  * @returns {Promise<ItemPF2e[]>} The features created.
  */
 export async function syncSecondaryClassFeatures(actor, { notify = false } = {}) {
-  if (!isDualClassActor(actor)) return [];
+  if (!isMultiClassActor(actor)) return [];
 
   const secondary = getSecondaryClass(actor);
   const granted = await secondary.createGrantedItems({ level: actor.level });
@@ -75,7 +75,7 @@ export function onUpdateActor(actor, changes, options, userId) {
   // to an already level 8 character catch up immediately instead of waiting for the next level.
   const flagChanged = changes?.flags?.[MODULE_ID]?.secondaryClass !== undefined;
   if (!levelChanged && !flagChanged) return;
-  if (!isDualClassActor(actor)) return;
+  if (!isMultiClassActor(actor)) return;
 
   syncSecondaryClassFeatures(actor);
 }
