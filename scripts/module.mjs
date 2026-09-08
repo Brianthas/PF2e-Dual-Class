@@ -4,6 +4,8 @@ import { registerCoexistence, onDeleteClassItem, armSecondClass, clearArm } from
 import { registerMerge } from "./merge.mjs";
 import { registerLadders, buildSections } from "./ladders.mjs";
 import { onUpdateActor, syncSecondaryClassFeatures } from "./features.mjs";
+import { registerBoostRows } from "./boosts.mjs";
+import { registerSheet } from "./sheet.mjs";
 
 /**
  * Registration timing.
@@ -40,6 +42,9 @@ Hooks.once("init", () => {
     merge: registerMerge(),
     ladders: registerLadders()
   };
+  registerBoostRows();
+  registerSheet();
+
   const failed = Object.entries(patched).filter(([, ok]) => !ok).map(([name]) => name);
   if (failed.length) console.error(`${MODULE_ID} | init: failed to patch ${failed.join(", ")}`);
   else console.log(`${MODULE_ID} | init: all patches registered`);

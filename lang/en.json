@@ -7,6 +7,22 @@
         "Hint": "Turn on the Dual-Class Characters variant rule. Characters are unaffected until a second class is added to them."
       }
     },
+    "Sheet": {
+      "SecondClass": "Second Class",
+      "SecondClassTitle": "Second Class: {class}",
+      "SecondClassActions": "Second class actions",
+      "AddSecondClass": "Add a second class",
+      "Add": "Add",
+      "PickPrompt": "Add a second class alongside {primary}.",
+      "PickHint": "The class keeps its own feat ladder, class DC and key attribute boost. Its features are granted straight away, so expect the usual choice prompts.",
+      "NoClassesFound": "No other class items were found in this world or its compendia.",
+      "OpenClass": "Open Class Item",
+      "MakePrimary": "Make {class} the primary class",
+      "PrimaryIs": "Primary class: {class}. The primary sets the character's key attribute and main class DC.",
+      "SyncFeatures": "Sync Class Features",
+      "RemoveSecondClass": "Remove Second Class",
+      "Removed": "Removed {class} and the features it granted."
+    },
     "Sync": {
       "UpToDate": "{class} has no class features missing.",
       "Added": "Added {count} {class} class feature(s)."
