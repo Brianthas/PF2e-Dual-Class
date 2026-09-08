@@ -1,7 +1,8 @@
 # Design notes
 
 Why the module works the way it does. The README covers what it does. Line references are to
-Pathfinder 2e 8.4.1's bundled `pf2e.mjs`, which is where all of this was read.
+Pathfinder 2e 8.5.0's bundled `pf2e.mjs`, which is where all of this was read. They move on every
+release: re-find each one by the code around it rather than trusting the number.
 
 ## Two class items, not one merged one
 
@@ -21,7 +22,7 @@ either class is updated, where two real items are re-read on every data-prep cyc
 
 ## Most of the merge is already correct
 
-`ClassPF2e#prepareActorData` (51369-51395) resolves with `Math.max` for perception, all three saving
+`ClassPF2e#prepareActorData` (51701) resolves with `Math.max` for perception, all three saving
 throws, every attack and defense category, `proficiencies.spellcasting.rank`, and each trained
 skill. Two class items therefore produce "use the highest proficiency granted for a given statistic"
 with no help at all.
@@ -42,7 +43,7 @@ needs has no equivalent here: there is nothing stale to remove.
 
 ## Getting two class items onto one actor
 
-`ItemPF2e.createDocuments` (44932-44939) collects every existing ancestry, background, class,
+`ItemPF2e.createDocuments` (45262) collects every existing ancestry, background, class,
 heritage and deity whose type appears in the incoming batch and deletes them:
 
 ```js
@@ -116,7 +117,7 @@ Green comes from a `selected` class on the button, not from `aria-pressed`.
 
 ## Feat ladders
 
-`CharacterPF2e#prepareFeats` (33984-33994) builds the feat groups, loops
+`CharacterPF2e#prepareFeats` (34262) builds the feat groups, loops
 `game.pf2e.settings.campaign.feats.sections` calling `createGroup` on each, then assigns feats to
 slots. That loop is unconditional - it does not check the `campaignFeats` setting, confirmed in a
 world where that setting is off and custom sections still appear. Pushing a section definition onto
@@ -130,7 +131,7 @@ Adding the group after the call instead would not work: `assignToSlots` is not i
 `assignFeat` pushes onto `feats[]` for unslotted groups and `postProcess` sorts and filters.
 
 A section whose every slot is above the character's level is skipped rather than pushed. `FeatGroup`
-drops the out-of-range slots itself (33233) but still creates the group, which renders as a header
+drops the out-of-range slots itself (33510) but still creates the group, which renders as a header
 with nothing under it - a level 1 Monk/Wizard hits this, since Wizard class feats start at 2.
 
 Another module's general-purpose second class-feat ladder is stood down for actors this module
@@ -139,8 +140,8 @@ not the part that matters, and matching it would mean naming another package in 
 
 ## Class features
 
-`CharacterPF2e._preUpdate` grants features on a level change from `let s = this.class` (34534) -
-singular. The level-down branch (34543) deletes by level with no class awareness, so removal already
+`CharacterPF2e._preUpdate` grants features on a level change from `let s = this.class` (34812) -
+singular. The level-down branch (34821) deletes by level with no class awareness, so removal already
 covers both classes and only granting needed building.
 
 `syncSecondaryClassFeatures` reconciles instead of wrapping that async internal: it asks the
@@ -182,7 +183,7 @@ the same slot ids, and they attach again.
 
 ## Not reusing the system's class picker
 
-`ABCPicker` keys its instance on `abc-picker-${itemType}-${actor.uuid}` (22710), so a second one for
+`ABCPicker` keys its instance on `abc-picker-${itemType}-${actor.uuid}` (22808), so a second one for
 the same actor and type collides with the first. Its selection handling lives inside a Svelte
 component with no seam to intercept, and what it does on confirm is replace the class. The Second
 Class slot uses a plain dialog over the class compendia instead.
@@ -208,7 +209,7 @@ for. This was checked rather than assumed, because it was the one merge rule wit
 ## What the module deliberately does not do
 
 **Skill increases are not automated.** `skillIncreaseLevels` appears twice in the whole system
-(117418 in the schema, 121245 in the class item's own sheet) and the character actor never reads it,
+(117949 in the schema, 121787 in the class item's own sheet) and the character actor never reads it,
 so the system does not automate them for single-class characters either.
 
 **Trained skill counts are not enforced**, only reported. `trainedSkills.additional` is stored on
