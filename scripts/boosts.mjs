@@ -188,7 +188,11 @@ function narrowRow(row, classItem, attributes, actor, isClone) {
     }
     button.hidden = false;
 
-    button.setAttribute("aria-pressed", String(selected === attribute));
+    // `aria-pressed` is for assistive tech; the green fill comes from the `selected` class PF2e's
+    // own button component adds. Setting only the attribute left every key looking unchosen.
+    const isSelected = selected === attribute;
+    button.setAttribute("aria-pressed", String(isSelected));
+    button.classList.toggle("selected", isSelected);
 
     // PF2e's own listener is still on the original row's buttons and writes to `actor.class`, which
     // is right for the primary and wrong for everything else. Replacing the node drops that
