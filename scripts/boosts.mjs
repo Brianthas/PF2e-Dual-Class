@@ -160,6 +160,12 @@ function narrowRow(row, classItem, attributes, actor, isClone) {
   row.setAttribute(ROW_MARKER, isClone ? "secondary" : "primary");
   row.setAttribute("aria-label", `Class key attribute for ${classItem.name}`);
 
+  // The clone inherits the "Class" heading. Retitling it keeps the two rows told apart at a glance,
+  // matching the sheet's own Class / Second Class cells, and means the row lookup no longer has a
+  // second element answering to the heading it searches for.
+  const title = row.querySelector(".title");
+  if (title && isClone) title.textContent = game.i18n.localize("PF2EDC.Sheet.SecondClass");
+
   const description = row.querySelector(".description");
   if (description) description.textContent = classItem.name;
 

@@ -33,7 +33,12 @@ function onRenderSheet(sheet, element) {
   if (!classCell) return;
   if (actor.itemTypes.class.length === 0) return;
 
-  classCell.after(buildCell(actor, classCell, sheet.isEditable));
+  // Appended to the end of the grid rather than inserted after the Class cell. The grid holds
+  // Ancestry, Heritage, Background, Class and Deity in two columns, which leaves the sixth cell
+  // empty; filling that one keeps every existing field where the player already expects it, where
+  // inserting after Class would push Deity into the next slot.
+  const grid = classCell.parentElement;
+  grid.append(buildCell(actor, classCell, sheet.isEditable));
 }
 
 /**
