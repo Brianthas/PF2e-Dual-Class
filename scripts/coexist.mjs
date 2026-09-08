@@ -205,6 +205,14 @@ async function flagNewClassAsSecondary(actor, created) {
 export function onDeleteClassItem(item) {
   const actor = item?.parent;
   if (item?.type !== "class" || actor?.type !== "character") return;
-  if (actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) !== item.id) return;
-  actor.unsetFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
+  if (actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) === undefined) return;
+
+  // Clear the flag when the class it names goes, and equally when the *other* class goes and this
+  // one is all that is left. A single remaining class still flagged as the second one is not
+  // dual-class by any useful definition, and it would show up in the Second Class slot with the
+  // Class slot empty beside it.
+  const deletedWasSecondary = actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) === item.id;
+  if (deletedWasSecondary || actor.itemTypes.class.length < 2) {
+    actor.unsetFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
+  }
 }
