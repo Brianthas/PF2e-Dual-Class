@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- Fixed the Enable Dual Class setting hint, which said characters were unaffected until a second
+  class was added. They are not: with the setting on, a player cannot level a character past 1st
+  until it has both classes. The hint says that now.
+- Reworded the README and several on-screen messages.
+
 ## 0.1.0
 
 First release. Runs the Dual-Class Characters variant rule on two real class items.

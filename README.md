@@ -74,8 +74,9 @@ Strength for the Fighter gets Strength **and** Intelligence.
 
 The Attribute Boosts window gets a row per class, each wired to its own class item, because the
 system's single row writes every choice to the first class. The rows sit where the boosts are
-actually applied, after Background and before the free boosts, so a class boost is counted before
-the free ones and the partial-boost rule at +4 works out on its own.
+actually applied, after Background and before the free boosts. That ordering matters: a class boost
+lands before the free ones, so if it takes an attribute to +4 the free boosts that follow are worth
+a half step, the same as they would be for a single-class character.
 
 ### Feat ladders
 
@@ -116,10 +117,10 @@ does not show both.
 A dual-class caster's **spellcasting proficiency** is the better of the two classes, so a
 Fighter/Wizard is trained in spell attack rolls and spell DC rather than untrained.
 
-**Each class needs its own spellcasting entry, added by hand.** That is not this module: Pathfinder
-2e never creates one automatically, for a second class or a first. No class feature grants one - of
-the 391 item grants across the class-features compendium, none is a spellcasting entry - and the
-system's own way of making one is the manual dialog on the Spellcasting tab. So add a second entry
+**Each class needs its own spellcasting entry, added by hand.** This is how Pathfinder 2e works for
+everyone, not something the module takes away: the system has never created a spellcasting entry
+from a class, first or second. No class feature grants one, and the way you make one is the dialog
+on the Spellcasting tab. So add a second entry
 there, with the second class's tradition, prepared or spontaneous category, and key attribute, the
 same way the first one was made.
 
@@ -138,10 +139,10 @@ add. Use it after giving a second class to a character that is already past leve
 
 ### Levelling past 1st
 
-A character cannot leave 1st level with only one class. The second class's 1st-level features,
-proficiencies and key attribute boost all belong to the character from the start, and levelling
-without it quietly produces a character that never received any of them - with nothing on the sheet
-to show it, because the numbers look exactly like a legitimate single-class character.
+A character cannot leave 1st level with only one class. The second class brings 1st-level features,
+proficiencies and a key attribute boost that the character is meant to have from the start, and if
+you level without picking it, none of that ever arrives. Nothing on the sheet looks wrong either,
+because a character missing all of it looks exactly like an ordinary single-class one.
 
 **A player is stopped; a GM is warned and allowed through.** A GM has reasons for a one-class
 character in a dual-class world - an NPC built on a character sheet, or a character partway through
@@ -182,11 +183,12 @@ Verified against Foundry v14 and Pathfinder 2e 8.4.1 and 8.5.0. The manifest dec
 minimum rather than a lower version nobody has run it on; Pathfinder 2e 8.4.1 itself requires
 Foundry 14.361, so there is no older combination to support.
 
-Making two class items coexist means working around the system's own behaviour, which deletes an
-existing class whenever a class is added. That is done by keeping the class the system is about to
-delete, which relies on how the system performs that deletion. It reports loudly rather than
-silently if a future Pathfinder 2e release changes it, but **check that adding a second class still
-keeps the first after any system update.**
+Pathfinder 2e deletes a character's existing class whenever a new one is added, and there is no
+setting to turn that off. This module gets two classes onto one sheet by holding on to the class the
+system is about to delete, which depends on the particular way the system does the deleting. If a
+future release changes that, the module notices and tells you: an error on screen, a note in the chat
+log, and details in the console. Even so, **after any system update, add a second class to a test
+character and check the first one is still there.**
 
 If another module adds a general-purpose second ladder of class feat slots, it is suppressed for
 characters this module already gives per-class ladders to, so the sheet does not offer the same

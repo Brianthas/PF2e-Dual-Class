@@ -4,7 +4,7 @@
     "Settings": {
       "ModuleEnabled": {
         "Name": "Enable Dual Class",
-        "Hint": "Turn on the Dual-Class Characters variant rule. Characters are unaffected until a second class is added to them."
+        "Hint": "Turn on the Dual-Class Characters variant rule. Every character then needs two classes: players cannot level one past 1st until it has both, though you can as GM."
       },
       "AncestryParagon": {
         "Name": "Enable Ancestry Paragon",
@@ -38,12 +38,12 @@
       "FromBackground": "background trains {skills}",
       "Granted": "granted {skills}",
       "AllTrained": "{actual} of {total} skills trained - all of them",
-      "AllTrainedWhy": "Something on this character trains every skill, so there is nothing left for the class skill picks to buy and no count worth making.",
-      "LevelOneOnly": "Shown at 1st level only, where every trained skill still traces to the build."
+      "AllTrainedWhy": "Something on this character trains every skill, so the class skill picks have nothing left to spend on and there is no count worth showing.",
+      "LevelOneOnly": "Shown at 1st level only, while every trained skill can still be traced back to where it came from."
     },
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",
-      "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. Two classes is the supported shape."
+      "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. This module only handles two."
     },
     "LevelGate": {
       "OneClass": "{actor} has only one class ({class}).",
