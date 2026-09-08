@@ -217,3 +217,8 @@ the class item and read by nothing on the actor.
 **Feat slots are not gated by class.** `FeatGroup#isFeatValid` tests `supported`, the feat category,
 and never reads `filter.traits`. Blocking would mean wrapping `FeatGroup#insertFeat`, and `FeatGroup`
 is not exposed on `CONFIG` - it is reachable only through an actor's live `feats` collection.
+
+**A third class item is ignored, not rejected.** The module reads one primary and one flagged
+secondary, so a third contributes its proficiencies (the system resolves those with a maximum) and
+gets its own class DC, but it is absent from the Hit Points comparison and gets no feat ladder. Two
+is the shape that is tested.
