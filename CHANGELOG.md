@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- The module description now mentions Ancestry Paragon, which has its own world setting and was not
+  discoverable from the module list.
+
 ## 0.2.0
 
 - Renamed. The module id is now `pf2e-dual-class-items` and the title is **Dual Class Items (PF2e)**.
