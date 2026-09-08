@@ -63,7 +63,9 @@ function grantedByRules(actor) {
   const core = CONFIG.PF2E.skills ?? {};
   const granted = new Set();
   const skillPath = /^system\.skills\.(.+)\.rank$/;
-  const selectionFlag = /rulesSelections\.([A-Za-z0-9_]+)\}?$/;
+  // The flag can be nested - Clan Lore writes `rulesSelections.clan.skillOne` - so everything after
+  // `rulesSelections.` is captured and walked rather than treated as a single key.
+  const selectionFlag = /rulesSelections\.([A-Za-z0-9_.]+)\}?$/;
 
   for (const item of actor.items) {
     for (const rule of item.system?.rules ?? []) {
@@ -81,7 +83,9 @@ function grantedByRules(actor) {
       // looked up there rather than the path being resolved by hand.
       if (slug.startsWith("{")) {
         const flag = selectionFlag.exec(slug);
-        slug = flag ? item.flags?.pf2e?.rulesSelections?.[flag[1]] : null;
+        let value = flag ? item.flags?.pf2e?.rulesSelections : null;
+        for (const part of flag?.[1].split(".") ?? []) value = value?.[part];
+        slug = typeof value === "string" ? value : null;
       }
 
       // An unanswered choice resolves to nothing, and the skill it would have trained is untrained
@@ -125,6 +129,16 @@ export function tallyTrainedSkills(actor) {
   const coreSkills = Object.keys(CONFIG.PF2E.skills ?? {});
   const actual = coreSkills.filter((key) => (actor.system.skills[key]?.rank ?? 0) >= 1).length;
 
+  // Something can train every skill outright - a homebrew feature doing it as one upgrade per skill
+  // is the case this was found on. There is then nothing for the free picks to buy, and counting
+  // produces a number wrong in a confusing way: every skill is granted, so the expected total reads
+  // as sixteen plus picks that cannot be spent, and the character looks permanently short by
+  // exactly those picks. Where every skill is already covered, say so instead of counting.
+  //
+  // Keyed on the outcome rather than on recognising any particular feature, so anything that trains
+  // everything gets the same answer.
+  const everySkillGranted = coreSkills.length > 0 && coreSkills.every((key) => named.has(key));
+
   return {
     automatic: [...automatic],
     background: [...background],
@@ -134,6 +148,8 @@ export function tallyTrainedSkills(actor) {
     free,
     expected,
     actual,
+    coreCount: coreSkills.length,
+    everySkillGranted,
     classes: classes.map((c) => c.name)
   };
 }
@@ -146,7 +162,7 @@ export function tallyTrainedSkills(actor) {
  * a wrong one are coloured the way the rest of the sheet colours those two ideas.
  */
 function buildPanel(tally) {
-  const wrong = tally.actual !== tally.expected;
+  const wrong = !tally.everySkillGranted && tally.actual !== tally.expected;
 
   const wrapper = document.createElement("div");
   wrapper.className = PANEL_CLASS;
@@ -158,6 +174,20 @@ function buildPanel(tally) {
 
   const line = document.createElement("div");
   line.className = "pf2edc-skill-count-line";
+  if (tally.everySkillGranted) {
+    line.innerHTML = game.i18n.format("PF2EDC.Skills.AllTrained", {
+      actual: `<strong class="pf2edc-count">${tally.actual}</strong>`,
+      total: tally.coreCount
+    });
+    wrapper.append(line);
+
+    const why = document.createElement("div");
+    why.className = "pf2edc-skill-count-detail";
+    why.textContent = game.i18n.localize("PF2EDC.Skills.AllTrainedWhy");
+    wrapper.append(why);
+    return wrapper;
+  }
+
   line.innerHTML = game.i18n.format("PF2EDC.Skills.Count", {
     actual: `<strong class="pf2edc-count">${tally.actual}</strong>`,
     expected: `<strong>${tally.expected}</strong>`

@@ -159,7 +159,7 @@ function reorderGroups(feats) {
  * The match is structural - a section whose `supported` list is exactly `["class"]` - rather than by
  * id. Matching an id would mean naming another package inside this one, and the id is not the part
  * that matters: what makes such a section redundant is that it accepts class feats generally. This
- * mirrors the shape of the duplicate check in the Divine Blessings module's `categories.mjs`.
+ * mirrors the shape of the duplicate check another module of the author's already uses.
  *
  * Sections are put back in the `finally`, so this changes nothing for single-class actors and
  * nothing is written to the stored setting.

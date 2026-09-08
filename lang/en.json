@@ -37,6 +37,8 @@
       "FreePicks": "{free} free picks ({additional} + Int {int})",
       "FromBackground": "background trains {skills}",
       "Granted": "granted {skills}",
+      "AllTrained": "{actual} of {total} skills trained - all of them",
+      "AllTrainedWhy": "Something on this character trains every skill, so there is nothing left for the class skill picks to buy and no count worth making.",
       "LevelOneOnly": "Shown at 1st level only, where every trained skill still traces to the build."
     },
     "LevelGate": {
