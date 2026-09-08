@@ -4,7 +4,7 @@
   "description": "Runs the Dual-Class Characters variant rule on two real class items instead of a merged one: both classes' proficiencies at the higher rank, the better Hit Points, both class DCs, both key attribute boosts, and a separate feat ladder for each class.",
   "version": "0.1.0",
   "compatibility": {
-    "minimum": "13",
+    "minimum": "14",
     "verified": "14"
   },
   "authors": [
@@ -32,7 +32,7 @@
         "id": "pf2e",
         "type": "system",
         "compatibility": {
-          "minimum": "8.0.0",
+          "minimum": "8.4.1",
           "verified": "8.4.1"
         }
       }
