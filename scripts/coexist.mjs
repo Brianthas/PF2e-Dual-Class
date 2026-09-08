@@ -93,8 +93,46 @@ function verifyPurgeBypass(actor, expectedIds) {
   );
 }
 
+/**
+ * Stop deleting one class from taking the other class's features with it.
+ *
+ * Deleting an item on a creature expands the list to include that item's linked items
+ * (`CreaturePF2e#deleteEmbeddedDocuments`, pf2e.mjs:33091-33096). For a class, "linked" is computed
+ * by `ABCItemPF2e#getLinkedItems` (45084) as every feat whose `system.location` is *any* class item
+ * id on the actor:
+ *
+ *   let e = this.actor.itemTypes[this.type].map((e) => e.id);
+ *   return this.actor.itemTypes.feat.filter((t) => e.includes(t.system.location ?? ""));
+ *
+ * and `ClassPF2e` widens it again to every `classfeature` on the actor that nothing else granted.
+ * With one class both are exactly right. With two, removing either class deletes both classes'
+ * features - measured: removing a Wizard took the Fighter's granted feature with it.
+ *
+ * A dual-class actor gets the narrow answer instead: the feats this class item actually granted,
+ * which `createGrantedItems` marks by stamping its own id into `system.location` (45099). Features
+ * granted in turn by those features carry `flags.pf2e.grantedBy` and are already removed with their
+ * granter, so they do not need listing here.
+ *
+ * This guards deleting a class by any route, not only the module's own Remove Second Class - a class
+ * dragged out of the items list would otherwise take the other class's features with it.
+ */
+function registerLinkedItemNarrowing() {
+  return registerLibWrapper(
+    "CONFIG.PF2E.Item.documentClasses.class.prototype.getLinkedItems",
+    function (wrapped) {
+      const actor = this.actor;
+      if (!moduleEnabled() || actor?.type !== "character") return wrapped();
+      if (actor.itemTypes.class.length < 2) return wrapped();
+      return actor.itemTypes.feat.filter((f) => f.system.location === this.id);
+    },
+    "MIXED"
+  );
+}
+
 export function registerCoexistence() {
-  let ok = registerLibWrapper(
+  let ok = registerLinkedItemNarrowing();
+
+  ok = registerLibWrapper(
     "CONFIG.Item.documentClass.createDocuments",
     async function (wrapped, data = [], operation = {}) {
       const actor = operation.parent;
@@ -119,7 +157,7 @@ export function registerCoexistence() {
       }
     },
     "MIXED"
-  );
+  ) && ok;
 
   ok = registerLibWrapper(
     "CONFIG.Actor.documentClass.prototype.deleteEmbeddedDocuments",
