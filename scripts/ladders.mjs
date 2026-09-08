@@ -100,10 +100,10 @@ function reorderGroups(feats) {
     ordered.push([id, group]);
     taken.add(id);
 
-    const prefixes = follows[id];
-    if (!prefixes) continue;
-
-    for (const prefix of prefixes) {
+    // Not `continue` when there is no entry: the same-support pass below applies to every group,
+    // and skipping the rest of the body for the groups `follows` does not name left it reachable
+    // only for class feats, which is the one kind it was never meant for.
+    for (const prefix of follows[id] ?? []) {
       for (const entry of entries) {
         const matches = entry[0] === prefix || entry[0].startsWith(`${prefix}-`);
         if (matches && !taken.has(entry[0])) {
@@ -350,10 +350,6 @@ function buildDualClassSections(actor) {
     });
   }
 
-  // The ancestry, skill and general ladders come from `actor.class` alone, so a secondary class that
-  // grants more of them than the primary would silently lose the difference. Only the extra levels
-  // get a section: a Rogue secondary brings its odd-level skill feats, while two classes whose
-  // ladders already match produce nothing at all rather than an empty header.
   // Skill, general and ancestry feats get no section of their own. They are had once per level, so
   // a second class raises the level count on the one ladder rather than opening a second - handled
   // by merging those arrays in `withParagonLadder` before the groups are built. Only class feats,

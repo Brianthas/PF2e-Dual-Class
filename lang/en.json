@@ -57,10 +57,7 @@
     },
     "Section": {
       "AncestryParagon": "Ancestry Feats (Paragon)",
-      "ClassFeats": "Second Class Feats",
-      "SkillFeats": "Second Class Skill Feats",
-      "GeneralFeats": "Second Class General Feats",
-      "AncestryFeats": "Second Class Ancestry Feats"
+      "ClassFeats": "Second Class Feats"
     }
   }
 }

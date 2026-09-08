@@ -33,3 +33,6 @@ First release. Runs the Dual-Class Characters variant rule on two real class ite
   feat located to any class item as linked to the class being removed, which is right with one class
   and destroys the other class's features with two. Applies to deleting a class by any route, not
   only the module's own Remove Second Class.
+- A feat section another module adds is placed with the group that takes the same kind of feat
+  rather than at the bottom of the tab, so a second source of skill or ancestry feats reads as a
+  continuation of that ladder.

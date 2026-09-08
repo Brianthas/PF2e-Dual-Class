@@ -1,0 +1,43 @@
+name: Release
+
+# Triggered by a version tag, which tools/release.mjs pushes after bumping module.json.
+# module.json's manifest and download URLs point at releases/latest/download/, so both
+# files have to be uploaded as release assets under exactly those names or every install
+# and every update check fails.
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # The tag and module.json's version are written by separate steps in release.mjs, so
+      # they can disagree if a tag is ever pushed by hand. Foundry reads the version out of
+      # the manifest, so a mismatch installs a version the release is not named after.
+      - name: Check the tag matches module.json
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          module_version=$(node -p "require('./module.json').version")
+          if [ "$tag_version" != "$module_version" ]; then
+            echo "Tag $GITHUB_REF_NAME says $tag_version, module.json says $module_version"
+            exit 1
+          fi
+          echo "Version $module_version"
+
+      - name: Zip module
+        run: |
+          zip -r module.zip module.json scripts lang styles LICENSE README.md CHANGELOG.md
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            module.json
+            module.zip
+          generate_release_notes: true
