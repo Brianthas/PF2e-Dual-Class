@@ -204,7 +204,12 @@ async function openActions(actor, secondary) {
  * class item's id (pf2e.mjs:45099), so this removes what that class brought and leaves the other
  * class's features alone even where both classes grant a feature of the same name.
  */
-async function removeSecondClass(actor, secondary) {
+export async function removeSecondClass(actor, secondary = getSecondaryClass(actor)) {
+  if (!secondary) return;
+  return removeSecondClassItem(actor, secondary);
+}
+
+async function removeSecondClassItem(actor, secondary) {
   const granted = actor.itemTypes.feat
     .filter((f) => f.system.location === secondary.id)
     .map((f) => f.id);

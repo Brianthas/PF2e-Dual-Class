@@ -148,6 +148,19 @@ secondary class what it should have granted by now, drops anything already prese
 and creates the rest. The `sourceId` filter makes repeat runs free, so one function serves a level
 change, the moment a class is flagged secondary, and a button.
 
+## Removing the second class
+
+Removing it deletes the class item and the features it granted, matched on `system.location`, which
+`createGrantedItems` stamps with the granting class item's id (45099). Matching on the id rather
+than the name is what keeps the other class's features when both grant a feature of the same name.
+
+Feats the player chose into that class's ladder are deliberately left alone. Their `location` is a
+slot id (`dc-class-wizard-4`), not the class item's id, so they are not caught by that match - and
+they should not be: they are choices someone made, not something the module granted. With the ladder
+gone, `assignToSlots` finds no group for their location and falls back to the bonus group, so they
+appear under Bonus Feats rather than vanishing. Re-adding the same class restores the ladder with
+the same slot ids, and they attach again.
+
 ## Not reusing the system's class picker
 
 `ABCPicker` keys its instance on `abc-picker-${itemType}-${actor.uuid}` (22710), so a second one for

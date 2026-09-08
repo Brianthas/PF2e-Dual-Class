@@ -5,7 +5,7 @@ import { registerMerge } from "./merge.mjs";
 import { registerLadders, buildSections } from "./ladders.mjs";
 import { onUpdateActor, syncSecondaryClassFeatures } from "./features.mjs";
 import { registerBoostRows } from "./boosts.mjs";
-import { registerSheet } from "./sheet.mjs";
+import { registerSheet, removeSecondClass } from "./sheet.mjs";
 import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
 import { registerMismatchWarning } from "./mismatch.mjs";
 
@@ -60,6 +60,7 @@ Hooks.on("updateActor", onUpdateActor);
 Hooks.once("ready", () => {
   // Exposed so a macro or the console can drive the same entry points the sheet controls use.
   game.modules.get(MODULE_ID).api = {
-    armSecondClass, clearArm, buildSections, syncSecondaryClassFeatures, tallyTrainedSkills
+    armSecondClass, clearArm, buildSections, syncSecondaryClassFeatures, tallyTrainedSkills,
+    removeSecondClass
   };
 });
