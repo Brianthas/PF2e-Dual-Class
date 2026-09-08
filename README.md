@@ -140,9 +140,9 @@ one flagged as second gets a feat ladder.
 
 ## Compatibility
 
-Verified against Foundry v14 and Pathfinder 2e 8.4.1, and the manifest declares that as the minimum
-rather than a lower version nobody has run it on. Pathfinder 2e 8.4.1 itself requires Foundry
-14.361, so there is no older combination to support.
+Verified against Foundry v14 and Pathfinder 2e 8.4.1 and 8.5.0. The manifest declares 8.4.1 as the
+minimum rather than a lower version nobody has run it on; Pathfinder 2e 8.4.1 itself requires
+Foundry 14.361, so there is no older combination to support.
 
 Making two class items coexist means working around the system's own behaviour, which deletes an
 existing class whenever a class is added. That is done by keeping the class the system is about to
