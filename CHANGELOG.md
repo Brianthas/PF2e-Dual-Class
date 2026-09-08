@@ -23,6 +23,12 @@ First release. Runs the Dual-Class Characters variant rule on two real class ite
   additional skill counts rather than the sum.
 - A warning when a class feat is placed in the other class's ladder. Feat slots are not gated by
   class, so this reports rather than blocks.
+- Ancestry Paragon, as its own world setting independent of dual class. The extra slots go into
+  PF2e's own Ancestry Feats group rather than a second ladder, so the feats sit where a player looks
+  for them, and the heading says the ladder is a paragon one.
+- A player cannot level a character past 1st with only one class; a GM is warned and allowed
+  through. The second class's 1st-level features and proficiencies belong to the character from the
+  start, and levelling without it leaves no sign on the sheet.
 - Deleting one class no longer takes the other class's features with it. The system treats every
   feat located to any class item as linked to the class being removed, which is right with one class
   and destroys the other class's features with two. Applies to deleting a class by any route, not

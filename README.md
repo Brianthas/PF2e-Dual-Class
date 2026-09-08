@@ -111,17 +111,38 @@ character's level drops. **Sync Class Features**, in the Second Class slot's men
 grants anything missing; it is safe to run at any time and does nothing when there is nothing to
 add. Use it after giving a second class to a character that is already past level 1.
 
+### Levelling past 1st
+
+A character cannot leave 1st level with only one class. The second class's 1st-level features,
+proficiencies and key attribute boost all belong to the character from the start, and levelling
+without it quietly produces a character that never received any of them - with nothing on the sheet
+to show it, because the numbers look exactly like a legitimate single-class character.
+
+**A player is stopped; a GM is warned and allowed through.** A GM has reasons for a one-class
+character in a dual-class world - an NPC built on a character sheet, or a character partway through
+being fixed - and no way to say so to a hard block.
+
+The check is on leaving 1st level, not on every level change. A character already past 1st with one
+class may have been imported or predate the variant being switched on, and blocking every update to
+it would be obstructive.
+
 ### Trained skills
 
 A counter at the top of the Proficiencies tab shows how many trained skills the character has
 against how many the build accounts for: the skills each class trains automatically, plus the
 **larger** of the two classes' additional skill counts (never the sum), plus the Intelligence
-modifier, plus the background's.
+modifier, plus the background's, plus any trained by a heritage, ancestry feat or class feature.
 
-Two things it cannot see. Ancestries carry no trained-skill field, so a skill trained by an ancestry
-comes through a feat and is not counted. And a skill increase can be spent either raising a trained
-skill or training a new one, with nothing recording which, so a count above the expected total is
-only flagged once it exceeds what every increase taken so far could account for.
+Those last ones are found by reading the rule that grants them, including the common case where the
+player chooses which skill - Skilled Human, the Natural Skill ancestry feat, a Rogue's racket - where
+the choice is resolved from the item's own answer rather than guessed at.
+
+**It shows at 1st level only, and that is what makes it exact.** At 1st level every trained skill
+traces to a build source, so the count is an identity rather than an estimate. From 3rd level a
+skill increase can be spent either raising a trained skill or training an untrained one, with
+nothing recording which, so a later count would be a guess dressed as a check - and a panel that
+cries wolf on a legitimate build is worse than no panel. 1st level is also exactly when the
+dual-class arithmetic is being done for the first time and is easy to get wrong.
 
 ## Which class is which
 
