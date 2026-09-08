@@ -1,4 +1,5 @@
-import { SECTION_PREFIX, SECTION_ROOT } from "./constants.mjs";
+import { MODULE_ID, SECTION_PREFIX, SECTION_ROOT, PARAGON_SECTION, PARAGON_LEVELS } from "./constants.mjs";
+import { ancestryParagonEnabled } from "./settings.mjs";
 import { registerLibWrapper, isDualClassActor, getPrimaryClass, getSecondaryClass, classSlug } from "./util.mjs";
 
 /**
@@ -32,15 +33,24 @@ export function registerLadders() {
     "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareFeats",
     function (wrapped, ...args) {
       const sections = game.pf2e?.settings?.campaign?.feats?.sections;
-      const extra = Array.isArray(sections) ? buildSections(this) : [];
+      if (!Array.isArray(sections)) return wrapped(...args);
 
-      if (extra.length === 0) return wrapped(...args);
+      const extra = buildSections(this);
+      const paragon = paragonApplies(this);
+      if (extra.length === 0 && !paragon) return wrapped(...args);
 
-      const stoodDown = removeGenericClassSections(sections);
+      // Another package's ladder for the same slots is stood down only where this module is
+      // supplying them itself: a generic class ladder when this character has one per class, and an
+      // Ancestry Paragon section when the setting here is on.
+      const stoodDown = [
+        ...(extra.length ? removeGenericClassSections(sections) : []),
+        ...(paragon ? removeSectionsFor(sections, ["ancestry"]) : [])
+      ];
       sections.push(...extra);
       try {
-        const result = wrapped(...args);
+        const result = withParagonLadder(this, () => wrapped(...args));
         reorderGroups(this.feats);
+        labelParagonGroup(this.feats, this);
         return result;
       } finally {
         for (const section of extra) {
@@ -73,28 +83,66 @@ function reorderGroups(feats) {
   const isOurs = (id) => id.startsWith(SECTION_ROOT);
   if (!entries.some(([id]) => isOurs(id))) return;
 
+  // Which of this module's sections belong under which built-in group. Ancestry Paragon is not here:
+  // its slots go into PF2e's own ancestry group rather than a section of their own.
   const follows = {
-    class: SECTION_PREFIX.CLASS,
-    skill: SECTION_PREFIX.SKILL,
-    general: SECTION_PREFIX.GENERAL,
-    ancestry: SECTION_PREFIX.ANCESTRY
+    class: [SECTION_PREFIX.CLASS],
+    skill: [SECTION_PREFIX.SKILL],
+    general: [SECTION_PREFIX.GENERAL],
+    ancestry: [SECTION_PREFIX.ANCESTRY]
   };
 
+  const sameSupport = (a, b) => Array.isArray(a) && Array.isArray(b)
+    && a.length === b.length && a.every((v) => b.includes(v));
+
   const ordered = [];
+  const taken = new Set();
   for (const [id, group] of entries) {
-    if (isOurs(id)) continue;
+    if (isOurs(id) || taken.has(id)) continue;
     ordered.push([id, group]);
-    const prefix = follows[id];
-    if (!prefix) continue;
+    taken.add(id);
+
+    const prefixes = follows[id];
+    if (!prefixes) continue;
+
+    for (const prefix of prefixes) {
+      for (const entry of entries) {
+        const matches = entry[0] === prefix || entry[0].startsWith(`${prefix}-`);
+        if (matches && !taken.has(entry[0])) {
+          ordered.push(entry);
+          taken.add(entry[0]);
+        }
+      }
+    }
+
+    // Another module's section that feeds the same kind of feat belongs with that kind, not at the
+    // bottom of the tab. An Ancestry Paragon section is the case in point: it accepts ancestry
+    // feats, so it reads as a continuation of the Ancestry Feats group rather than as something
+    // unrelated sitting below the class feats.
+    //
+    // Matched on the categories a section accepts rather than on its id, so it works for whichever
+    // module supplies it. Only groups from campaign sections can match - PF2e's own groups all
+    // accept different categories from one another.
     for (const entry of entries) {
-      if (entry[0].startsWith(`${prefix}-`)) ordered.push(entry);
+      if (taken.has(entry[0]) || isOurs(entry[0])) continue;
+      if (!sameSupport(entry[1].supported, group.supported)) continue;
+      ordered.push(entry);
+      taken.add(entry[0]);
     }
   }
 
-  // Anything of ours whose counterpart group is absent still has to be kept, or it would vanish
-  // from the sheet entirely rather than merely sitting in the wrong place.
+  // Anything not placed above is appended rather than dropped. This covers our own sections whose
+  // counterpart group is absent, and is a backstop for every other group too: the collection is
+  // rebuilt from this list, so a group missing from it disappears from the sheet rather than merely
+  // sitting in the wrong place. Reordering must never lose a group.
   for (const entry of entries) {
-    if (isOurs(entry[0]) && !ordered.some(([id]) => id === entry[0])) ordered.push(entry);
+    if (!taken.has(entry[0])) ordered.push(entry);
+  }
+
+  if (ordered.length !== entries.length) {
+    console.error(`${MODULE_ID} | feat group reorder changed the group count `
+      + `(${entries.length} -> ${ordered.length}); leaving the original order alone.`);
+    return;
   }
 
   feats.clear();
@@ -120,10 +168,30 @@ function reorderGroups(feats) {
  * @returns {object[]} The removed sections, to be restored by the caller.
  */
 function removeGenericClassSections(sections) {
+  return removeSectionsFor(sections, ["class"]);
+}
+
+/**
+ * Take out every section that simply grants slots of one category, for the duration of this prepare.
+ *
+ * Used for two cases. A generic second ladder of class feats, when this module is already giving the
+ * character a ladder per class - otherwise the same slots are offered twice. And an Ancestry Paragon
+ * section from another package, when this module's own Ancestry Paragon setting is on: the extra
+ * slots then live in PF2e's ancestry group, so a separate section beside it would double them.
+ *
+ * Matched on the categories a section accepts rather than on an id, so it holds for whichever
+ * package supplies it. Sections are put back by the caller's `finally`, so nothing is written to the
+ * stored setting and characters this module leaves alone are unaffected.
+ *
+ * @param {object[]} sections The live world-global section array.
+ * @param {string[]} supported The exact category list to match.
+ * @returns {object[]} The removed sections, for the caller to restore.
+ */
+function removeSectionsFor(sections, supported) {
   const removed = [];
   for (let i = sections.length - 1; i >= 0; i -= 1) {
-    const supported = sections[i]?.supported;
-    if (Array.isArray(supported) && supported.length === 1 && supported[0] === "class") {
+    const s = sections[i]?.supported;
+    if (Array.isArray(s) && s.length === supported.length && s.every((v) => supported.includes(v))) {
       removed.push(...sections.splice(i, 1));
     }
   }
@@ -136,6 +204,100 @@ function removeGenericClassSections(sections) {
  * @returns {object[]}
  */
 export function buildSections(actor) {
+  return buildDualClassSections(actor);
+}
+
+/**
+ * Run `fn` with the character's ancestry ladder extended by Ancestry Paragon.
+ *
+ * `CharacterFeats` reads `actor.class.grantedFeatSlots` while it builds the groups, so the ladder has
+ * to be different at that moment. Rather than patch the getter globally, this defines an own
+ * property on the one class item for the duration of the call and deletes it afterwards, which puts
+ * the change exactly where it is needed and leaves nothing behind if `fn` throws.
+ *
+ * @param {ActorPF2e} actor
+ * @param {Function} fn
+ */
+function withParagonLadder(actor, fn) {
+  if (!paragonApplies(actor)) return fn();
+
+  const classItem = actor.class;
+  const original = classItem.grantedFeatSlots;
+  Object.defineProperty(classItem, "grantedFeatSlots", {
+    value: { ...original, ancestry: paragonSlots(original.ancestry) },
+    configurable: true
+  });
+  try {
+    return fn();
+  } finally {
+    delete classItem.grantedFeatSlots;
+  }
+}
+
+/**
+ * Say so in the heading when the ancestry ladder is a paragon one.
+ *
+ * The extra slots sit in PF2e's own Ancestry Feats group, which is the point - they are ancestry
+ * feats and belong with the others. Without a note in the heading there would be nothing on the tab
+ * explaining why that group is twice the length it is on a character without the variant.
+ *
+ * @param {Collection} feats
+ * @param {ActorPF2e} actor
+ */
+function labelParagonGroup(feats, actor) {
+  if (!paragonApplies(actor)) return;
+  const group = feats.get("ancestry");
+  if (group) group.label = game.i18n.localize("PF2EDC.Section.AncestryParagon");
+}
+
+/**
+ * Whether Ancestry Paragon should extend this character's ancestry ladder.
+ *
+ * Needs a class item, because the ladder being extended is the class's.
+ *
+ * @param {ActorPF2e} actor
+ */
+function paragonApplies(actor) {
+  return ancestryParagonEnabled() && actor?.type === "character" && !!actor.class;
+}
+
+/**
+ * The ancestry ladder with Ancestry Paragon's extra levels folded in.
+ *
+ * The variant gives two ancestry feats at 1st level and one at every odd level thereafter, eleven in
+ * total. Five of those are the class's own ladder, so `PARAGON_LEVELS` are the six added on top -
+ * including a second slot at level 1.
+ *
+ * That duplicate is why the slots are built as objects rather than plain numbers. `FeatGroup` turns
+ * a number into `{ id: "<group>-<level>" }` and files it under `this.slots[id]` (pf2e.mjs:33517),
+ * so two slots at level 1 would collide on `ancestry-1` and share one entry. Passing an object lets
+ * the second carry its own id, which keeps both in the group PF2e already renders instead of
+ * needing a separate one.
+ *
+ * @param {number[]} base The class's own ancestry feat levels.
+ * @returns {object[]} Slot definitions, ordered by level.
+ */
+function paragonSlots(base) {
+  const seen = new Set();
+  const slots = [];
+  for (const level of [...base, ...PARAGON_LEVELS].sort((a, b) => a - b)) {
+    const duplicate = seen.has(level);
+    seen.add(level);
+    slots.push({
+      id: duplicate ? `${PARAGON_SECTION}-${level}` : `ancestry-${level}`,
+      level,
+      label: String(level)
+    });
+  }
+  return slots;
+}
+
+/**
+ * The per-class sections for one dual-class actor.
+ * @param {ActorPF2e} actor
+ * @returns {object[]}
+ */
+function buildDualClassSections(actor) {
   if (!isDualClassActor(actor)) return [];
 
   const primary = getPrimaryClass(actor);

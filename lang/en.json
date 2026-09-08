@@ -5,6 +5,10 @@
       "ModuleEnabled": {
         "Name": "Enable Dual Class",
         "Hint": "Turn on the Dual-Class Characters variant rule. Characters are unaffected until a second class is added to them."
+      },
+      "AncestryParagon": {
+        "Name": "Enable Ancestry Paragon",
+        "Hint": "Every character gains a second ancestry feat at 1st level and another at each odd level thereafter, eleven in total. Independent of Dual Class. Skipped if another module already provides these slots."
       }
     },
     "Sheet": {
@@ -39,6 +43,7 @@
       "Added": "Added {count} {class} class feature(s)."
     },
     "Section": {
+      "AncestryParagon": "Ancestry Feats (Paragon)",
       "ClassFeats": "Second Class Feats",
       "SkillFeats": "Second Class Skill Feats",
       "GeneralFeats": "Second Class General Feats",
