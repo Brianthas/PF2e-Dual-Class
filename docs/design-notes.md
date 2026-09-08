@@ -35,11 +35,16 @@ It recomputes rather than restoring a snapshot taken before the wrapped call. Pr
 `actor.items` order, so the secondary can prepare before or after the primary; recomputing from both
 class items after each one prepares gives the same answer either way and converges when run twice.
 
-**Nothing can downgrade a proficiency.** Class items resolve with a maximum, and across all 875
-items in `pf2e.classfeatures` there are 35 rule elements that write a proficiency rank and every one
-uses `mode: "upgrade"` - no `override`, `downgrade`, `subtract` or `multiply`. The class items' own
-rules add four more, also all `upgrade`. So the comparison-and-removal step a merged-item approach
-needs has no equivalent here: there is nothing stale to remove.
+**Nothing a second class brings can downgrade a proficiency.** Class items resolve with a maximum,
+and across all 875 items in `pf2e.classfeatures` there are 35 rule elements that write a proficiency
+rank and every one uses `mode: "upgrade"` - no `override`, `downgrade`, `subtract` or `multiply`.
+The class items' own rules add four more, also all `upgrade`. So the comparison-and-removal step a
+merged-item approach needs has no equivalent here: there is nothing stale to remove.
+
+That scope is the claim. It covers what a second class contributes, which is all this module adds,
+and it says nothing about the rest of the game: feats, ancestries, heritages and backgrounds were
+not surveyed, and a rule element elsewhere that overrides a proficiency rank would behave here
+exactly as it does on a single-class character.
 
 ## Getting two class items onto one actor
 
