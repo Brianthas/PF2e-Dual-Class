@@ -1,4 +1,4 @@
-import { SECTION_PREFIX } from "./constants.mjs";
+import { SECTION_PREFIX, SECTION_ROOT } from "./constants.mjs";
 import { registerLibWrapper, isDualClassActor, getPrimaryClass, getSecondaryClass, classSlug } from "./util.mjs";
 
 /**
@@ -39,7 +39,9 @@ export function registerLadders() {
       const stoodDown = removeGenericClassSections(sections);
       sections.push(...extra);
       try {
-        return wrapped(...args);
+        const result = wrapped(...args);
+        reorderGroups(this.feats);
+        return result;
       } finally {
         for (const section of extra) {
           const at = sections.indexOf(section);
@@ -50,6 +52,53 @@ export function registerLadders() {
     },
     "WRAPPER"
   );
+}
+
+/**
+ * Put each added section directly beneath the group it doubles.
+ *
+ * Sections from `campaign.feats.sections` are created after every built-in group, so the second
+ * class's feats would sit below Skill, General and any campaign sections - a long way from the class
+ * feats they belong beside. `CharacterFeats` is a Collection, which is a Map and so keeps insertion
+ * order, and the sheet renders the groups in that order. Rebuilding the map in the order wanted is
+ * therefore the whole of the fix.
+ *
+ * Done after the wrapped call, so it is purely presentational: `assignToSlots` has already run and
+ * does not care what order the groups are in.
+ *
+ * @param {Collection} feats The actor's prepared feat groups.
+ */
+function reorderGroups(feats) {
+  const entries = [...feats.entries()];
+  const isOurs = (id) => id.startsWith(SECTION_ROOT);
+  if (!entries.some(([id]) => isOurs(id))) return;
+
+  const follows = {
+    class: SECTION_PREFIX.CLASS,
+    skill: SECTION_PREFIX.SKILL,
+    general: SECTION_PREFIX.GENERAL,
+    ancestry: SECTION_PREFIX.ANCESTRY
+  };
+
+  const ordered = [];
+  for (const [id, group] of entries) {
+    if (isOurs(id)) continue;
+    ordered.push([id, group]);
+    const prefix = follows[id];
+    if (!prefix) continue;
+    for (const entry of entries) {
+      if (entry[0].startsWith(`${prefix}-`)) ordered.push(entry);
+    }
+  }
+
+  // Anything of ours whose counterpart group is absent still has to be kept, or it would vanish
+  // from the sheet entirely rather than merely sitting in the wrong place.
+  for (const entry of entries) {
+    if (isOurs(entry[0]) && !ordered.some(([id]) => id === entry[0])) ordered.push(entry);
+  }
+
+  feats.clear();
+  for (const [id, group] of ordered) feats.set(id, group);
 }
 
 /**

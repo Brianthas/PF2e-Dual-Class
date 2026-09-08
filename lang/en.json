@@ -39,10 +39,10 @@
       "Added": "Added {count} {class} class feature(s)."
     },
     "Section": {
-      "ClassFeats": "{class} Feats",
-      "SkillFeats": "{class} Skill Feats",
-      "GeneralFeats": "{class} General Feats",
-      "AncestryFeats": "{class} Ancestry Feats"
+      "ClassFeats": "Second Class Feats",
+      "SkillFeats": "Second Class Skill Feats",
+      "GeneralFeats": "Second Class General Feats",
+      "AncestryFeats": "Second Class Ancestry Feats"
     }
   }
 }
