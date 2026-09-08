@@ -1,0 +1,17 @@
+{
+  "PF2EDC": {
+    "ModuleName": "Dual Class (PF2e)",
+    "Settings": {
+      "ModuleEnabled": {
+        "Name": "Enable Dual Class",
+        "Hint": "Turn on the Dual-Class Characters variant rule. Characters are unaffected until a second class is added to them."
+      }
+    },
+    "Section": {
+      "ClassFeats": "{class} Feats",
+      "SkillFeats": "{class} Skill Feats",
+      "GeneralFeats": "{class} General Feats",
+      "AncestryFeats": "{class} Ancestry Feats"
+    }
+  }
+}
