@@ -8,6 +8,7 @@ import { registerBoostRows } from "./boosts.mjs";
 import { registerSheet, removeSecondClass } from "./sheet.mjs";
 import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
 import { registerMismatchWarning } from "./mismatch.mjs";
+import { registerLevelGate } from "./level-gate.mjs";
 
 /**
  * Registration timing.
@@ -48,6 +49,7 @@ Hooks.once("init", () => {
   registerSheet();
   registerSkillCounter();
   registerMismatchWarning();
+  registerLevelGate();
 
   const failed = Object.entries(patched).filter(([, ok]) => !ok).map(([name]) => name);
   if (failed.length) console.error(`${MODULE_ID} | init: failed to patch ${failed.join(", ")}`);

@@ -36,7 +36,14 @@
       "FromClasses": "{classes} train {skills}",
       "FreePicks": "{free} free picks ({additional} + Int {int})",
       "FromBackground": "background trains {skills}",
-      "Increases": "{count} skill increase(s) taken, each of which may have trained a new skill"
+      "Granted": "granted {skills}",
+      "LevelOneOnly": "Shown at 1st level only, where every trained skill still traces to the build."
+    },
+    "LevelGate": {
+      "OneClass": "{actor} has only one class ({class}).",
+      "NoClass": "{actor} has no class yet.",
+      "Blocked": "Add the second class before levelling past 1st: its 1st-level features and proficiencies belong to the character from the start.",
+      "GmAllowed": "Levelling anyway because you are the GM."
     },
     "Sync": {
       "UpToDate": "{class} has no class features missing.",
