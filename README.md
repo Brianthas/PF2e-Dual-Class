@@ -77,14 +77,33 @@ Each class gets its own ladder of class feat slots, at the levels that class gra
 with the class name. A Fighter/Wizard at level 5 has Fighter slots at 1, 2 and 4 and Wizard slots at
 2 and 4, because the Wizard's class feats start at level 2.
 
-Where the second class grants skill, general or ancestry feats at levels the first does not, those
-extra slots get their own section too. A Fighter/Rogue picks up the Rogue's per-level skill feats;
-two classes whose ladders already match add nothing.
+**Skill, general and ancestry feats stay on one ladder, not two.** The variant rule lists those as
+had only once per level, so two classes do not grant two of them at the same level. What a second
+class can do is grant one at a level the first does not reach: a Fighter/Rogue gets the Rogue's
+skill feat at every level rather than every even one. Those extra levels are added to the system's
+own Skill Feats, General Feats and Ancestry Feats groups, so the slots sit where a player already
+looks for them. Two classes whose ladders match add nothing.
+
+Class feats are the exception, and that is why they get two ladders: they are not on the
+once-per-level list, so a dual-class character really does get one from each class at the same
+level.
 
 **The ladders label their slots, they do not police them.** Each ladder browses to its own class's
 feats, but the system's own check on a feat slot tests the feat's category and not its class, so
 anything that is a class feat can be dropped in either ladder. Putting a feat in the wrong one warns
 and lets it through. Archetype and dedication feats belong in both and are never flagged.
+
+### Ancestry Paragon
+
+**Enable Ancestry Paragon** is a separate world setting for the variant rule of the same name: an
+ancestry feat at 1st level and at every odd level after, eleven in total instead of five. It is
+independent of dual class and applies to every character with a class, single-classed or not, so a
+world can run either variant without the other.
+
+The extra slots go into the system's own **Ancestry Feats** group rather than a second ladder
+beside it, and the heading reads **Ancestry Feats (Paragon)** while the setting is on. If another
+module is already providing Ancestry Paragon slots, this one stands its section down so the sheet
+does not show both.
 
 ### Spellcasting
 
