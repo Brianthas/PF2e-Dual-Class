@@ -112,6 +112,14 @@ sheet treats as *the* one, and the name shown in the Class slot. The published r
 what to do when two classes disagree on a key attribute, so the choice is left explicit: **Make
 primary** in the Second Class menu swaps them.
 
+## Two classes, not three
+
+Two is the supported shape and the only one tested. A third class item does not break anything - it
+still contributes its proficiencies, since the system resolves those with a maximum, and it still
+gets its own class DC - but the module ignores it. Hit Points come from the better of the two
+classes it knows about, so a third class with a larger hit die would not be counted, and only the
+one flagged as second gets a feat ladder.
+
 ## Compatibility
 
 Verified against Foundry v14 and Pathfinder 2e 8.4.1.
