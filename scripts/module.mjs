@@ -6,6 +6,7 @@ import { registerLadders, buildSections } from "./ladders.mjs";
 import { onUpdateActor, syncSecondaryClassFeatures } from "./features.mjs";
 import { registerBoostRows } from "./boosts.mjs";
 import { registerSheet } from "./sheet.mjs";
+import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
 
 /**
  * Registration timing.
@@ -44,6 +45,7 @@ Hooks.once("init", () => {
   };
   registerBoostRows();
   registerSheet();
+  registerSkillCounter();
 
   const failed = Object.entries(patched).filter(([, ok]) => !ok).map(([name]) => name);
   if (failed.length) console.error(`${MODULE_ID} | init: failed to patch ${failed.join(", ")}`);
@@ -56,6 +58,6 @@ Hooks.on("updateActor", onUpdateActor);
 Hooks.once("ready", () => {
   // Exposed so a macro or the console can drive the same entry points the sheet controls use.
   game.modules.get(MODULE_ID).api = {
-    armSecondClass, clearArm, buildSections, syncSecondaryClassFeatures
+    armSecondClass, clearArm, buildSections, syncSecondaryClassFeatures, tallyTrainedSkills
   };
 });

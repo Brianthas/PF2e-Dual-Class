@@ -23,6 +23,14 @@
       "RemoveSecondClass": "Remove Second Class",
       "Removed": "Removed {class} and the features it granted."
     },
+    "Skills": {
+      "Header": "Trained Skills",
+      "Count": "{actual} trained, expected {expected}",
+      "FromClasses": "{classes} train {skills}",
+      "FreePicks": "{free} free picks ({additional} + Int {int})",
+      "FromBackground": "background trains {skills}",
+      "Increases": "{count} skill increase(s) taken, each of which may have trained a new skill"
+    },
     "Sync": {
       "UpToDate": "{class} has no class features missing.",
       "Added": "Added {count} {class} class feature(s)."

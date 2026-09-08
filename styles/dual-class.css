@@ -1,1 +1,45 @@
-/* Placeholder. Sheet styles land with the sheet injection. */
+/* Trained skill counter, at the top of the Proficiencies tab.
+   Colours come from the sheet's own variables so a right and a wrong count read the way the rest of
+   the sheet already colours those two ideas: the proficiency blue for trained, the header red for
+   something needing attention. */
+
+.pf2edc-skill-count {
+  margin-bottom: 0.5em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--color-border-light-2, #b5b3a4);
+}
+
+/* PF2e styles the tab's own headers through a direct-child selector, which this one is not, so it
+   restates the header's colour and face rather than inheriting them. */
+.pf2edc-skill-count > header {
+  font-family: var(--serif, "Eczar", Georgia, serif);
+  font-size: var(--font-size-16, 16px);
+  color: var(--color-pf-primary, #5e0000);
+}
+
+.pf2edc-skill-count-line {
+  font-size: var(--font-size-13, 13px);
+  color: var(--color-text-primary, #222);
+}
+
+.pf2edc-skill-count .pf2edc-count {
+  color: var(--color-proficiency-trained, #171f69);
+}
+
+.pf2edc-skill-count[data-state="wrong"] .pf2edc-count {
+  color: var(--color-pf-primary, #5e0000);
+}
+
+.pf2edc-skill-count-detail {
+  font-size: var(--font-size-11, 11px);
+  color: var(--color-text-subtle, #555);
+  margin-top: 0.15em;
+}
+
+/* The second class cell fills the empty slot in the sheet's abcd grid. Nothing to restyle: it is a
+   copy of the Class cell and inherits everything. Only an empty one needs a hint that it is
+   clickable, matching how PF2e greys an unset ancestry or deity. */
+.detail.pf2edc-second-class:not(.selected) .value::after {
+  content: attr(data-placeholder);
+  color: var(--color-text-subtle, #555);
+}
