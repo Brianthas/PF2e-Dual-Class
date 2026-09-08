@@ -23,3 +23,7 @@ First release. Runs the Dual-Class Characters variant rule on two real class ite
   additional skill counts rather than the sum.
 - A warning when a class feat is placed in the other class's ladder. Feat slots are not gated by
   class, so this reports rather than blocks.
+- Deleting one class no longer takes the other class's features with it. The system treats every
+  feat located to any class item as linked to the class being removed, which is right with one class
+  and destroys the other class's features with two. Applies to deleting a class by any route, not
+  only the module's own Remove Second Class.

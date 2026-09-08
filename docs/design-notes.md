@@ -148,11 +148,30 @@ secondary class what it should have granted by now, drops anything already prese
 and creates the rest. The `sourceId` filter makes repeat runs free, so one function serves a level
 change, the moment a class is flagged secondary, and a button.
 
-## Removing the second class
+## Removing a class
 
-Removing it deletes the class item and the features it granted, matched on `system.location`, which
-`createGrantedItems` stamps with the granting class item's id (45099). Matching on the id rather
-than the name is what keeps the other class's features when both grant a feature of the same name.
+Deleting an item on a creature expands the list to that item's linked items
+(`CreaturePF2e#deleteEmbeddedDocuments`, 33091-33096). For a class, `ABCItemPF2e#getLinkedItems`
+(45084) computes those as every feat whose `system.location` is *any* class item id on the actor:
+
+```js
+let e = this.actor.itemTypes[this.type].map((e) => e.id);
+return this.actor.itemTypes.feat.filter((t) => e.includes(t.system.location ?? ""));
+```
+
+and `ClassPF2e` widens it again to every `classfeature` nothing else granted. Both are exactly right
+with one class. With two, deleting either class deletes **both** classes' features - measured by
+stamping a marker feat at each class item's id and removing one class: the other's marker went with
+it, unrecoverably, and by any route, including dragging a class out of the items list.
+
+So on a dual-class actor a class reports only the feats it granted itself, which
+`createGrantedItems` marks by stamping its own id into `system.location` (45099). Features granted
+in turn by those carry `flags.pf2e.grantedBy` and are already removed with their granter, so they
+need no listing. Matching on the id rather than the name is also what keeps the other class's
+features when both classes grant a feature of the same name.
+
+The secondary flag is cleared when either class is deleted, not only the one it names: a lone class
+still flagged as the second one would render in the Second Class slot with the Class slot empty.
 
 Feats the player chose into that class's ladder are deliberately left alone. Their `location` is a
 slot id (`dc-class-wizard-4`), not the class item's id, so they are not caught by that match - and
