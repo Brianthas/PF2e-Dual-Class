@@ -1,14 +1,29 @@
 export const MODULE_ID = "pf2e-dual-class-items";
 
 /**
- * Actor flag holding the item id of the class item treated as secondary.
+ * Actor flag holding the item ids of every class beyond the first, in the order they were added.
  *
  * One flag is the whole of the module's persisted state. Everything else - the merged
- * proficiencies, hit points, feat ladders, class DCs - is recomputed from the two class items on
- * every data-prep cycle, so clearing this flag returns the actor to a normal single-class
- * character with nothing left behind.
+ * proficiencies, hit points, feat ladders, class DCs - is recomputed from the class items on every
+ * data-prep cycle, so clearing this flag returns the actor to a normal single-class character with
+ * nothing left behind.
+ *
+ * A list rather than one id per position. The rules treat every class after the first identically,
+ * so a `tertiaryClass` flag beside `secondaryClass` would double the branching at every reader for
+ * no gain, and a fourth would double it again.
+ */
+export const EXTRA_CLASSES_FLAG = "extraClasses";
+
+/**
+ * The flag this module wrote before it supported more than two classes: a single class item id.
+ *
+ * Read on migration only, never written. Characters built under 0.2.x carry it, and their second
+ * class would silently stop being recognised without this.
  */
 export const SECONDARY_CLASS_FLAG = "secondaryClass";
+
+/** How many classes a character may hold, by whether the third-class setting is on. */
+export const MAX_CLASSES = { dual: 2, triple: 3 };
 
 /**
  * Prefixes for the feat sections this module adds.

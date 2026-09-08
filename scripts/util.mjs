@@ -1,4 +1,4 @@
-import { MODULE_ID, SECONDARY_CLASS_FLAG } from "./constants.mjs";
+import { MODULE_ID, SECONDARY_CLASS_FLAG, EXTRA_CLASSES_FLAG } from "./constants.mjs";
 import { moduleEnabled } from "./settings.mjs";
 
 /**
@@ -54,44 +54,88 @@ export function notifyDualClass(level, message) {
 }
 
 /**
- * The class item flagged as secondary, or null.
+ * The ids of every class beyond the first, in the order they were added.
  *
  * Reads the flag rather than item order, because `actor.items` order decides which class PF2e
  * itself treats as the real one and that is not something the player chooses.
+ *
+ * Characters built before this module supported a third class carry a single id under the old
+ * `secondaryClass` flag. That is read here and treated as a one-entry list, so nothing has to be
+ * migrated on disk and a character whose flag is never rewritten keeps working.
+ *
+ * @param {ActorPF2e} actor
+ * @returns {string[]}
+ */
+export function getExtraClassIds(actor) {
+  if (!moduleEnabled()) return [];
+  if (actor?.type !== "character") return [];
+
+  const list = actor.getFlag(MODULE_ID, EXTRA_CLASSES_FLAG);
+  if (Array.isArray(list)) return list.filter((id) => typeof id === "string");
+
+  const legacy = actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
+  return typeof legacy === "string" ? [legacy] : [];
+}
+
+/**
+ * Every class item beyond the first, in flag order, with any id that no longer resolves dropped.
+ *
+ * @param {ActorPF2e} actor
+ * @returns {ItemPF2e[]}
+ */
+export function getExtraClasses(actor) {
+  return getExtraClassIds(actor)
+    .map((id) => actor.items.get(id))
+    .filter((item) => item?.type === "class");
+}
+
+/**
+ * The class item flagged as secondary, or null. The first extra class.
  *
  * @param {ActorPF2e} actor
  * @returns {ItemPF2e|null}
  */
 export function getSecondaryClass(actor) {
-  if (!moduleEnabled()) return null;
-  if (actor?.type !== "character") return null;
-  const id = actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
-  if (typeof id !== "string") return null;
-  const item = actor.items.get(id);
-  return item?.type === "class" ? item : null;
+  return getExtraClasses(actor)[0] ?? null;
 }
 
 /**
- * The class item that is *not* the secondary one, on an actor that has a secondary.
+ * The class item that is not one of the extras, on an actor that has at least one.
  *
  * @param {ActorPF2e} actor
  * @returns {ItemPF2e|null}
  */
 export function getPrimaryClass(actor) {
-  const secondary = getSecondaryClass(actor);
-  if (!secondary) return null;
-  return actor.itemTypes.class.find((c) => c.id !== secondary.id) ?? null;
+  const extraIds = new Set(getExtraClassIds(actor));
+  if (extraIds.size === 0) return null;
+  return actor.itemTypes.class.find((c) => !extraIds.has(c.id)) ?? null;
 }
 
 /**
- * Whether dual-class rules are active for this actor: the module is on and two class items are
- * present, one of them flagged secondary.
+ * Every class item on the actor in rules order: the primary first, then the extras as flagged.
+ *
+ * This is the list to fold over for anything the rules say to take across all classes - the higher
+ * Hit Points, the highest proficiency, the larger skill count, a feat ladder each. Empty when the
+ * module is off or the actor has no extra classes, so callers can treat empty as "not our business".
+ *
+ * @param {ActorPF2e} actor
+ * @returns {ItemPF2e[]}
+ */
+export function getAllClasses(actor) {
+  const primary = getPrimaryClass(actor);
+  if (!primary) return [];
+  return [primary, ...getExtraClasses(actor)];
+}
+
+/**
+ * Whether this module's rules are active for this actor: the module is on, and the actor has a
+ * primary class plus at least one extra.
  *
  * @param {ActorPF2e} actor
  * @returns {boolean}
  */
-export function isDualClassActor(actor) {
-  return !!getSecondaryClass(actor) && !!getPrimaryClass(actor);
+export function isMultiClassActor(actor) {
+  return getAllClasses(actor).length >= 2;
 }
 
 /** A class item's slug, falling back to its name the way PF2e's own code does. */
