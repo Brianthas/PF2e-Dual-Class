@@ -35,6 +35,11 @@ jobs:
       - name: Check localisation keys
         run: npm run check-lang
 
+      # Feat group ordering is the one part of the module that runs on a plain Map, so it is the one
+      # part testable without Foundry. It is also where a bug hid for the life of the code.
+      - name: Test
+        run: npm test
+
       # Every file the release zip lists has to exist, or the zip step fails only at tag time, which
       # is the worst moment to find out.
       - name: Check the release zip contents exist

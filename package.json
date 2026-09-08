@@ -9,6 +9,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "check-lang": "node tools/check-lang.mjs"
+    "check-lang": "node tools/check-lang.mjs",
+    "test": "node tools/test-reorder.mjs"
   }
 }

@@ -76,9 +76,13 @@ export function registerLadders() {
  * Done after the wrapped call, so it is purely presentational: `assignToSlots` has already run and
  * does not care what order the groups are in.
  *
+ * Exported for `tools/test-reorder.mjs`, which is the only caller outside this file. It takes a
+ * Collection but touches only the Map half of it, so the test drives it with a plain Map rather
+ * than standing up Foundry.
+ *
  * @param {Collection} feats The actor's prepared feat groups.
  */
-function reorderGroups(feats) {
+export function reorderGroups(feats) {
   const entries = [...feats.entries()];
   const isOurs = (id) => id.startsWith(SECTION_ROOT);
   if (!entries.some(([id]) => isOurs(id))) return;
@@ -180,6 +184,13 @@ function removeGenericClassSections(sections) {
  * Matched on the categories a section accepts rather than on an id, so it holds for whichever
  * package supplies it. Sections are put back by the caller's `finally`, so nothing is written to the
  * stored setting and characters this module leaves alone are unaffected.
+ *
+ * **Adding a category to the call sites is a decision, not a detail.** The match cannot tell another
+ * module's redundant generic ladder from a section that module adds for one of its own features, so
+ * a new entry here removes both. `["skill"]` is the live case: a module supplying extra skill feat
+ * slots for a specific character option uses exactly that list, and standing it down would take its
+ * group off the sheet for the whole prepare with nothing logged anywhere. Only stand down a category
+ * this module is itself supplying the slots for, and check what else is using it first.
  *
  * @param {object[]} sections The live world-global section array.
  * @param {string[]} supported The exact category list to match.
