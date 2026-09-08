@@ -155,6 +155,24 @@ the same actor and type collides with the first. Its selection handling lives in
 component with no seam to intercept, and what it does on confirm is replace the class. The Second
 Class slot uses a plain dialog over the class compendia instead.
 
+## Spellcasting and focus, which need nothing
+
+Spellcasting proficiency is one of the ranks `ClassPF2e#prepareActorData` resolves with a maximum,
+so a Fighter/Wizard keeps the Wizard's trained rank rather than falling to the Fighter's zero. That
+is the single most damaging thing a merged class item gets wrong, because a merged item that never
+copied `system.spellcasting` leaves the character untrained in spell attack rolls and spell DC with
+nothing on the sheet to say so.
+
+Each class's spellcasting entry arrives with its class features: the class feature that grants
+spellcasting carries a `GrantItem` rule, so granting the second class's features produces its entry.
+Two entries coexist without help - the system already supports several, which is how multiclass
+archetypes work - and each keeps its own tradition, prepared or spontaneous category, and attribute.
+
+The focus pool needs nothing either. A focus spell adds one to `resources.focus.max` (52533), and
+the total is clamped against `resources.focus.cap` (32916), which the character sets to 3 (33633).
+So two classes' focus spells cannot push the pool past three, which is what the published rule asks
+for. This was checked rather than assumed, because it was the one merge rule with no obvious owner.
+
 ## What the module deliberately does not do
 
 **Skill increases are not automated.** `skillIncreaseLevels` appears twice in the whole system
