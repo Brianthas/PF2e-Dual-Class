@@ -114,8 +114,16 @@ async function promptForSecondClass(actor) {
     return;
   }
 
+  // Escaped through the DOM rather than a helper from the API surface: class names come from
+  // whatever compendia the world has installed, including homebrew, so they are not trusted markup.
+  const escape = (text) => {
+    const node = document.createElement("div");
+    node.textContent = text;
+    return node.innerHTML;
+  };
+
   const select = options
-    .map((o) => `<option value="${o.uuid}">${foundry.utils.escapeHTML(o.name)}</option>`)
+    .map((o) => `<option value="${escape(o.uuid)}">${escape(o.name)}</option>`)
     .join("");
 
   const content = `<p>${game.i18n.format("PF2EDC.Sheet.PickPrompt", { primary: primary.name })}</p>`

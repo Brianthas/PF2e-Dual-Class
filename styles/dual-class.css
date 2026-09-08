@@ -36,10 +36,5 @@
   margin-top: 0.15em;
 }
 
-/* The second class cell fills the empty slot in the sheet's abcd grid. Nothing to restyle: it is a
-   copy of the Class cell and inherits everything. Only an empty one needs a hint that it is
-   clickable, matching how PF2e greys an unset ancestry or deity. */
-.detail.pf2edc-second-class:not(.selected) .value::after {
-  content: attr(data-placeholder);
-  color: var(--color-text-subtle, #555);
-}
+/* The second class cell fills the empty slot in the sheet's abcd grid. It is a copy of the Class
+   cell, so it inherits the sheet's styling and needs nothing of its own. */
