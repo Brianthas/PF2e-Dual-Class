@@ -32,12 +32,18 @@ https://github.com/Brianthas/PF2e-Dual-Class/releases/latest/download/module.jso
 
 ## Usage
 
-1. As GM, enable **Enable Dual Class** in the module's world settings. It is off by default, and
-   turning it on changes nothing until a character is given a second class.
+1. As GM, enable **Enable Dual Class** in the module's world settings. It is off by default.
 2. Build the character with its first class as normal.
 3. On the character sheet, use the **Second Class** slot next to Deity and pick the second class.
    Its class features are granted immediately, so expect the same choice prompts the first class
    asked for.
+4. Level up from there as normal.
+
+**Both classes are picked at 1st level, before levelling.** Each class contributes 1st-level
+features, proficiencies and a key attribute boost that belong to the character from the start, so a
+player cannot take a character from 1st to 2nd level until it has two, and is told why. See
+[Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
+already above 1st level are left alone.
 
 The character sheet then shows **Class** and **Second Class**, and the Attribute Boosts window shows
 a key attribute row for each.
