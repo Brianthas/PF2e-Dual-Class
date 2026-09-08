@@ -41,6 +41,10 @@
       "AllTrainedWhy": "Something on this character trains every skill, so there is nothing left for the class skill picks to buy and no count worth making.",
       "LevelOneOnly": "Shown at 1st level only, where every trained skill still traces to the build."
     },
+    "Coexist": {
+      "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",
+      "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. Two classes is the supported shape."
+    },
     "LevelGate": {
       "OneClass": "{actor} has only one class ({class}).",
       "NoClass": "{actor} has no class yet.",

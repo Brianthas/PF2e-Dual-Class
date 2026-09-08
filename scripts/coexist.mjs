@@ -138,12 +138,37 @@ export function registerCoexistence() {
       const actor = operation.parent;
       const addsClass = Array.isArray(data) && data.some((d) => d?.type === "class");
 
-      if (!moduleEnabled() || !addsClass || actor?.type !== "character" || !isArmed(actor)) {
+      if (!moduleEnabled() || !addsClass || actor?.type !== "character") {
         return wrapped(data, operation);
       }
 
       const existing = actor.itemTypes.class.map((c) => c.id);
       if (existing.length === 0) return wrapped(data, operation);
+
+      // A class dropped straight onto the sheet, rather than added through the Second Class control,
+      // arms nothing - and the system's purge then replaces the class the character already has,
+      // taking its features with it and saying nothing. In a world running this variant that is
+      // almost never what was meant, so a second class is kept by default and the fact is reported.
+      // Getting rid of a class is still one click in the items list, and now safe: a class only
+      // takes its own features with it.
+      //
+      // Only from one class to two. Three is not the supported shape, so an unarmed add to a
+      // character that already has two is left to behave as the system normally would, with a
+      // warning rather than a silent replacement.
+      if (!isArmed(actor)) {
+        if (existing.length !== 1) {
+          notifyDualClass("warn", game.i18n.format("PF2EDC.Coexist.UnarmedManyClasses", {
+            actor: actor.name,
+            count: existing.length
+          }));
+          return wrapped(data, operation);
+        }
+        const kept = actor.itemTypes.class[0]?.name ?? "";
+        notifyDualClass("info", game.i18n.format("PF2EDC.Coexist.KeptFirstClass", {
+          actor: actor.name,
+          class: kept
+        }));
+      }
 
       preserve = { actorId: actor.id, ids: new Set(existing) };
       armed = null;
