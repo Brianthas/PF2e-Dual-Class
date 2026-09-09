@@ -43,11 +43,25 @@ class contributes its own boost and its own class DC. Which classes are extra is
 `extraClasses`, holding item ids in the order they were added; the primary is whichever class item
 is not in it.
 
-**Nothing a second class brings can downgrade a proficiency.** Class items resolve with a maximum,
-and across all 875 items in `pf2e.classfeatures` there are 35 rule elements that write a proficiency
-rank and every one uses `mode: "upgrade"` - no `override`, `downgrade`, `subtract` or `multiply`.
-The class items' own rules add four more, also all `upgrade`. So the comparison-and-removal step a
-merged-item approach needs has no equivalent here: there is nothing stale to remove.
+**Nothing a second class brings can downgrade a proficiency.** Three mechanisms raise a rank and all
+three take a maximum, so none of them can lower one:
+
+- The class item itself, in `ClassPF2e#prepareActorData` (51701), with `Math.max`.
+- A class feature's **`system.subfeatures.proficiencies`**, applied in `FeatPF2e#prepareActorData`
+  (52012) as `r.rank = Math.max(r.rank, n.rank)`, routed by key to perception, spellcasting, a save,
+  a weapon category, an armour category or a class DC.
+- Rule elements on class features, every one of which uses `mode: "upgrade"` - no `override`,
+  `downgrade`, `subtract` or `multiply`.
+
+**The subfeatures route is where most of it lives, and an earlier version of this note missed it.**
+That version cited only the rule elements, which is a survey of the wrong field: measured across the
+874 items in `pf2e.classfeatures` on 2026-09-09 there are 289 subfeature proficiency entries against
+199 rule-element writes touching a rank. The conclusion held by luck rather than by evidence. If you
+are ever asked why an actor's saves or armour do not match what a feature's text claims, that field
+is the first place to look, not the rules array.
+
+So the comparison-and-removal step a merged-item approach needs has no equivalent here: there is
+nothing stale to remove.
 
 That scope is the claim. It covers what a second class contributes, which is all this module adds,
 and it says nothing about the rest of the game: feats, ancestries, heritages and backgrounds were

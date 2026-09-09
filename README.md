@@ -56,7 +56,8 @@ a key attribute row for each.
 Every proficiency is the better of the two classes: perception, all three saving throws, each weapon
 and armor category, and spellcasting. The system already resolves a class item's proficiencies with
 a maximum, so a second class item can only ever raise a rank, never lower one. The same holds for
-class features that grant proficiency, which all use an upgrade-only mode.
+class features that grant proficiency, whether they do it through a rule element or through the
+field the system uses for most class progression: both take the higher of the two.
 
 ### Hit Points
 
