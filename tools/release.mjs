@@ -55,6 +55,8 @@ const tagMessage = process.argv[3] ?? `Release ${tag}`;
 
 console.log(`Bumping version ${oldVersion} -> ${newVersion}`);
 
+syncLiveManifest(newVersion);
+
 run("git", ["add", "module.json"]);
 run("git", ["commit", "-m", `Bump version to ${newVersion}`]);
 run("git", ["push", "origin", "main"]);
@@ -62,3 +64,39 @@ run("git", ["tag", "-a", tag, "-m", tagMessage]);
 run("git", ["push", "origin", tag]);
 
 console.log(`\nReleased ${tag}.`);
+
+/**
+ * Copy the bumped manifest into the live Foundry module directory.
+ *
+ * The editor's mirror hook copies a file to the live copy after every edit made with its own tools,
+ * but this script writes `module.json` with `fs`, so that never fires and the live copy keeps the
+ * previous version. It happened on two consecutive releases before this existed: the released
+ * artifacts were right and the installed copy claimed the old number.
+ *
+ * Reports what it read back rather than what it meant to write, and never fails the release: the
+ * live copy is a convenience, and a missing or read-only directory is not a reason to abort a
+ * release that has already been tagged.
+ */
+function syncLiveManifest(version) {
+  const live = path.join(
+    process.env.LOCALAPPDATA ?? path.join(process.env.USERPROFILE ?? "", "AppData", "Local"),
+    "FoundryVTT", "Data", "modules", JSON.parse(fs.readFileSync(modulePath, "utf8")).id, "module.json"
+  );
+
+  if (!fs.existsSync(path.dirname(live))) {
+    console.log(`Live copy not found at ${path.dirname(live)}; skipped.`);
+    return;
+  }
+
+  try {
+    fs.copyFileSync(modulePath, live);
+    const readBack = JSON.parse(fs.readFileSync(live, "utf8")).version;
+    console.log(
+      readBack === version
+        ? `Live copy synced: ${live} reads ${readBack}`
+        : `Live copy NOT synced: ${live} reads ${readBack}, expected ${version}`
+    );
+  } catch (error) {
+    console.log(`Live copy not synced (${error.message}); update it by hand.`);
+  }
+}
