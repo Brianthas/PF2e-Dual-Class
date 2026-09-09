@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0
+
+- The skill panel now counts proficiency points and stays on the sheet at every level, instead of
+  counting trained skills and disappearing after 1st. A rank is worth its own number - trained 1,
+  expert 2, master 3, legendary 4 - and every source is worth one point, whether it trains a new
+  skill or raises one already trained. That makes the count an identity at any level, where counting
+  skills stopped being one as soon as skill increases existed.
+- **Unspent skill increases are shown.** Nothing else on the sheet records that you owe yourself
+  one, so they are easy to forget at level up. Skill increases are had once per level, so the levels
+  are unioned across classes: a Fighter/Rogue gets the Rogue's schedule, one every level from 2nd,
+  rather than the Fighter's odd levels from 3rd.
+- **Ranks above what the character's level allows are listed.** Expert comes from the first level
+  the character gains a skill increase, master at 7th, legendary at 15th. Only the expert gate moves
+  by class, and it is read from the class's own data rather than assumed: Rogue and Investigator are
+  the only two whose increases start at 2nd, and their own entries defer to 7th and 15th unchanged.
+- Being over budget is reported as a rank nothing accounts for rather than as an error, since a feat
+  or feature that grants a rank outright is the likelier cause. A character with something that
+  trains every skill still shows the all-trained message instead of a meaningless number.
+
 ## 0.3.2
 
 - A key attribute boost from an extra class no longer pushes a modifier past +4 at character

@@ -46,15 +46,19 @@
       "Warning": "{feat} is a {belongs} feat but was placed in the {placed} feat slots. It still counts; move it if that was not intended."
     },
     "Skills": {
-      "Header": "Trained Skills",
-      "Count": "{actual} trained, expected {expected}",
+      "Header": "Skill Proficiencies",
+      "Points": "{spent} spent of {budget}",
+      "Unspent": "{count} unspent - a skill increase you have not used yet",
+      "Over": "{count} over budget - check for a rank nothing accounts for",
+      "OverCap": "Too high for this level: {skills}",
+      "Increases": "{count} skill increases so far",
       "FromClasses": "{classes} train {skills}",
       "FreePicks": "{free} free picks ({additional} + Int {int})",
       "FromBackground": "background trains {skills}",
       "Granted": "granted {skills}",
       "AllTrained": "{actual} of {total} skills trained - all of them",
       "AllTrainedWhy": "Something on this character trains every skill, so the class skill picks have nothing left to spend on and there is no count worth showing.",
-      "LevelOneOnly": "Shown at 1st level only, while every trained skill can still be traced back to where it came from."
+      "HowCounted": "Trained counts 1, expert 2, master 3, legendary 4. Each initially trained skill and each skill increase is worth one."
     },
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",

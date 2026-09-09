@@ -183,23 +183,36 @@ The check is on leaving 1st level, not on every level change. A character alread
 class may have been imported or predate the variant being switched on, and blocking every update to
 it would be obstructive.
 
-### Trained skills
+### Skill proficiencies
 
-A counter at the top of the Proficiencies tab shows how many trained skills the character has
-against how many the build accounts for: the skills each class trains automatically, plus the
-**larger** of the two classes' additional skill counts (never the sum), plus the Intelligence
-modifier, plus the background's, plus any trained by a heritage, ancestry feat or class feature.
+A panel at the top of the Proficiencies tab counts proficiency points. A rank is worth its own
+number - trained 1, expert 2, master 3, legendary 4 - and every source is worth one point, whether
+it trains a new skill or raises one already trained. So the total is an identity at any level:
 
-Those last ones are found by reading the rule that grants them, including the common case where the
-player chooses which skill - Skilled Human, the Natural Skill ancestry feat, a Rogue's racket - where
-the choice is resolved from the item's own answer rather than guessed at.
+```text
+sum of your ranks = initially trained skills + skill increases so far
+```
 
-**It shows at 1st level only, and that is what makes it exact.** At 1st level every trained skill
-traces to a build source, so the count is an identity rather than an estimate. From 3rd level a
-skill increase can be spent either raising a trained skill or training an untrained one, with
-nothing recording which, so a later count would be a guess dressed as a check - and a panel that
-cries wolf on a legitimate build is worse than no panel. 1st level is also exactly when the
-dual-class arithmetic is being done for the first time and is easy to get wrong.
+Initially trained is the skills each class trains automatically, plus the **larger** of the classes'
+additional skill counts (never the sum), plus the Intelligence modifier, plus the background's, plus
+any trained by a heritage, ancestry feat or class feature. Those last ones are found by reading the
+rule that grants them, including the common case where the player chooses which skill - Skilled
+Human, the Natural Skill ancestry feat, a Rogue's racket - where the choice is resolved from the
+item's own answer rather than guessed at.
+
+Skill increases are had once per level, so the levels are unioned across classes rather than added.
+A Fighter/Rogue gets the Rogue's schedule, one every level from 2nd, not the Fighter's odd levels
+from 3rd.
+
+**Unspent increases are the line worth watching.** Nothing else on the sheet records that you owe
+yourself one, so they are easy to forget at level up. Being over budget is reported as a rank
+nothing accounts for rather than as an error, because a feat that grants a rank outright is the
+likelier cause than a mistake.
+
+**Ranks above what your level allows are listed separately**, and that check is exact. Expert comes
+from the first level you gain a skill increase, master at 7th, legendary at 15th. Only the expert
+gate moves by class: Rogue and Investigator are the only classes whose increases start at 2nd, and
+their own entries defer to 7th and 15th unchanged.
 
 ## Which class is which
 
