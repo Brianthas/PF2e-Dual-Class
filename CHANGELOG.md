@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.0
+
+- A character can take a **third class**, treated exactly like the second: the best of the three
+  proficiencies, the highest Hit Points, the larger additional skill count rather than the sum, a
+  class DC each at its own key attribute, a key attribute boost each, and a class feat ladder each.
+  Skill, general and ancestry feats stay on one ladder across all three, since the variant rule has
+  those only once per level. Not a published rule; the Dual-Class rules applied to one more class.
+- Two ways to allow it, off by default. **Allow a Third Class** is a world setting covering every
+  character. **Third Class Permissions** is a GM-only screen for allowing it to particular
+  characters in a world that is otherwise dual class. Either grants it.
+- Levelling past 1st now requires every class the character is entitled to, so a character allowed
+  three needs three, while another character in the same world still needs two.
+- Feat ladders are named after their class: **Fighter Feats**, **Rogue Feats**, **Sorcerer Feats**,
+  including the system's own group, which previously read "Class Feats" while the others carried
+  names. A single-class character is unchanged.
+- The class cells sit together on the sheet, reading Class, Second Class, Third Class, then Deity.
+  They appear whenever the module is on rather than only once a first class is picked.
+- Fixed the class feature sync asking for choices already made. Levelling up re-ran every extra
+  class's feature grant, which re-opens that class's choice prompts, so a Rogue was asked for its
+  racket again at every level and the answer was thrown away as a duplicate. Nothing is generated
+  now for a class that has nothing new to give.
+- Fixed a class added to an already-levelled character not catching up its features. The check
+  watched the flag name used before this version.
+
 ## 0.2.1
 
 - The module description now mentions Ancestry Paragon, which has its own world setting and was not

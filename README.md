@@ -34,14 +34,15 @@ https://github.com/Brianthas/PF2e-Dual-Class/releases/latest/download/module.jso
 
 1. As GM, enable **Enable Dual Class** in the module's world settings. It is off by default.
 2. Build the character with its first class as normal.
-3. On the character sheet, use the **Second Class** slot next to Deity and pick the second class.
-   Its class features are granted immediately, so expect the same choice prompts the first class
-   asked for.
+3. On the character sheet, use the **Second Class** slot, which sits directly after Class, and pick
+   the second class. Its class features are granted immediately, so expect the same choice prompts
+   the first class asked for.
 4. Level up from there as normal.
 
-**Both classes are picked at 1st level, before levelling.** Each class contributes 1st-level
-features, proficiencies and a key attribute boost that belong to the character from the start, so a
-player cannot take a character past 1st level until it has two, and is told why. See
+**Every class is picked at 1st level, before levelling.** Each one contributes 1st-level features,
+proficiencies and a key attribute boost that belong to the character from the start, so a player
+cannot take a character past 1st level until it has all of them, and is told why. A character
+allowed a third class needs three; another character in the same world still needs two. See
 [Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
 already above 1st level are left alone.
 
@@ -80,9 +81,13 @@ a half step, the same as they would be for a single-class character.
 
 ### Feat ladders
 
-Each class gets its own ladder of class feat slots, at the levels that class grants them, labelled
-with the class name. A Fighter/Wizard at level 5 has Fighter slots at 1, 2 and 4 and Wizard slots at
-2 and 4, because the Wizard's class feats start at level 2.
+Each class gets its own ladder of class feat slots, at the levels that class grants them, headed
+with the class name: **Fighter Feats**, **Wizard Feats**. A Fighter/Wizard at level 5 has Fighter
+slots at 1, 2 and 4 and Wizard slots at 2 and 4, because the Wizard's class feats start at level 2.
+
+A ladder whose every slot is above the character's level is not shown at all, since it would be a
+heading with nothing under it. That is why a 1st-level Fighter/Sorcerer sees only one class ladder:
+the Sorcerer's feats start at 2nd.
 
 **Skill, general and ancestry feats stay on one ladder, not two.** The variant rule lists those as
 had only once per level, so two classes do not grant two of them at the same level. What a second
@@ -99,6 +104,25 @@ level.
 feats, but the system's own check on a feat slot tests the feat's category and not its class, so
 anything that is a class feat can be dropped in either ladder. Putting a feat in the wrong one warns
 and lets it through. Archetype and dedication feats belong in both and are never flagged.
+
+### A third class
+
+Two settings allow it, both off by default, and either is enough.
+
+**Allow a Third Class** is a world setting: every character may take three. **Third Class
+Permissions** is a GM-only screen listing every character with a checkbox, for allowing it to
+particular characters in a world that is otherwise dual class. The permission is recorded on the
+character, so it travels with them and cannot go stale, and unticking someone does not remove a
+class they already have.
+
+A third class is treated exactly like the second, because the same rules apply to it: the best of
+the three proficiencies, the highest Hit Points, the larger additional skill count rather than the
+sum, a class DC each at its own key attribute, a key attribute boost each, and a feat ladder each.
+Skill, general and ancestry feats stay on one ladder across all three, since those are had only
+once per level however many classes you have.
+
+**Three classes is not a published variant rule.** Dual-Class is; this applies its rules to one
+more class, which is why it is off unless a GM turns it on.
 
 ### Ancestry Paragon
 
@@ -138,14 +162,16 @@ add. Use it after giving a second class to a character that is already past leve
 
 ### Levelling past 1st
 
-A character cannot leave 1st level with only one class. The second class brings 1st-level features,
-proficiencies and a key attribute boost that the character is meant to have from the start, and if
-you level without picking it, none of that ever arrives. Nothing on the sheet looks wrong either,
-because a character missing all of it looks exactly like an ordinary single-class one.
+A character cannot leave 1st level short of the classes it is entitled to: two normally, three if a
+third is allowed for them. Each class brings 1st-level features, proficiencies and a key attribute
+boost that the character is meant to have from the start, and if you level without picking one, none
+of that ever arrives. Nothing on the sheet looks wrong either, because a character missing all of it
+looks exactly like an ordinary character with fewer classes.
 
 **A player is stopped; a GM is warned and allowed through.** A GM has reasons for a one-class
 character in a dual-class world - an NPC built on a character sheet, or a character partway through
-being fixed - and no way to say so to a hard block.
+being fixed - and no way to say so to a hard block. The warning names how many classes the character
+has and how many it needs.
 
 The check is on leaving 1st level, not on every level change. A character already past 1st with one
 class may have been imported or predate the variant being switched on, and blocking every update to

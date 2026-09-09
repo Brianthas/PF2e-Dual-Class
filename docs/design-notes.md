@@ -32,8 +32,16 @@ Six fields in that method are plain assignment, so the last class to prepare win
 and `details.keyability.value`. Those are the only ones the module recomputes.
 
 It recomputes rather than restoring a snapshot taken before the wrapped call. Prepare order follows
-`actor.items` order, so the secondary can prepare before or after the primary; recomputing from both
-class items after each one prepares gives the same answer either way and converges when run twice.
+`actor.items` order, so an extra class can prepare before or after the primary; recomputing from
+every class item after each one prepares gives the same answer either way and converges when run
+twice.
+
+The recompute folds over a list of classes rather than handling a primary and a secondary. The rules
+treat every class after the first identically, so a third is another entry in the same fold and not
+another branch - Hit Points take the highest of all of them, key options are the union, and each
+class contributes its own boost and its own class DC. Which classes are extra is one actor flag,
+`extraClasses`, holding item ids in the order they were added; the primary is whichever class item
+is not in it.
 
 **Nothing a second class brings can downgrade a proficiency.** Class items resolve with a maximum,
 and across all 875 items in `pf2e.classfeatures` there are 35 rule elements that write a proficiency
@@ -149,10 +157,20 @@ not the part that matters, and matching it would mean naming another package in 
 singular. The level-down branch (34821) deletes by level with no class awareness, so removal already
 covers both classes and only granting needed building.
 
-`syncSecondaryClassFeatures` reconciles instead of wrapping that async internal: it asks the
-secondary class what it should have granted by now, drops anything already present by `sourceId`,
-and creates the rest. The `sourceId` filter makes repeat runs free, so one function serves a level
-change, the moment a class is flagged secondary, and a button.
+`syncSecondaryClassFeatures` reconciles instead of wrapping that async internal: it asks each extra
+class what it should have granted by now, drops anything already present by `sourceId`, and creates
+the rest. That filter makes repeat runs free, so one function serves a level change, the moment a
+class is added, and a button.
+
+**Asking a class what it would grant is not free, which is the subtlety.** `createGrantedItems`
+re-runs that class's `ChoiceSet` rules while it builds the items, so calling it and discarding the
+duplicates afterwards means the player is asked to re-pick their Rogue racket on every level up and
+the answer is then thrown away. So nothing is generated for a class that has nothing new to give:
+`system.items` on the class item is its grant table, one entry per granted item with a `uuid` and
+the `level` it arrives at, and comparing those against the sourceIds already on the actor answers
+"is there anything to do" without generating anything. It errs toward asking - an entry whose uuid
+cannot be compared counts as missing - so the worst case is the old behaviour rather than a feature
+that never arrives.
 
 ## Removing a class
 
@@ -176,8 +194,11 @@ in turn by those carry `flags.pf2e.grantedBy` and are already removed with their
 need no listing. Matching on the id rather than the name is also what keeps the other class's
 features when both classes grant a feature of the same name.
 
-The secondary flag is cleared when either class is deleted, not only the one it names: a lone class
-still flagged as the second one would render in the Second Class slot with the Class slot empty.
+Deleting a class removes it from the `extraClasses` list rather than clearing the list, so a
+character with three keeps the other one. The list is dropped entirely once fewer than two classes
+remain: a lone class still listed as an extra would render in the Second Class slot with the Class
+slot empty. Deleting is also what retires the old single-id flag on a character that still carries
+it, so the two never both exist.
 
 Feats the player chose into that class's ladder are deliberately left alone. Their `location` is a
 slot id (`dc-class-wizard-4`), not the class item's id, so they are not caught by that match - and
@@ -224,7 +245,7 @@ the class item and read by nothing on the actor.
 and never reads `filter.traits`. Blocking would mean wrapping `FeatGroup#insertFeat`, and `FeatGroup`
 is not exposed on `CONFIG` - it is reachable only through an actor's live `feats` collection.
 
-**A third class item is ignored, not rejected.** The module reads one primary and one flagged
-secondary, so a third contributes its proficiencies (the system resolves those with a maximum) and
-gets its own class DC, but it is absent from the Hit Points comparison and gets no feat ladder. Two
-is the shape that is tested.
+**A fourth class is not supported.** Three is where the settings stop, and it is the shape that is
+tested. Nothing in the code counts to three, though: the extra classes are a list and every rule
+folds over it, so a fourth would be a change to what `maxClasses` returns rather than to any of the
+readers.
