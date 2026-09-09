@@ -1,4 +1,4 @@
-import { registerLibWrapper, isMultiClassActor, getPrimaryClass, getSecondaryClass, classSlug } from "./util.mjs";
+import { registerLibWrapper, isMultiClassActor, getAllClasses, classSlug } from "./util.mjs";
 
 /**
  * Merging two class items into one character.
@@ -47,14 +47,20 @@ export function registerMerge() {
 }
 
 /**
- * Recompute every field that a second class item gets wrong.
+ * Recompute every field that an additional class item gets wrong.
+ *
+ * Folds over every class the character has rather than a primary and a secondary. The rules treat
+ * each class after the first identically, so a third is another entry in the same fold, not another
+ * branch: Hit Points take the highest of all of them, key options are the union of all of them, and
+ * every class contributes its own boost and its own class DC.
+ *
  * @param {ActorPF2e} actor
  */
 function applyDualClassMerge(actor) {
   if (!isMultiClassActor(actor)) return;
 
-  const primary = getPrimaryClass(actor);
-  const secondary = getSecondaryClass(actor);
+  const classes = getAllClasses(actor);
+  const primary = classes[0];
   const { attributes, build, details, proficiencies } = actor.system;
 
   // Identity is always the primary's. PF2e supports exactly one `actor.class`, and everything that
@@ -63,24 +69,26 @@ function applyDualClassMerge(actor) {
   actor.class = primary;
   details.class = { name: primary.name, trait: classSlug(primary) };
 
-  // Hit Points: "use only the higher Hit Points per level from the two classes."
-  attributes.classhp = Math.max(primary.system.hp, secondary.system.hp);
+  // Hit Points: "use only the higher Hit Points per level", across however many classes there are.
+  attributes.classhp = Math.max(...classes.map((c) => c.system.hp));
 
-  // Both classes offer their own key attribute options, and both boosts apply: a key attribute
+  // Every class offers its own key attribute options, and every boost applies: a key attribute
   // boost is neither Hit Points nor a starting skill, so "add everything from each class" covers it.
-  build.attributes.keyOptions = [
-    ...new Set([...primary.system.keyAbility.value, ...secondary.system.keyAbility.value])
-  ];
+  build.attributes.keyOptions = [...new Set(classes.flatMap((c) => c.system.keyAbility.value))];
 
   // `boosts.class` is initialised to null and written as a single string by PF2e, but the code that
-  // turns boosts into attribute modifiers (pf2e.mjs:33773-33778) branches on `typeof === "string"`
-  // else `Array.isArray`, applying every entry, for every category including `class`. So an array
-  // here gets both boosts applied through PF2e's own arithmetic, including the partial-boost rule
+  // turns boosts into attribute modifiers (pf2e.mjs:34054) branches on `typeof === "string"` else
+  // `Array.isArray`, applying every entry, for every category including `class`. So an array here
+  // gets every boost applied through PF2e's own arithmetic, including the partial-boost rule
   // `mod += mod >= 4 ? 0.5 : 1`, at the `class` position of the boost order
   // ["ancestry", "background", "class", 1, 5, 10, 15, 20] - before the level 1 free boosts.
-  const classBoosts = [primary.system.keyAbility.selected, secondary.system.keyAbility.selected]
+  //
+  // Not deduplicated. Two classes keyed on the same attribute really do boost it twice: the rule
+  // against boosting the same attribute twice governs one set of boosts, not two arriving from two
+  // classes.
+  build.attributes.boosts.class = classes
+    .map((c) => c.system.keyAbility.selected)
     .filter((a) => typeof a === "string");
-  build.attributes.boosts.class = classBoosts;
 
   // PF2e derives this from `boosts.class` on the same line it assigns it, which produces the array
   // once the line above has run. The character's single key attribute is the primary's.
@@ -88,19 +96,14 @@ function applyDualClassMerge(actor) {
     details.keyability.value = primary.system.keyAbility.selected ?? "str";
   }
 
-  // Both classes write their class DC entry with `primary: true`. Exactly one should hold it.
-  const primarySlug = classSlug(primary);
-  const secondarySlug = classSlug(secondary);
-  if (proficiencies.classDCs?.[primarySlug]) proficiencies.classDCs[primarySlug].primary = true;
-  if (proficiencies.classDCs?.[secondarySlug]) proficiencies.classDCs[secondarySlug].primary = false;
-
-  // The class DC's attribute is written from `details.keyability.value` as it stood when that class
-  // prepared, so the secondary's entry can carry the primary's attribute. Each class DC uses its own
-  // class's key attribute.
-  if (proficiencies.classDCs?.[secondarySlug] && secondary.system.keyAbility.selected) {
-    proficiencies.classDCs[secondarySlug].attribute = secondary.system.keyAbility.selected;
-  }
-  if (proficiencies.classDCs?.[primarySlug] && primary.system.keyAbility.selected) {
-    proficiencies.classDCs[primarySlug].attribute = primary.system.keyAbility.selected;
+  // Every class writes its class DC entry with `primary: true`. Exactly one should hold it, and each
+  // DC uses its own class's key attribute rather than whatever `details.keyability.value` happened
+  // to be when that class prepared.
+  for (const [index, classItem] of classes.entries()) {
+    const slug = classSlug(classItem);
+    const dc = proficiencies.classDCs?.[slug];
+    if (!dc) continue;
+    dc.primary = index === 0;
+    if (classItem.system.keyAbility.selected) dc.attribute = classItem.system.keyAbility.selected;
   }
 }

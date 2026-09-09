@@ -1,6 +1,13 @@
-import { MODULE_ID, SECONDARY_CLASS_FLAG } from "./constants.mjs";
-import { moduleEnabled } from "./settings.mjs";
-import { getPrimaryClass, getSecondaryClass, notifyDualClass } from "./util.mjs";
+import { MODULE_ID, EXTRA_CLASSES_FLAG } from "./constants.mjs";
+import { moduleEnabled, maxClasses } from "./settings.mjs";
+import {
+  getPrimaryClass,
+  getSecondaryClass,
+  getExtraClasses,
+  getExtraClassIds,
+  extraClassLabel,
+  notifyDualClass
+} from "./util.mjs";
 import { armSecondClass } from "./coexist.mjs";
 import { syncSecondaryClassFeatures } from "./features.mjs";
 
@@ -31,27 +38,44 @@ function onRenderSheet(sheet, element) {
 
   const classCell = [...root.querySelectorAll(".detail.class")].at(0);
   if (!classCell) return;
-  if (actor.itemTypes.class.length === 0) return;
 
-  // Appended to the end of the grid rather than inserted after the Class cell. The grid holds
-  // Ancestry, Heritage, Background, Class and Deity in two columns, which leaves the sixth cell
-  // empty; filling that one keeps every existing field where the player already expects it, where
-  // inserting after Class would push Deity into the next slot.
-  const grid = classCell.parentElement;
-  grid.append(buildCell(actor, classCell, sheet.isEditable));
+  // Inserted directly after the Class cell so the sheet reads Class, Second Class, Third Class, with
+  // Deity following them. The classes are one group and belong together; putting the extras at the
+  // end of the grid left Deity sitting between a character's first class and its second.
+  //
+  // Always shown while the module is on, whether or not the character has a class yet. A GM
+  // building a new character otherwise gets no sign the variant is running until after they pick
+  // the first class, which reads as the module being broken.
+  //
+  // One cell per class the character is entitled to beyond the first, so the empty slot for the
+  // next one is visible rather than appearing only once the previous is filled.
+  const extras = getExtraClasses(actor);
+  const slots = Math.max(maxClasses(actor) - 1, extras.length);
+  let previous = classCell;
+  for (let index = 0; index < slots; index += 1) {
+    const cell = buildCell(actor, classCell, sheet.isEditable, extras[index] ?? null, index);
+    previous.after(cell);
+    previous = cell;
+  }
 }
 
 /**
- * A copy of the Class cell describing the second class, or an empty one offering to add it.
+ * A copy of the Class cell describing one extra class, or an empty one offering to add it.
+ *
+ * @param {ActorPF2e} actor
+ * @param {HTMLElement} classCell The sheet's own Class cell, cloned for styling.
+ * @param {boolean} editable
+ * @param {ItemPF2e|null} secondary The class this cell describes, or null for an empty slot.
+ * @param {number} index 0 for the second class, 1 for the third, and so on.
  */
-function buildCell(actor, classCell, editable) {
-  const secondary = getSecondaryClass(actor);
+function buildCell(actor, classCell, editable, secondary, index) {
   const cell = classCell.cloneNode(true);
   cell.classList.add(CELL_CLASS);
+  cell.dataset.pf2edcSlot = String(index);
   cell.classList.toggle("selected", !!secondary);
 
   const label = cell.querySelector(".details-label");
-  if (label) label.textContent = game.i18n.localize("PF2EDC.Sheet.SecondClass");
+  if (label) label.textContent = extraClassLabel(index);
 
   const value = cell.querySelector(".value");
   if (value) {
@@ -183,7 +207,13 @@ async function openActions(actor, secondary) {
     {
       action: "swap",
       label: game.i18n.format("PF2EDC.Sheet.MakePrimary", { class: secondary.name }),
-      callback: () => actor.setFlag(MODULE_ID, SECONDARY_CLASS_FLAG, primary.id)
+      // Swap in place: this class leaves the extras list and the old primary takes its position, so
+      // the order of any other extra class is untouched.
+      callback: () => actor.setFlag(
+        MODULE_ID,
+        EXTRA_CLASSES_FLAG,
+        getExtraClassIds(actor).map((id) => (id === secondary.id ? primary.id : id))
+      )
     },
     {
       action: "sync",
@@ -222,7 +252,9 @@ async function removeSecondClassItem(actor, secondary) {
     .filter((f) => f.system.location === secondary.id)
     .map((f) => f.id);
 
-  await actor.unsetFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
+  // The flag is not touched here. `onDeleteClassItem` runs on the `deleteItem` hook and removes
+  // exactly this class from the list, keeping any other extra class the character has - clearing
+  // the flag outright would strip a third class along with the one being removed.
   await actor.deleteEmbeddedDocuments("Item", [...granted, secondary.id]);
   notifyDualClass("info", game.i18n.format("PF2EDC.Sheet.Removed", { class: secondary.name }));
 }

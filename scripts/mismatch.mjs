@@ -1,6 +1,6 @@
 import { SECTION_PREFIX } from "./constants.mjs";
 import { moduleEnabled } from "./settings.mjs";
-import { getPrimaryClass, getSecondaryClass, isMultiClassActor, classSlug, notifyDualClass } from "./util.mjs";
+import { getAllClasses, isMultiClassActor, classSlug, notifyDualClass } from "./util.mjs";
 
 /**
  * Warn when a class feat lands in the other class's ladder.
@@ -38,30 +38,28 @@ function checkFeat(item, userId) {
   const location = item.system.location;
   if (typeof location !== "string") return;
 
-  const primary = getPrimaryClass(actor);
-  const secondary = getSecondaryClass(actor);
-  const secondarySlug = classSlug(secondary);
-  const primarySlug = classSlug(primary);
+  const classes = getAllClasses(actor);
+  const [primary] = classes;
 
-  // Which ladder did it land in? The secondary's slots are `dc-class-<slug>-<level>`; the primary's
+  // Which ladder did it land in? An extra class's slots are `dc-class-<slug>-<level>`; the primary's
   // are PF2e's own `class-<level>`.
-  const inSecondary = location.startsWith(`${SECTION_PREFIX.CLASS}-${secondarySlug}-`);
-  const inPrimary = /^class-\d+$/.test(location);
-  if (!inSecondary && !inPrimary) return;
+  const owner = /^class-\d+$/.test(location)
+    ? primary
+    : classes.find((c) => location.startsWith(`${SECTION_PREFIX.CLASS}-${classSlug(c)}-`));
+  if (!owner) return;
 
   const traits = item.traits;
   if (traits.has("archetype") || traits.has("dedication")) return;
 
-  const expected = inSecondary ? secondarySlug : primarySlug;
-  const other = inSecondary ? primarySlug : secondarySlug;
+  // Only complain when the feat positively belongs to one of the character's *other* classes. A feat
+  // carrying no class trait at all - a generic class feat, or one from a third-party class this
+  // check knows nothing about - is not evidence of a mistake.
+  if (traits.has(classSlug(owner))) return;
+  const belongsTo = classes.find((c) => c.id !== owner.id && traits.has(classSlug(c)));
+  if (!belongsTo) return;
 
-  // Only complain when the feat positively belongs to the other class. A feat carrying neither
-  // class trait - a generic class feat, or one from a third-party class this check knows nothing
-  // about - is not evidence of a mistake.
-  if (traits.has(expected) || !traits.has(other)) return;
-
-  const expectedName = inSecondary ? secondary.name : primary.name;
-  const otherName = inSecondary ? primary.name : secondary.name;
+  const expectedName = owner.name;
+  const otherName = belongsTo.name;
 
   notifyDualClass("warn", game.i18n.format("PF2EDC.Mismatch.Warning", {
     feat: item.name,

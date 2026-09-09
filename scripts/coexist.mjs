@@ -1,6 +1,6 @@
-import { MODULE_ID, SECONDARY_CLASS_FLAG } from "./constants.mjs";
-import { moduleEnabled } from "./settings.mjs";
-import { registerLibWrapper, notifyDualClass } from "./util.mjs";
+import { MODULE_ID, SECONDARY_CLASS_FLAG, EXTRA_CLASSES_FLAG } from "./constants.mjs";
+import { moduleEnabled, maxClasses } from "./settings.mjs";
+import { registerLibWrapper, notifyDualClass, getExtraClassIds } from "./util.mjs";
 
 /**
  * Letting an actor hold two class items at once.
@@ -152,18 +152,20 @@ export function registerCoexistence() {
       // Getting rid of a class is still one click in the items list, and now safe: a class only
       // takes its own features with it.
       //
-      // Only from one class to two. Three is not the supported shape, so an unarmed add to a
-      // character that already has two is left to behave as the system normally would, with a
-      // warning rather than a silent replacement.
+      // Up to what this character is entitled to. An unarmed add that would take them past that is
+      // left to behave as the system normally would, with a warning rather than a silent
+      // replacement, since at that point replacing a class is the likelier intent.
+      const limit = maxClasses(actor);
       if (!isArmed(actor)) {
-        if (existing.length !== 1) {
+        if (existing.length >= limit) {
           notifyDualClass("warn", game.i18n.format("PF2EDC.Coexist.UnarmedManyClasses", {
             actor: actor.name,
-            count: existing.length
+            count: existing.length,
+            limit
           }));
           return wrapped(data, operation);
         }
-        const kept = actor.itemTypes.class[0]?.name ?? "";
+        const kept = actor.itemTypes.class.map((c) => c.name).join(", ");
         notifyDualClass("info", game.i18n.format("PF2EDC.Coexist.KeptFirstClass", {
           actor: actor.name,
           class: kept
@@ -218,7 +220,12 @@ export function registerCoexistence() {
 async function flagNewClassAsSecondary(actor, created) {
   const newClass = (created ?? []).find((i) => i?.type === "class");
   if (!newClass) return;
-  await actor.setFlag(MODULE_ID, SECONDARY_CLASS_FLAG, newClass.id);
+
+  // Append rather than overwrite, so adding a third class keeps the second. Written as the list
+  // even when it holds one id, which is also what migrates a character off the old single-id flag:
+  // `getExtraClassIds` reads the old one, and this writes the new one on the next class change.
+  const ids = [...getExtraClassIds(actor).filter((id) => id !== newClass.id), newClass.id];
+  await actor.setFlag(MODULE_ID, EXTRA_CLASSES_FLAG, ids);
 }
 
 /**
@@ -230,14 +237,28 @@ async function flagNewClassAsSecondary(actor, created) {
 export function onDeleteClassItem(item) {
   const actor = item?.parent;
   if (item?.type !== "class" || actor?.type !== "character") return;
-  if (actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) === undefined) return;
 
-  // Clear the flag when the class it names goes, and equally when the *other* class goes and this
-  // one is all that is left. A single remaining class still flagged as the second one is not
-  // dual-class by any useful definition, and it would show up in the Second Class slot with the
-  // Class slot empty beside it.
-  const deletedWasSecondary = actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) === item.id;
-  if (deletedWasSecondary || actor.itemTypes.class.length < 2) {
+  const ids = getExtraClassIds(actor);
+  if (ids.length === 0) return;
+
+  // Drop the deleted class from the list, and drop the whole list once fewer than two classes are
+  // left. A single remaining class still listed as an extra is not multi-class by any useful
+  // definition, and it would show up in an extra slot with the Class slot empty beside it.
+  const remaining = ids.filter((id) => id !== item.id && actor.items.get(id)?.type === "class");
+  const classCount = actor.itemTypes.class.filter((c) => c.id !== item.id).length;
+
+  if (classCount < 2 || remaining.length === 0) {
+    actor.unsetFlag(MODULE_ID, EXTRA_CLASSES_FLAG);
+    if (actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) !== undefined) {
+      actor.unsetFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
+    }
+    return;
+  }
+
+  // Written as the list even when the character came in on the old single-id flag, which retires
+  // that flag rather than leaving two sources of truth behind.
+  actor.setFlag(MODULE_ID, EXTRA_CLASSES_FLAG, remaining);
+  if (actor.getFlag(MODULE_ID, SECONDARY_CLASS_FLAG) !== undefined) {
     actor.unsetFlag(MODULE_ID, SECONDARY_CLASS_FLAG);
   }
 }

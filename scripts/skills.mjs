@@ -1,5 +1,5 @@
 import { moduleEnabled } from "./settings.mjs";
-import { getPrimaryClass, getSecondaryClass, isMultiClassActor } from "./util.mjs";
+import { getAllClasses, isMultiClassActor } from "./util.mjs";
 
 /**
  * How many trained skills a dual-class character should start with.
@@ -102,11 +102,9 @@ function grantedByRules(actor) {
  * @param {ActorPF2e} actor
  */
 export function tallyTrainedSkills(actor) {
-  const primary = getPrimaryClass(actor);
-  const secondary = getSecondaryClass(actor);
-  const classes = [primary, secondary].filter((c) => !!c);
+  const classes = getAllClasses(actor);
 
-  // Each class trains its own list, and the two are unioned rather than added: a skill both classes
+  // Each class trains its own list, and they are unioned rather than added: a skill two classes both
   // train is one trained skill, not two.
   const automatic = new Set();
   for (const classItem of classes) {

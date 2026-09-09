@@ -138,6 +138,22 @@ export function isMultiClassActor(actor) {
   return getAllClasses(actor).length >= 2;
 }
 
+/**
+ * What to call the nth class after the first, wherever one is named to the player.
+ *
+ * Shared by the sheet cells and the Attribute Boosts rows so the two never drift apart. English has
+ * ordinary words for the second and third; past that it falls back to numbering rather than
+ * inventing "Quaternary Class".
+ *
+ * @param {number} index 0 for the second class, 1 for the third, and so on.
+ * @returns {string}
+ */
+export function extraClassLabel(index) {
+  if (index === 0) return game.i18n.localize("PF2EDC.Sheet.SecondClass");
+  if (index === 1) return game.i18n.localize("PF2EDC.Sheet.ThirdClass");
+  return game.i18n.format("PF2EDC.Sheet.NthClass", { n: index + 2 });
+}
+
 /** A class item's slug, falling back to its name the way PF2e's own code does. */
 export function classSlug(classItem) {
   return classItem.slug ?? game.pf2e.system.sluggify(classItem.name);

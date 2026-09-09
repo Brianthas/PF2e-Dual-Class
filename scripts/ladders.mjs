@@ -1,6 +1,12 @@
 import { MODULE_ID, SECTION_PREFIX, SECTION_ROOT, PARAGON_SECTION, PARAGON_LEVELS } from "./constants.mjs";
 import { ancestryParagonEnabled } from "./settings.mjs";
-import { registerLibWrapper, isMultiClassActor, getSecondaryClass, classSlug } from "./util.mjs";
+import {
+  registerLibWrapper,
+  isMultiClassActor,
+  getExtraClasses,
+  getAllClasses,
+  classSlug
+} from "./util.mjs";
 
 /**
  * A second set of feat ladders, one per class.
@@ -51,6 +57,7 @@ export function registerLadders() {
         const result = withParagonLadder(this, () => wrapped(...args));
         reorderGroups(this.feats);
         labelParagonGroup(this.feats, this);
+        labelPrimaryClassGroup(this.feats, this);
         return result;
       } finally {
         for (const section of extra) {
@@ -229,29 +236,29 @@ export function buildSections(actor) {
  */
 function withParagonLadder(actor, fn) {
   const paragon = paragonApplies(actor);
-  const secondary = getSecondaryClass(actor);
-  const dual = isMultiClassActor(actor);
-  if (!paragon && !dual) return fn();
+  const extras = getExtraClasses(actor);
+  const multi = isMultiClassActor(actor);
+  if (!paragon && !multi) return fn();
 
   const classItem = actor.class;
   const original = classItem.grantedFeatSlots;
   const merged = { ...original };
 
-  // Skill, general and ancestry feats are had "only once per level", so two classes do not grant two
-  // of them at the same level - what a second class can do is fill in levels the first does not
-  // reach. A Rogue's accelerated skill feats are the case that matters: every level rather than
-  // every even one. So these three ladders are the union of both classes' levels, in the group PF2e
-  // already renders, rather than a second ladder beside it that would read as a separate allowance.
+  // Skill, general and ancestry feats are had "only once per level", so a second or third class does
+  // not grant two of them at the same level - what an extra class can do is fill in levels the first
+  // does not reach. A Rogue's accelerated skill feats are the case that matters: every level rather
+  // than every even one. So these three ladders are the union across every class, in the group PF2e
+  // already renders, rather than a ladder each that would read as separate allowances.
   //
   // Class feats are deliberately not merged. They are not in that once-per-level list, so a
-  // dual-class character really does get one from each class at the same level, and those stay as
-  // two ladders.
-  if (dual && secondary) {
-    const union = (a, b) => [...new Set([...(a ?? []), ...(b ?? [])])].sort((x, y) => x - y);
-    const second = secondary.grantedFeatSlots;
-    merged.skill = union(original.skill, second.skill);
-    merged.general = union(original.general, second.general);
-    merged.ancestry = union(original.ancestry, second.ancestry);
+  // multi-class character really does get one from each class at the same level, and those stay as
+  // a ladder each.
+  if (multi && extras.length) {
+    const ladders = [original, ...extras.map((c) => c.grantedFeatSlots)];
+    const union = (key) => [...new Set(ladders.flatMap((l) => l[key] ?? []))].sort((x, y) => x - y);
+    merged.skill = union("skill");
+    merged.general = union("general");
+    merged.ancestry = union("ancestry");
   }
 
   if (paragon) merged.ancestry = paragonSlots(merged.ancestry);
@@ -281,6 +288,26 @@ function labelParagonGroup(feats, actor) {
   if (!paragonApplies(actor)) return;
   const group = feats.get("ancestry");
   if (group) group.label = game.i18n.localize("PF2EDC.Section.AncestryParagon");
+}
+
+/**
+ * Name PF2e's own class feat group after the class it belongs to.
+ *
+ * It is labelled "Class Feats", which is fine with one class and ambiguous with two: the ladders
+ * added here are named after their classes, so leaving the first as the generic one makes the
+ * primary the odd one out. Renamed only for a character this module is doing something for, so a
+ * single-class character keeps the system's own wording.
+ *
+ * @param {Collection} feats
+ * @param {ActorPF2e} actor
+ */
+function labelPrimaryClassGroup(feats, actor) {
+  if (!isMultiClassActor(actor)) return;
+  const primary = getAllClasses(actor)[0];
+  const group = feats.get("class");
+  if (primary && group) {
+    group.label = game.i18n.format("PF2EDC.Section.NamedClassFeats", { class: primary.name });
+  }
 }
 
 /**
@@ -333,38 +360,41 @@ function paragonSlots(base) {
 function buildDualClassSections(actor) {
   if (!isMultiClassActor(actor)) return [];
 
-  const secondary = getSecondaryClass(actor);
-  const slug = classSlug(secondary);
-  const secondarySlots = secondary.grantedFeatSlots;
-
   // PF2e's own class group filters to the class trait plus dedication (or archetype once the
-  // character has one), at pf2e.mjs:33341-33350. The secondary's ladder mirrors that with its own
-  // trait, so each ladder browses to its own class's feats.
+  // character has one), at pf2e.mjs:33341-33350. Each extra class's ladder mirrors that with its own
+  // trait, so every ladder browses to its own class's feats.
   const hasDedication = actor.itemTypes.feat.some((f) => f.traits.has("dedication"));
-  const traits = [slug in CONFIG.PF2E.featTraits ? slug : null, hasDedication ? "archetype" : "dedication"]
-    .filter((t) => !!t);
 
   // A section whose every slot is above the character's level renders as a header with nothing under
-  // it. `FeatGroup` drops the out-of-range slots itself (pf2e.mjs:33233) but still creates the group,
+  // it. `FeatGroup` drops the out-of-range slots itself (pf2e.mjs:33510) but still creates the group,
   // so the emptiness has to be caught here. A level 1 Monk/Wizard hits this: Wizard's class feats
   // start at level 2.
-  const inRange = (levels) => levels.filter((level) => level <= actor.level);
+  const inRange = (levels) => (levels ?? []).filter((level) => level <= actor.level);
 
   const sections = [];
-  if (inRange(secondarySlots.class).length > 0) {
+  for (const classItem of getExtraClasses(actor)) {
+    const slug = classSlug(classItem);
+    const slots = classItem.grantedFeatSlots;
+    if (inRange(slots.class).length === 0) continue;
+
+    const traits = [
+      slug in CONFIG.PF2E.featTraits ? slug : null,
+      hasDedication ? "archetype" : "dedication"
+    ].filter((t) => !!t);
+
     sections.push({
       id: `${SECTION_PREFIX.CLASS}-${slug}`,
-      label: game.i18n.format("PF2EDC.Section.ClassFeats", { class: secondary.name }),
+      label: game.i18n.format("PF2EDC.Section.NamedClassFeats", { class: classItem.name }),
       supported: ["class"],
       filter: { traits },
-      slots: secondarySlots.class
+      slots: slots.class
     });
   }
 
   // Skill, general and ancestry feats get no section of their own. They are had once per level, so
-  // a second class raises the level count on the one ladder rather than opening a second - handled
-  // by merging those arrays in `withParagonLadder` before the groups are built. Only class feats,
-  // which really are one per class per level, get a ladder here.
+  // an extra class raises the level count on the one ladder rather than opening another - handled by
+  // merging those arrays in `withParagonLadder` before the groups are built. Only class feats, which
+  // really are one per class per level, get a ladder here.
 
   return sections;
 }

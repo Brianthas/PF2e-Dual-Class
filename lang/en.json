@@ -26,6 +26,8 @@
     },
     "Sheet": {
       "SecondClass": "Second Class",
+      "ThirdClass": "Third Class",
+      "NthClass": "Class {n}",
       "SecondClassTitle": "Second Class: {class}",
       "SecondClassActions": "Second class actions",
       "AddSecondClass": "Add a second class",
@@ -70,7 +72,7 @@
     },
     "Section": {
       "AncestryParagon": "Ancestry Feats (Paragon)",
-      "ClassFeats": "Second Class Feats"
+      "NamedClassFeats": "{class} Feats"
     }
   }
 }

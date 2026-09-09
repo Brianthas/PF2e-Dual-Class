@@ -1,4 +1,4 @@
-import { isMultiClassActor, getPrimaryClass, getSecondaryClass } from "./util.mjs";
+import { isMultiClassActor, getAllClasses, extraClassLabel } from "./util.mjs";
 
 /**
  * A CLASS row per class in the Attribute Boosts window.
@@ -131,19 +131,22 @@ function applyRows(element, actor) {
   const row = findClassRow(element);
   if (!row) return;
 
-  const primary = getPrimaryClass(actor);
-  const secondary = getSecondaryClass(actor);
-  if (!primary || !secondary) return;
+  const classes = getAllClasses(actor);
+  if (classes.length < 2) return;
 
   const attributes = Object.keys(CONFIG.PF2E.abilities);
 
-  // The clone has to be taken before the original is narrowed, so it still carries every button.
-  const secondaryRow = row.cloneNode(true);
+  // Every clone has to be taken before the original is narrowed, so each still carries every button.
+  // One clone per class after the first, inserted in order so the rows read primary, second, third.
+  const clones = classes.slice(1).map(() => row.cloneNode(true));
 
-  narrowRow(row, primary, attributes, actor, false);
-  narrowRow(secondaryRow, secondary, attributes, actor, true);
-
-  row.after(secondaryRow);
+  narrowRow(row, classes[0], attributes, actor, false, 0);
+  let previous = row;
+  for (const [index, clone] of clones.entries()) {
+    narrowRow(clone, classes[index + 1], attributes, actor, true, index + 1);
+    previous.after(clone);
+    previous = clone;
+  }
 }
 
 /**
@@ -154,17 +157,19 @@ function applyRows(element, actor) {
  * @param {ItemPF2e} classItem
  * @param {string[]} attributes Attribute keys in column order.
  * @param {ActorPF2e} actor
- * @param {boolean} isClone Whether this row is the inserted one.
+ * @param {boolean} isClone Whether this row is an inserted one.
+ * @param {number} position 0 for the primary, then 1, 2 ... for each class after it.
  */
-function narrowRow(row, classItem, attributes, actor, isClone) {
+function narrowRow(row, classItem, attributes, actor, isClone, position) {
   row.setAttribute(ROW_MARKER, isClone ? "secondary" : "primary");
   row.setAttribute("aria-label", `Class key attribute for ${classItem.name}`);
 
-  // The clone inherits the "Class" heading. Retitling it keeps the two rows told apart at a glance,
+  // A clone inherits the "Class" heading. Retitling it keeps the rows told apart at a glance,
   // matching the sheet's own Class / Second Class cells, and means the row lookup no longer has a
-  // second element answering to the heading it searches for.
+  // second element answering to the heading it searches for. Past the second there is no such
+  // phrase, so those are titled with the class's own name.
   const title = row.querySelector(".title");
-  if (title && isClone) title.textContent = game.i18n.localize("PF2EDC.Sheet.SecondClass");
+  if (title && isClone) title.textContent = extraClassLabel(position - 1);
 
   const description = row.querySelector(".description");
   if (description) description.textContent = classItem.name;
