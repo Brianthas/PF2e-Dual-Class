@@ -1,6 +1,12 @@
 import { registerLibWrapper, isMultiClassActor, getAllClasses, classSlug } from "./util.mjs";
 
 /**
+ * The highest attribute modifier a character may have at creation.
+ * Player Core, character creation step 6: no modifier lower than -1 or higher than +4.
+ */
+const CREATION_CAP = 4;
+
+/**
  * Merging two class items into one character.
  *
  * Most of the Dual-Class rule is already how PF2e behaves. `ClassPF2e#prepareActorData`
@@ -36,7 +42,7 @@ import { registerLibWrapper, isMultiClassActor, getAllClasses, classSlug } from 
  */
 
 export function registerMerge() {
-  return registerLibWrapper(
+  const merged = registerLibWrapper(
     "CONFIG.PF2E.Item.documentClasses.class.prototype.prepareActorData",
     function (wrapped, ...args) {
       wrapped(...args);
@@ -44,6 +50,93 @@ export function registerMerge() {
     },
     "WRAPPER"
   );
+
+  return registerBoostCap() && merged;
+}
+
+/**
+ * Stop the extra classes' key attribute boosts pushing a modifier past +4 during character creation.
+ *
+ * Character creation caps a modifier at +4: "You should have no attribute modifier lower than -1 or
+ * higher than +4" (Player Core, character creation step 6). PF2e does not enforce it, and has never
+ * needed to - without this module a single character cannot collect enough creation boosts on one
+ * attribute to get there.
+ *
+ * `prepareBuildData` (pf2e.mjs:34038) applies every boost with `mod += mod >= 4 ? .5 : 1`. That half
+ * step is the *level-up* rule, the one that makes 18 to 20 cost two boosts at 5th, 10th, 15th and
+ * 20th. With three classes keyed on the same attribute it fires at creation instead and produces a
+ * modifier of +4.5, which is not a legal 1st-level character.
+ *
+ * So a class boost that would land on an attribute already at +4 from creation sources is dropped
+ * for the duration of the call rather than applied at half value. Boosts at 5th and beyond are not
+ * touched: those are exactly where the half step belongs.
+ *
+ * The array is put back afterwards, so the Attribute Boosts window still shows the key attribute the
+ * player chose for that class. The choice is real, it just cannot raise the number past the cap.
+ */
+function registerBoostCap() {
+  return registerLibWrapper(
+    "CONFIG.PF2E.Actor.documentClasses.character.prototype.prepareBuildData",
+    function (wrapped, ...args) {
+      const build = this.system.build?.attributes;
+      const classBoosts = build?.boosts?.class;
+
+      // Only ever narrows what this module widened: one class writes a string, and PF2e's own
+      // arithmetic on a single boost is already correct.
+      if (build?.manual || !Array.isArray(classBoosts) || classBoosts.length < 2) {
+        return wrapped(...args);
+      }
+
+      const capped = withoutSurplusClassBoosts(this, build, classBoosts);
+      if (capped.length === classBoosts.length) return wrapped(...args);
+
+      build.boosts.class = capped;
+      try {
+        return wrapped(...args);
+      } finally {
+        build.boosts.class = classBoosts;
+      }
+    },
+    "WRAPPER"
+  );
+}
+
+/**
+ * The class boosts that still fit under the +4 creation cap, in order.
+ *
+ * Replays the creation boosts the way `prepareBuildData` does - ancestry, then background, then
+ * class, then the 1st-level free boosts - starting from the modifiers as they stand on entry to
+ * that method, which are the pre-boost values. Anything at 5th level or later is ignored: it is
+ * applied after all of these and is allowed above +4.
+ *
+ * @param {ActorPF2e} actor
+ * @param {object} build `system.build.attributes`
+ * @param {string[]} classBoosts
+ * @returns {string[]}
+ */
+function withoutSurplusClassBoosts(actor, build, classBoosts) {
+  const mods = {};
+  for (const [key, ability] of Object.entries(actor.system.abilities)) mods[key] = ability.mod;
+
+  const apply = (attr) => {
+    if (!(attr in mods)) return;
+    mods[attr] += mods[attr] >= CREATION_CAP ? 0.5 : 1;
+  };
+
+  for (const boost of build.boosts.ancestry ?? []) apply(boost);
+  for (const flaw of build.flaws?.ancestry ?? []) {
+    if (flaw in mods) mods[flaw] -= 1;
+  }
+  for (const boost of build.boosts.background ?? []) apply(boost);
+
+  const kept = [];
+  for (const boost of classBoosts) {
+    if (mods[boost] >= CREATION_CAP) continue;
+    kept.push(boost);
+    apply(boost);
+  }
+
+  return kept;
 }
 
 /**

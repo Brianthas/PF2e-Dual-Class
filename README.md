@@ -73,6 +73,12 @@ Both classes' key attribute boosts apply, because a key attribute boost is neith
 starting skill, and the rule is to add everything else from each class. A Fighter/Wizard who takes
 Strength for the Fighter gets Strength **and** Intelligence.
 
+**Nothing goes above +4 at 1st level.** Character creation caps a modifier at +4, and classes keyed
+on the same attribute can otherwise stack past it. A class boost that would land on an attribute
+already at +4 is dropped rather than applied at half value, so it cannot bank a half step that a
+later boost would cash in. Boosts at 5th level and beyond are untouched, where the half step is the
+rule that makes 18 to 20 cost two boosts.
+
 The Attribute Boosts window gets a row per class, each wired to its own class item, because the
 system's single row writes every choice to the first class. The rows sit where the boosts are
 actually applied, after Background and before the free boosts. That ordering matters: a class boost

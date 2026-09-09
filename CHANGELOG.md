@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.2
+
+- A key attribute boost from an extra class no longer pushes a modifier past +4 at character
+  creation. Character creation caps a modifier at +4, and PF2e has never had to enforce it because
+  without this module one character cannot collect enough creation boosts on one attribute to get
+  there. Classes keyed on the same attribute could, and the boost past the cap was applied at the
+  half value PF2e uses for level-up boosts, banking a half step. That is worth more than it looks:
+  the banked half meant a later boost reached +5 in one step instead of two. A class boost that
+  would land on an attribute already at +4 is now dropped instead.
+- Boosts at 5th level and beyond are unaffected. The half step is the correct rule there, and this
+  only changes what happens during creation.
+
 ## 0.3.1
 
 - Fixed adding a class deleting the previous class's features. The system purges the existing class
