@@ -186,7 +186,10 @@ it would be obstructive.
 
 ### Skill proficiencies
 
-A panel at the top of the Proficiencies tab counts proficiency points. A rank is worth its own
+A panel at the top of the Proficiencies tab counts proficiency points. **Show the Skill
+Proficiencies Panel** controls it, on by default, and it does not need Dual Class switched on: a
+single-class character forgets an unspent skill increase just as easily, and the rank caps apply to
+everyone. Install the module, leave Dual Class off, and this is all you get. A rank is worth its own
 number - trained 1, expert 2, master 3, legendary 4 - and every source is worth one point, whether
 it trains a new skill or raises one already trained. So the total is an identity at any level:
 

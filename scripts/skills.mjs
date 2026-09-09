@@ -1,5 +1,5 @@
-import { moduleEnabled } from "./settings.mjs";
-import { getAllClasses, isMultiClassActor } from "./util.mjs";
+import { skillCounterEnabled } from "./settings.mjs";
+import { getAllClasses } from "./util.mjs";
 
 /**
  * How many trained skills a dual-class character should start with.
@@ -58,14 +58,34 @@ export function registerSkillCounter() {
 
 function onRender(sheet, element) {
   const actor = sheet?.actor;
-  if (!moduleEnabled() || actor?.type !== "character") return;
-  if (!isMultiClassActor(actor)) return;
+  if (!skillCounterEnabled() || actor?.type !== "character") return;
+
+  // A character with no class has no budget to count against, which is the only thing that stops
+  // this rendering. Neither the module's own dual-class toggle nor a second class is required.
+  if (countedClasses(actor).length === 0) return;
 
   const root = element instanceof HTMLElement ? element : element?.[0];
   const section = root?.querySelector('section[data-tab="proficiencies"], .tab[data-tab="proficiencies"]');
   if (!section || section.querySelector(`.${PANEL_CLASS}`)) return;
 
   section.prepend(buildPanel(tallyTrainedSkills(actor)));
+}
+
+/**
+ * The classes whose budgets this panel adds up.
+ *
+ * Every class when the module is running dual class for this character, and the single class
+ * otherwise. `getAllClasses` returns nothing for a character the module is not managing - including
+ * every character when Dual Class is switched off - and the panel has to work in exactly that case,
+ * so the fallback is what makes it independent rather than an edge case.
+ *
+ * @param {ActorPF2e} actor
+ * @returns {ItemPF2e[]}
+ */
+function countedClasses(actor) {
+  const all = getAllClasses(actor);
+  if (all.length > 0) return all;
+  return actor?.class ? [actor.class] : [];
 }
 
 /**
@@ -125,7 +145,7 @@ function grantedByRules(actor) {
  * @param {ActorPF2e} actor
  */
 export function tallyTrainedSkills(actor) {
-  const classes = getAllClasses(actor);
+  const classes = countedClasses(actor);
 
   // Each class trains its own list, and they are unioned rather than added: a skill two classes both
   // train is one trained skill, not two.
@@ -288,7 +308,10 @@ function buildPanel(tally) {
 
   const parts = [];
   if (tally.automatic.length) {
-    parts.push(game.i18n.format("PF2EDC.Skills.FromClasses", {
+    // "Fighter train Stealth" is wrong with one class and right with three, so the verb follows the
+    // count rather than the panel assuming it is always looking at a multi-class character.
+    const key = tally.classes.length > 1 ? "PF2EDC.Skills.FromClasses" : "PF2EDC.Skills.FromClass";
+    parts.push(game.i18n.format(key, {
       classes: tally.classes.join(" / "),
       skills: tally.automatic.map(skillLabel).join(", ")
     }));

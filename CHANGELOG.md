@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.1
+
+- The skill panel has its own setting, **Show the Skill Proficiencies Panel**, on by default, and no
+  longer needs Dual Class switched on. Counting proficiency points has nothing to do with having two
+  classes: a single-class character forgets an unspent skill increase just as easily, and the rank
+  caps apply to everyone. Someone who wants only this can install the module and leave Dual Class
+  off.
+- Turning the setting on or off updates any open character sheet straight away rather than waiting
+  for the sheet to be closed and reopened.
+- The panel's wording follows the number of classes, so a single-class character reads "Rogue trains
+  Stealth" rather than "Rogue train Stealth".
+
 ## 0.4.0
 
 - The skill panel now counts proficiency points and stays on the sheet at every level, instead of

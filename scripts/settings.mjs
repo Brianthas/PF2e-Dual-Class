@@ -38,6 +38,30 @@ export function registerSettings() {
     requiresReload: true
   });
 
+  // Not gated behind Dual Class, and on by default. Counting proficiency points has nothing to do
+  // with having two classes: a single-class character forgets an unspent skill increase just as
+  // easily, and the rank caps apply to everyone. Someone who wants only this can install the module,
+  // leave Dual Class off, and get it.
+  //
+  // No reload needed, so `onChange` re-renders any open character sheet rather than leaving the
+  // panel there until the sheet is closed and opened again. Reached through the actors rather than
+  // through `foundry.applications.instances`, which does not list PF2e's character sheets: an
+  // earlier version iterated that collection, found nothing, and left the panel on screen after the
+  // setting was switched off.
+  game.settings.register(MODULE_ID, "skillCounter", {
+    name: "PF2EDC.Settings.SkillCounter.Name",
+    hint: "PF2EDC.Settings.SkillCounter.Hint",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true,
+    onChange: () => {
+      for (const actor of game.actors) {
+        if (actor.type === "character" && actor.sheet?.rendered) actor.sheet.render();
+      }
+    }
+  });
+
   // Its own variant rule, so its own setting rather than something the dual-class toggle drags in.
   // A world can want one without the other.
   game.settings.register(MODULE_ID, "ancestryParagon", {
@@ -76,6 +100,16 @@ export function maxClasses(actor) {
   if (game.settings.get(MODULE_ID, "tripleClass") === true) return MAX_CLASSES.triple;
   if (actor.getFlag(MODULE_ID, THIRD_CLASS_FLAG) === true) return MAX_CLASSES.triple;
   return MAX_CLASSES.dual;
+}
+
+/**
+ * Whether the skill proficiency panel is on.
+ *
+ * Deliberately does not consult `moduleEnabled`: it works on a single-class character in a world
+ * that is not running Dual Class at all.
+ */
+export function skillCounterEnabled() {
+  return game.settings.get(MODULE_ID, "skillCounter") === true;
 }
 
 /**

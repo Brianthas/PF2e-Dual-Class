@@ -19,6 +19,10 @@
         "None": "This world has no characters yet.",
         "TableHint": "Ticked characters may take a third class. Unticking one does not remove a class they already have."
       },
+      "SkillCounter": {
+        "Name": "Show the Skill Proficiencies Panel",
+        "Hint": "Count proficiency points at the top of a character's Proficiencies tab: what the build gives, what has been spent, any unspent skill increases, and any rank too high for the character's level. Works on single-class characters and does not need Dual Class switched on."
+      },
       "AncestryParagon": {
         "Name": "Enable Ancestry Paragon",
         "Hint": "Every character gains a second ancestry feat at 1st level and another at each odd level thereafter, eleven in total. Independent of Dual Class. Skipped if another module already provides these slots."
@@ -53,6 +57,7 @@
       "OverCap": "Too high for this level: {skills}",
       "Increases": "{count} skill increases so far",
       "FromClasses": "{classes} train {skills}",
+      "FromClass": "{classes} trains {skills}",
       "FreePicks": "{free} free picks ({additional} + Int {int})",
       "FromBackground": "background trains {skills}",
       "Granted": "granted {skills}",
