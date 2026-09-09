@@ -59,9 +59,9 @@
       "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. This module only handles two."
     },
     "LevelGate": {
-      "OneClass": "{actor} has only one class ({class}).",
+      "Missing": "{actor} has {have} of {need} classes ({classes}).",
       "NoClass": "{actor} has no class yet.",
-      "Blocked": "Add the second class before levelling past 1st: its 1st-level features and proficiencies belong to the character from the start.",
+      "Blocked": "Add the missing class before levelling past 1st: its 1st-level features and proficiencies belong to the character from the start.",
       "GmAllowed": "Levelling anyway because you are the GM."
     },
     "Sync": {
