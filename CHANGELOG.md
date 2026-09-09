@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1
+
+- Fixed adding a class deleting the previous class's features. The system purges the existing class
+  before creating the new one, and that purge takes the class's granted feats with it. The class
+  itself was being kept and its features were not, so a Fighter who gained a second class kept the
+  Fighter item and lost Reactive Strike and Shield Block. Those feats are now kept too.
+- Fixed a second, wrong control on each extra class cell. The cell is a copy of the Class cell and
+  inherited the system's own class picker, which showed as a duplicate magnifying glass and would
+  have replaced the character's **first** class when clicked.
+
 ## 0.3.0
 
 - A character can take a **third class**, treated exactly like the second: the best of the three

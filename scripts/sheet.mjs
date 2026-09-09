@@ -82,11 +82,13 @@ function buildCell(actor, classCell, editable, secondary, index) {
     value.textContent = secondary?.name ?? "";
   }
 
-  // The cloned control still carries PF2e's `data-item-id` for the primary class, which would open
-  // the wrong item sheet. Replace it outright rather than retarget it, so none of PF2e's own
-  // delegated listeners stay attached to a control that now means something else.
-  const control = cell.querySelector(".detail-item-control");
-  control?.remove();
+  // Every control the clone inherited is removed, not just the item-control. The clone also carries
+  // PF2e's own `data-action="open-abc-picker"` anchor with `data-item-type="class"`, which opens the
+  // picker that replaces the character's *first* class - so on an empty cell it rendered a second
+  // magnifying glass beside ours, and clicking it would have replaced the wrong class. Removed
+  // outright rather than retargeted, so none of PF2e's delegated listeners stay attached to a
+  // control that now means something else.
+  for (const control of cell.querySelectorAll(".detail-item-control, [data-action]")) control.remove();
 
   if (!editable) return cell;
 

@@ -122,7 +122,21 @@ function registerLinkedItemNarrowing() {
     function (wrapped) {
       const actor = this.actor;
       if (!moduleEnabled() || actor?.type !== "character") return wrapped();
-      if (actor.itemTypes.class.length < 2) return wrapped();
+
+      // Two classes on the actor is the obvious case, and it is not the only one. During an *add*
+      // the system purges the existing class before creating the new one, so at that moment the
+      // actor still holds exactly one class and a count test falls through to the system's own
+      // implementation - which collects every feat located to any class item on the actor. The
+      // create wrapper filters the class ids out of that delete, but the feats are not class items
+      // and went through untouched, so adding a second class kept the first class and destroyed its
+      // features. Measured on 2026-09-09: a Fighter with four features had all four removed when a
+      // Sorcerer was added, and the Fighter item itself survived.
+      //
+      // So narrow whenever a create on this actor is preserving classes, whatever the count is
+      // right now.
+      const preserving = preserve?.actorId === actor.id;
+      if (!preserving && actor.itemTypes.class.length < 2) return wrapped();
+
       return actor.itemTypes.feat.filter((f) => f.system.location === this.id);
     },
     "MIXED"
@@ -172,7 +186,16 @@ export function registerCoexistence() {
         }));
       }
 
-      preserve = { actorId: actor.id, ids: new Set(existing) };
+      // The class items and everything they granted. Preserving only the class ids keeps the class
+      // and loses its features: the purge expands each class to its linked items, and a granted
+      // feature is a feat rather than a class item, so it is not in `existing` and goes through the
+      // delete untouched. Measured on 2026-09-09 before this line existed - adding a Sorcerer to a
+      // Fighter left the Fighter item in place with all four of its features removed.
+      const granted = actor.itemTypes.feat
+        .filter((f) => existing.includes(f.system.location))
+        .map((f) => f.id);
+
+      preserve = { actorId: actor.id, ids: new Set([...existing, ...granted]) };
       armed = null;
       try {
         const created = await wrapped(data, operation);
