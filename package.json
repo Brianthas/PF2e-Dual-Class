@@ -11,6 +11,6 @@
     "lint": "eslint .",
     "check-lang": "node tools/check-lang.mjs",
     "check-imports": "node tools/check-imports.mjs",
-    "test": "node tools/check-imports.mjs && node tools/test-reorder.mjs"
+    "test": "node tools/check-imports.mjs && node tools/test-reorder.mjs && node tools/test-fold.mjs"
   }
 }

@@ -190,17 +190,29 @@ A panel at the top of the Proficiencies tab counts proficiency points. **Show th
 Proficiencies Panel** controls it, on by default, and it does not need Dual Class switched on: a
 single-class character forgets an unspent skill increase just as easily, and the rank caps apply to
 everyone. Install the module, leave Dual Class off, and this is all you get. A rank is worth its own
-number - trained 1, expert 2, master 3, legendary 4 - and every source is worth one point, whether
-it trains a new skill or raises one already trained. So the total is an identity at any level:
+number - trained 1, expert 2, master 3, legendary 4 - so what a character holds is the sum of their
+ranks, and what they are owed is:
 
 ```text
-sum of your ranks = everything that granted you one + skill increases so far
+the ranks everything granted you + your free picks + your skill increases
 ```
 
-**Every source is worth one point**, whatever it does with it. A class's automatic skill, a
-background's, a heritage's, a dedication's granted skill, and Skill Mastery's expert step all cost
-the same, and each shows up in the spend as one more rank somewhere. Counting sources rather than
-distinct skills is what makes a rank *increase* from a feat count at all.
+**A source is worth the ranks it adds**, not one point flat. Most add one, but Skilled Human confers
+expert from 5th level in a single rule, the scaling dedications (Acrobat, Fan Dancer, Twilight
+Speaker) confer master at 7th and legendary at 15th, and Skill Mastery's two rules confer expert and
+master. The panel reads the rank each one confers, including the ones written as a level expression,
+so a feat that hands you two ranks does not leave you looking like you spent an increase on it.
+
+Where a skill has more than one source, the first pays for every rank it confers and each later one
+pays for the single step it adds. That is not a shortcut: these feats carry a prerequisite of the
+rank below, so a feat granting master requires expert, and the character reached expert by spending
+an increase the budget has already counted. Paying the whole gap again would invent unspent
+increases. The one case it understates is a source that grants a high rank with no prerequisite on a
+skill something else already trains, which is rare and fails quietly.
+
+`upgrade` is what these rules use, meaning "at least this rank", so two of them on one skill are
+never added together. The breakdown lists each skill with its own points beside it, so the figures
+add up to the total in front of them.
 
 The build gives you the skills each class trains automatically, the **larger** of the classes'
 additional skill counts (never the sum) plus the Intelligence modifier as free picks, the
@@ -209,10 +221,28 @@ Those last ones are found by reading the rule that grants them, including the tw
 player chooses - the skill (Skilled Human, the Natural Skill ancestry feat) and the whole rule
 target (most dedications).
 
-Two sources training the same skill count twice, because the rules say the second one is not
+Two sources training the same skill still count twice, because the rules say the second one is not
 wasted: *"Each time after the first that you'd become trained in a given skill, you instead allocate
 the trained proficiency to any other skill of your choice."* You end up with two trained skills, so
-the budget holds two points. The breakdown lists the skill twice for the same reason.
+the budget holds two points, and the extra one is listed as **redirected**.
+
+### GM grants
+
+**Grant a skill with an item and it is counted.** Anything the character holds that carries an
+`ActiveEffectLike` rule writing `system.skills.<skill>.rank` is read as a source, whatever type of
+item it is: a feat, a class feature, a heritage, or an effect you build yourself and drop on the
+sheet. The rank you write is the rank the panel credits, so an effect granting expert adds two
+points to the budget and two to the spend, and the character's unspent increases do not move.
+
+**Setting a rank by hand is not counted**, because there is nothing left to read: a rank edited
+directly on the sheet is indistinguishable from one the player bought. It is charged to the
+character's own points, so it eats unspent increases without saying so and only reads as over budget
+once those run out. Verified on a level 8 character with 2 unspent: granting trained by hand took it
+to 1 unspent, and granting master took it to 1 over. That silent case is the reason to make a grant
+an item rather than an edit.
+
+The same holds for Lores, with one difference: see the Lore paragraph below, where becoming trained
+is free and only ranks above trained are counted.
 
 **Lore skills get their own line, and only their ranks above trained are counted.** Becoming trained
 in a Lore is free here, because nothing in the data says where a Lore came from. Adding a background

@@ -58,15 +58,15 @@
       "NeedsLevel": "needs level {level}",
       "Increases": "skill increases",
       "FreePicks": "free picks ({additional} + Int {int})",
-      "Background": "background",
       "GrantedLabel": "granted",
+      "Redirected": "redirected, from a second source training a skill you already had",
       "LoreOne": "{count} Lore: {list}",
       "Lores": "{count} Lores: {list}",
       "LoreCounted": "{count} counted",
       "LoreNote": "Becoming trained in a Lore is not counted, since a background, a feat or the GM can hand one out. Ranks above trained are counted, because a skill increase is what buys them.",
       "AllTrained": "{actual} of {total} skills trained - all of them",
       "AllTrainedWhy": "Something on this character trains every skill, so the class skill picks have nothing left to spend on and there is no count worth showing.",
-      "HowCounted": "Trained 1 · Expert 2 · Master 3 · Legendary 4. Every trained skill and every skill increase is worth one point."
+      "HowCounted": "Trained 1 · Expert 2 · Master 3 · Legendary 4. A source is worth the ranks it adds, and a skill increase is worth one."
     },
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",

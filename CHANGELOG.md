@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.4.4
+
+- **A source is now worth the ranks it adds, not one point flat.** This was wrong on common
+  content. Skilled Human grants expert from 5th level in a single rule, the scaling dedications
+  grant master at 7th and legendary at 15th, and Skill Mastery's two rules grant expert and master.
+  Each was counted as one point while the rank it conferred was counted in full, so the character
+  was charged skill increases for ranks a feat had already given them. Surveyed the compendia to
+  size it: of the 479 rules that write a skill rank, 401 grant a single rank and 78 grant two, three
+  or four, thirteen of those through a level expression the panel now evaluates.
+- Two rules on one skill are no longer added together. They use `upgrade`, which means "at least
+  this rank", so the higher one subsumes the lower and the skill is paid for once. Where a skill has
+  several sources, the first pays for every rank it confers and each later one pays for the step it
+  adds, because those feats require the rank below and the character bought that rank with an
+  increase the budget already counts.
+- The test suite covers the new arithmetic. Each case is written so the model it replaced gives a
+  different answer, and two of them caught expectations that were wrong before the code was.
+- A second source training a skill the character already has still counts, and is now shown as
+  **redirected** rather than folded into the list, since the point is spent on a different skill.
+- The breakdown lists each granted skill with its own points, so the figures add up to the total in
+  front of them. It listed sources before, which cannot add up once one source grants two ranks.
+- **GM grants have a documented route.** A grant made as an item is counted, whatever type of item
+  it is, and the rank written is the rank credited. A rank set by hand on the sheet cannot be told
+  from one the player bought, so it is charged to the character: it eats unspent increases quietly
+  and only reads as over budget once they run out. The README says which to use.
+
 ## 0.4.3
 
 - **A skill increase spent on a Lore now counts.** Lores were outside the count entirely, so raising

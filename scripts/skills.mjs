@@ -105,6 +105,30 @@ function countedClasses(actor) {
 function grantedByRules(actor) {
   const core = CONFIG.PF2E.skills ?? {};
   const granted = [];
+  /** The prepared rule instances, which can resolve a value expression; the stored rules cannot. */
+  const preparedRules = (item) => {
+    const live = Array.isArray(item.rules) && item.rules.length ? item.rules : null;
+    return live ?? item.system?.rules ?? [];
+  };
+  /**
+   * The rank a rule confers, as a number.
+   *
+   * Surveyed across 14880 compendium items: of 479 rules writing a skill rank, 401 are a flat 1 and
+   * 78 confer 2, 3 or 4, thirteen of those through a level expression such as Skilled Human's
+   * `ternary(gte(@actor.level,5),2,1)`. Reading `value` raw counts that as one rank at every level.
+   */
+  const conferredRank = (rule) => {
+    const raw = rule.value;
+    if (typeof raw === "number") return raw;
+    try {
+      const resolved = Number(rule.resolveValue?.(raw));
+      if (Number.isFinite(resolved)) return resolved;
+    } catch {
+      // An expression that cannot resolve on this actor grants nothing readable; fall through.
+    }
+    const flat = Number(raw);
+    return Number.isFinite(flat) ? flat : 1;
+  };
   const skillPath = /^system\.skills\.(.+)\.rank$/;
   // The flag can be nested - Clan Lore writes `rulesSelections.clan.skillOne` - so everything after
   // `rulesSelections.` is captured and walked rather than treated as a single key.
@@ -120,7 +144,7 @@ function grantedByRules(actor) {
   };
 
   for (const item of actor.items) {
-    for (const rule of item.system?.rules ?? []) {
+    for (const rule of preparedRules(item)) {
       if (rule.key !== "ActiveEffectLike" || typeof rule.path !== "string") continue;
 
       // Three shapes, and each of the first two alone would miss most of them.
@@ -158,10 +182,61 @@ function grantedByRules(actor) {
       // One record per rule, not per skill. A rule that raises a rank the character already has is
       // worth a point exactly like one that trains a new skill: Skill Mastery's expert step costs
       // the same as a heritage's "become trained", and counting distinct skills loses it entirely.
-      granted.push({ skill: slug, source: item.name, rank: Number(rule.value) || 1 });
+      granted.push({ skill: slug, source: item.name, rank: Math.max(1, conferredRank(rule)) });
     }
   }
   return granted;
+}
+
+/**
+ * Add up what the build hands the character for free, in rank-points.
+ *
+ * A source is worth the ranks it actually confers, not one point flat. Most confer one - 401 of the
+ * 479 skill-rank rules in the compendia are a flat 1 - but Skilled Human confers 2 from 5th level,
+ * the scaling dedications confer 3 at 7th and 4 at 15th, and Skill Mastery's two rules confer 2 and
+ * 3. Counting each as a single point charged the character increases for ranks a feat had given
+ * them.
+ *
+ * `upgrade` is what these rules use, meaning "at least this rank", so two rules on one skill are not
+ * additive: the higher one subsumes the lower. The fold therefore pays for each skill's steps once,
+ * which is why it sorts ascending and is independent of the order the items happen to sit in.
+ *
+ * The exception is a duplicate *training*, which is not wasted. Player Core: "Each time after the
+ * first that you'd become trained in a given skill, you instead allocate the trained proficiency to
+ * any other skill of your choice." So it still buys a rank, just somewhere else. That is what makes
+ * two classes sharing a trained skill worth two points, which is the whole reason a dual-class
+ * character needs this panel.
+ *
+ * @param {{skill: string, rank: number}[]} grants
+ * @returns {{points: number, redirected: number, perSkill: Map<string, number>}}
+ */
+export function foldGrants(grants) {
+  const perSkill = new Map();
+  let points = 0;
+  let redirected = 0;
+
+  for (const grant of [...grants].sort((a, b) => a.rank - b.rank)) {
+    const held = perSkill.get(grant.skill) ?? 0;
+    if (held === 0) {
+      // Nothing else grants this skill, so the source is paying for every rank of it. Skilled Human
+      // at 5th level is the case that matters: it confers expert on a skill the character has no
+      // other claim to, and both ranks are free.
+      points += grant.rank;
+      perSkill.set(grant.skill, grant.rank);
+    } else if (grant.rank > held) {
+      // Something already grants this skill, so this source is worth the one step it adds and no
+      // more. These feats carry a prerequisite of the rank below - a feat granting master requires
+      // expert - which the character reached by spending increases already counted in the budget.
+      // Crediting the whole gap would pay for those ranks twice and invent unspent increases.
+      points += 1;
+      perSkill.set(grant.skill, grant.rank);
+    } else if (grant.rank === 1) {
+      points += 1;
+      redirected += 1;
+    }
+  }
+
+  return { points, redirected, perSkill };
 }
 
 /**
@@ -218,10 +293,14 @@ export function tallyTrainedSkills(actor) {
   const background = actor.background?.system.trainedSkills.value ?? [];
   const granted = grantedByRules(actor);
 
-  // Every source is one point, whatever it does with it. A class list, a background, a heritage's
-  // "become trained", a dedication's granted skill and Skill Mastery's expert step all cost the
-  // same, and all show up in the spend as one more rank somewhere.
-  const expected = automatic.length + background.length + granted.length + free;
+  // Every free source, folded into the rank-points it actually confers. See `foldGrants`.
+  const grants = [
+    ...automatic.map((skill) => ({ skill, rank: 1 })),
+    ...background.map((skill) => ({ skill, rank: 1 })),
+    ...granted.map((g) => ({ skill: g.skill, rank: g.rank }))
+  ];
+  const folded = foldGrants(grants);
+  const expected = folded.points + free;
 
   const coreSkills = Object.keys(CONFIG.PF2E.skills ?? {});
   const actual = coreSkills.filter((key) => (actor.system.skills[key]?.rank ?? 0) >= 1).length;
@@ -248,13 +327,16 @@ export function tallyTrainedSkills(actor) {
   const budget = expected + increases;
 
   return {
-    // Listed per source, duplicates included, so the count beside the list always equals its
-    // length. Deduplicating read as a bug: a character whose Skill Mastery raised one skill twice
-    // showed "6 granted" above five names. A repeated name is the honest answer, and it is also the
-    // useful one, since each occurrence really is another point.
+    // Listed per skill with the points it was granted, so the figures visibly add up to the bold
+    // total beside them. Listing per source cannot do that any more: Skill Mastery's two rules take
+    // one skill to master, which is three points against two names.
     automatic,
     background,
-    granted: granted.map((g) => g.skill),
+    granted: [...folded.perSkill.entries()]
+      .map(([skill, points]) => ({ skill, points }))
+      .sort((a, b) => skillLabel(a.skill).localeCompare(skillLabel(b.skill))),
+    grantPoints: folded.points,
+    redirected: folded.redirected,
     additional,
     intMod,
     free,
@@ -402,14 +484,18 @@ function buildPanel(tally) {
 
   // The breakdown, one labelled figure per source, so the headline can be audited without arithmetic.
   const parts = [];
-  if (tally.automatic.length) {
-    parts.push(entry(tally.classes.join(" / "), tally.automatic));
-  }
-  if (tally.background.length) {
-    parts.push(entry(game.i18n.localize("PF2EDC.Skills.Background"), tally.background));
-  }
   if (tally.granted.length) {
-    parts.push(entry(game.i18n.localize("PF2EDC.Skills.GrantedLabel"), tally.granted));
+    // Each skill carries its own points, so the figures add up to the bold total in front of them
+    // without the reader doing arithmetic the panel could have done.
+    const listed = tally.granted
+      .map((g) => `${escapeHtml(skillLabel(g.skill))} ${g.points}`)
+      .join(", ");
+    parts.push(`<strong>${tally.grantPoints - tally.redirected}</strong> `
+      + `${escapeHtml(game.i18n.localize("PF2EDC.Skills.GrantedLabel"))}: ${listed}`);
+  }
+  if (tally.redirected) {
+    parts.push(`<strong>${tally.redirected}</strong> `
+      + escapeHtml(game.i18n.localize("PF2EDC.Skills.Redirected")));
   }
   parts.push(`<strong>${tally.free}</strong> ${escapeHtml(game.i18n.format("PF2EDC.Skills.FreePicks", {
     additional: tally.additional,
@@ -454,18 +540,6 @@ function buildPanel(tally) {
   wrapper.append(note);
 
   return wrapper;
-}
-
-/**
- * "**2** Fighter: Acrobatics, Athletics" - the count in bold, then who gave them and which.
- *
- * One entry per source, so a skill granted twice appears twice and the count always equals the
- * list's length. Two classes that both train Survival read as "2 Fighter / Ranger: Survival,
- * Survival", which is right: the second grant is a second point, spent on a skill of the player's
- * choosing.
- */
-function entry(label, skills) {
-  return `<strong>${skills.length}</strong> ${escapeHtml(label)}: ${escapeHtml(skills.map(skillLabel).join(", "))}`;
 }
 
 /** Skill and class names come from content and go into innerHTML, so they are escaped. */
