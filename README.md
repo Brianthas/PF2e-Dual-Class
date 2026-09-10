@@ -41,9 +41,15 @@ https://github.com/Brianthas/PF2e-Dual-Class/releases/latest/download/module.jso
 
 **Every class is picked at 1st level, before levelling.** Each one contributes 1st-level features,
 proficiencies and a key attribute boost that belong to the character from the start, so a player
-cannot take a character past 1st level until it has all of them, and is told why. A character
-allowed a third class needs three; another character in the same world still needs two. See
-[Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
+cannot take a character past 1st level until it has all of them, and is told why.
+
+**How many is a property of the character, not of the world.** A character allowed a third class,
+whether by the world setting or by a GM allowing it to that character alone, must have all three
+picked before it can leave 1st level. Another character in the same world, without that permission,
+still needs only its two. The check counts the class items on the sheet, not whether every choice
+prompt those classes opened has been answered.
+
+See [Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
 already above 1st level are left alone.
 
 The character sheet then shows **Class** and **Second Class**, plus **Third Class** where one is
