@@ -71,19 +71,18 @@ The higher of the two classes' Hit Points per level, never the sum and never a m
 
 ### Class DCs
 
-Each class gets its own class DC at its own key attribute. They are listed together on the
-Proficiencies tab under **Class DCs**, one row each with its own number and rank, and every row can
-be rolled.
+Each class keeps its own class DC on its own key attribute, and they do not compete. A
+Sorcerer/Fighter shows a Charisma-based Sorcerer DC and a Dexterity-based Fighter DC side by side on
+the Proficiencies tab, both with their own rank, both rollable. There is nothing to choose.
 
-One of them is marked primary, and it is the first class's. On the sheet that only decides order:
-the primary sits at the top of that list and the others below it. What it really decides is what
-happens off the sheet, when something asks for *the* character's class DC rather than for a
-particular class's. An inline DC in an item's description, a rule element, an effect: all of those
-read one value, and they get the primary's, not the highest. A Fighter/Sorcerer with a Fighter DC of
-20 and a Sorcerer DC of 21 hands out **20** while both stay visible and rollable on the sheet.
+Where the numbers differ, the attribute is the whole reason. A class DC is 10 + level + proficiency +
+key attribute, the same formula for both, so at equal level and rank a Fighter on +4 Dexterity reads
+21 beside a Sorcerer on +3 Charisma reading 20. Two classes keyed on the same attribute read the
+same.
 
-That is the whole reason **Make primary** exists. If the character's abilities key off the Sorcerer,
-make the Sorcerer primary and everything asking for one class DC starts getting the Sorcerer's.
+One is flagged primary, which is the first class's. It sorts first in that list, and it is the value
+handed to anything that asks for *the* class DC instead of a named one. Very little does: 4 of the
+16,989 items in the SRD packs, all snare and poison feats.
 
 ### Key attribute boosts
 
