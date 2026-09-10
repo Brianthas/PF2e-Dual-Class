@@ -246,6 +246,49 @@ the total is clamped against `resources.focus.cap` (32916), which the character 
 So two classes' focus spells cannot push the pool past three, which is what the published rule asks
 for. This was checked rather than assumed, because it was the one merge rule with no obvious owner.
 
+## Counting skill proficiencies
+
+The panel compares a sum of the character's ranks against a budget it derives. Everything below is
+why the budget is derived the way it is; the README states the outcomes.
+
+**A source is worth the ranks it confers, not one point.** Surveyed across 14880 compendium items:
+of the 479 `ActiveEffectLike` rules that write a skill rank, 401 carry a flat `1`, 44 carry `2`, 8
+carry `3`, 5 carry `4`, and 13 carry a level expression such as Skilled Human's
+`ternary(gte(@actor.level,5),2,1)`. Reading `value` raw counts that last group as one rank at every
+level, so the value is resolved through the prepared rule instance, which exposes `resolveValue`.
+The stored `system.rules` array cannot resolve anything.
+
+**Two rules on one skill are not additive.** Every one of them uses `mode: "upgrade"`, meaning "at
+least this rank", so the higher subsumes the lower and the skill is paid for once.
+
+**A later source pays for one step, not the whole gap.** These feats carry a prerequisite of the
+rank below: a feat granting master requires expert, and the character reached expert by spending an
+increase the budget already counts. Crediting the full gap pays for those ranks twice and invents
+unspent increases. The fold therefore credits the first source on a skill its full rank and each
+later one a single step. It understates a no-prerequisite source granting a high rank on a skill
+something else already trains, which is the accepted cost.
+
+**A duplicate training is still worth a point.** Player Core: "Each time after the first that you'd
+become trained in a given skill, you instead allocate the trained proficiency to any other skill of
+your choice." Unioning the skills loses it, which matters most for two classes sharing a trained
+skill.
+
+**Lores are counted only above trained, because nothing records where a Lore came from.** Checked
+live: adding a background to a character creates no Lore item at all, so the Lore its
+`trainedSkills.lore` field promises is made by hand. A background's Lore, one a GM hands out and one
+bought with an increase are the same item carrying the same flags. The rank is the only signal, so
+the trained step is free and each rank above it is a point. Additional Lore breaks this and is
+accepted: it carries no rule elements at all, and across the 6284 feats in the SRD pack exactly one
+rule element touches a Lore path.
+
+**A hand-set rank cannot be distinguished from a bought one**, so it is charged to the character.
+Measured on a level 8 character holding 2 unspent points: granting trained by hand read 1 unspent,
+and granting master read 1 over budget. The quiet case is the first one, which is the argument for
+making a GM grant an item.
+
+**The arithmetic is covered by `tools/test-fold.mjs`**, whose cases are each written so the previous
+model gives a different answer.
+
 ## What the module deliberately does not do
 
 **Skill increases are not automated.** `skillIncreaseLevels` appears twice in the whole system

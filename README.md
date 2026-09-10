@@ -11,14 +11,13 @@ attribute boosts, and a separate feat ladder for each class.
 ## Why two class items
 
 The character keeps a Fighter item and a Wizard item, and the module corrects what the system gets
-wrong when two are present. Nothing is precomputed and nothing is written to the actor beyond a
-single flag naming which class is the second one, so the numbers are recalculated from the class
-items on every data-prep cycle and removing the second class puts the character back exactly as it
-was.
+wrong when two are present. Nothing is precomputed and nothing is written to the actor beyond a flag
+naming the extra classes, so the numbers are recalculated on every data-prep cycle and removing a
+class puts the character back exactly as it was.
 
-It also means both classes are real to the rest of the system. Feats and rule elements test roll
-options like `class:wizard`, and each class item contributes its own, so the second class's content
-works rather than needing to be special-cased.
+Both classes are also real to the rest of the system. Feats and rule elements test roll options like
+`class:wizard`, and each class item contributes its own, so the second class's content works rather
+than needing to be special-cased.
 
 ## Installation
 
@@ -35,39 +34,35 @@ https://github.com/Brianthas/PF2e-Dual-Class/releases/latest/download/module.jso
 1. As GM, enable **Enable Dual Class** in the module's world settings. It is off by default.
 2. Build the character with its first class as normal.
 3. On the character sheet, use the **Second Class** slot, which sits directly after Class, and pick
-   the second class. Its class features are granted immediately, so expect the same choice prompts
-   the first class asked for.
+   the second class. Its features are granted immediately, so expect the usual choice prompts.
 4. Level up from there as normal.
 
-**Every class is picked at 1st level, before levelling.** Each one contributes 1st-level features,
+The sheet then shows **Class** and **Second Class**, plus **Third Class** where one is allowed, and
+the Attribute Boosts window gets a key attribute row for each.
+
+**Every class is picked at 1st level, before levelling.** Each contributes 1st-level features,
 proficiencies and a key attribute boost that belong to the character from the start, so a player
-cannot take a character past 1st level until it has all of them, and is told why.
+cannot level past 1st until it has all of them, and is told why.
 
-**How many is a property of the character, not of the world.** A character allowed a third class,
-whether by the world setting or by a GM allowing it to that character alone, must have all three
-picked before it can leave 1st level. Another character in the same world, without that permission,
-still needs only its two. The check counts the class items on the sheet, not whether every choice
-prompt those classes opened has been answered.
-
-See [Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
-already above 1st level are left alone.
-
-The character sheet then shows **Class** and **Second Class**, plus **Third Class** where one is
-allowed, and the Attribute Boosts window shows a key attribute row for each.
+**How many is a property of the character, not of the world.** One allowed a third class, whether by
+the world setting or by a GM allowing it to that character alone, needs all three before it can
+leave 1st level. Another character in the same world still needs only two. The check counts class
+items, not whether every choice prompt has been answered. See
+[Levelling past 1st](#levelling-past-1st) for what a GM can do instead.
 
 ## What it does
 
 ### Proficiencies
 
-Every proficiency is the better of the two classes: perception, all three saving throws, each weapon
-and armor category, and spellcasting. The system already resolves a class item's proficiencies with
-a maximum, so a second class item can only ever raise a rank, never lower one. The same holds for
-class features that grant proficiency, whether they do it through a rule element or through the
-field the system uses for most class progression: both take the higher of the two.
+Every proficiency is the best of the classes: perception, all three saving throws, each weapon and
+armor category, and spellcasting. The system already resolves a class item's proficiencies with a
+maximum, so an extra class can only raise a rank, never lower one. The same holds for class features
+that grant proficiency, whether they do it through a rule element or through the field the system
+uses for most class progression.
 
 ### Hit Points
 
-The higher of the two classes' Hit Points per level, never the sum and never a mix.
+The higher of the classes' Hit Points per level. Never the sum, never a mix.
 
 ### Class DCs
 
@@ -86,240 +81,194 @@ handed to anything that asks for *the* class DC instead of a named one. Very lit
 
 ### Key attribute boosts
 
-Both classes' key attribute boosts apply, because a key attribute boost is neither Hit Points nor a
+Every class's key attribute boost applies, since a key attribute boost is neither Hit Points nor a
 starting skill, and the rule is to add everything else from each class. A Fighter/Wizard who takes
 Strength for the Fighter gets Strength **and** Intelligence.
 
 **Nothing goes above +4 at 1st level.** Character creation caps a modifier at +4, and classes keyed
 on the same attribute can otherwise stack past it. A class boost that would land on an attribute
 already at +4 is dropped rather than applied at half value, so it cannot bank a half step that a
-later boost would cash in. Boosts at 5th level and beyond are untouched, where the half step is the
-rule that makes 18 to 20 cost two boosts.
+later boost would cash in. Boosts at 5th level and beyond are untouched.
 
 The Attribute Boosts window gets a row per class, each wired to its own class item, because the
 system's single row writes every choice to the first class. The rows sit where the boosts are
-actually applied, after Background and before the free boosts.
-
-That ordering matters because Pathfinder 2e walks the boosts in that order and a boost landing on an
-attribute already at +4 is worth half a step rather than a whole one. Where the class boosts sit
-therefore changes what the free boosts after them are worth. The class boosts themselves never take
-an attribute past +4, since one that would is dropped rather than halved, as above; the half step
-can still reach a free boost the player puts on an attribute the class boosts already filled.
+actually applied, after Background and before the free boosts, so the free boosts that follow see
+what the class boosts left behind.
 
 ### Feat ladders
 
-Each class gets its own ladder of class feat slots, at the levels that class grants them, headed
-with the class name: **Fighter Feats**, **Wizard Feats**. A Fighter/Wizard at level 5 has Fighter
-slots at 1, 2 and 4 and Wizard slots at 2 and 4, because the Wizard's class feats start at level 2.
+One ladder of class feat slots per class, at that class's own levels, headed with its name:
+**Fighter Feats**, **Wizard Feats**. A Fighter/Wizard at level 5 has Fighter slots at 1, 2 and 4 and
+Wizard slots at 2 and 4. A ladder with no slot at or below the character's level is hidden, which is
+why a 1st-level Fighter/Sorcerer sees only one.
 
-A ladder whose every slot is above the character's level is not shown at all, since it would be a
-heading with nothing under it. That is why a 1st-level Fighter/Sorcerer sees only one class ladder:
-the Sorcerer's feats start at 2nd.
-
-**Skill, general and ancestry feats stay on one ladder, not two.** The variant rule lists those as
-had only once per level, so two classes do not grant two of them at the same level. What a second
-class can do is grant one at a level the first does not reach: a Fighter/Rogue gets the Rogue's
-skill feat at every level rather than every even one. Those extra levels are added to the system's
-own Skill Feats, General Feats and Ancestry Feats groups, so the slots sit where a player already
-looks for them. Two classes whose ladders match add nothing.
-
-Class feats are the exception, and that is why they get two ladders: they are not on the
-once-per-level list, so a dual-class character really does get one from each class at the same
-level.
-
-**The ladders label their slots, they do not police them.** Each ladder browses to its own class's
-feats, but the system's own check on a feat slot tests the feat's category and not its class, so
-anything that is a class feat can be dropped in either ladder. Putting a feat in the wrong one warns
-and lets it through. Archetype and dedication feats belong in both and are never flagged.
+- **Class feats get a ladder each.** They are not on the once-per-level list, so two classes really
+  do grant two at the same level.
+- **Skill, general and ancestry feats stay on one ladder.** Those are had once per level however
+  many classes you have. An extra class only adds levels the first does not reach: a Fighter/Rogue
+  gets the Rogue's skill feat every level, not every even one. The extra slots go into the system's
+  own Skill Feats, General Feats and Ancestry Feats groups, where a player already looks for them.
+  Classes whose ladders match add nothing.
+- **The ladders label slots, they do not police them.** The system checks a feat's category, not its
+  class, so any class feat drops into either ladder. A mismatch warns and lets it through. Archetype
+  and dedication feats belong in both and are never flagged.
 
 ### A third class
 
-Two settings allow it, both off by default, and either is enough.
+Off by default. Two settings allow it, and either is enough:
 
-**Allow a Third Class** is a world setting: every character may take three. **Third Class
-Permissions** is a GM-only screen listing every character with a checkbox, for allowing it to
-particular characters in a world that is otherwise dual class. The permission is recorded on the
-character, so it travels with them and cannot go stale, and unticking someone does not remove a
-class they already have.
+- **Allow a Third Class**, a world setting: every character may take three.
+- **Third Class Permissions**, a GM-only screen listing every character with a checkbox, for
+  allowing it to particular characters in a world that is otherwise dual class. The permission is
+  recorded on the character, so it travels with them, and unticking someone does not remove a class
+  they already have.
 
-A third class is treated exactly like the second, because the same rules apply to it: the best of
-the three proficiencies, the highest Hit Points, the larger additional skill count rather than the
-sum, a class DC each at its own key attribute, a key attribute boost each, and a feat ladder each.
-Skill, general and ancestry feats stay on one ladder across all three, since those are had only
-once per level however many classes you have.
+A third class is treated exactly like the second: the best of the three proficiencies, the highest
+Hit Points, the larger additional skill count rather than the sum, a class DC and a key attribute
+boost each, and a feat ladder each. Skill, general and ancestry feats stay on one ladder across all
+three.
 
-**Three classes is not a published variant rule.** Dual-Class is; this applies its rules to one
-more class, which is why it is off unless a GM turns it on.
+**Three classes is not a published variant rule.** Dual-Class is; this applies its rules to one more
+class, which is why it is off unless a GM turns it on.
 
 ### Ancestry Paragon
 
 **Enable Ancestry Paragon** is a separate world setting for the variant rule of the same name: the
 character starts with **two** ancestry feats and gains another at every odd level after, eleven in
 total instead of five. It is independent of dual class and applies to every character with a class,
-single-classed or not, so a world can run either variant without the other.
+so a world can run either variant alone.
 
-The extra slots go into the system's own **Ancestry Feats** group rather than a second ladder
-beside it, and the heading reads **Ancestry Feats (Paragon)** while the setting is on. If another
-module is already providing Ancestry Paragon slots, this one stands its section down so the sheet
-does not show both.
+The extra slots go into the system's own **Ancestry Feats** group rather than a second ladder beside
+it, and the heading reads **Ancestry Feats (Paragon)** while the setting is on. If another module
+already provides these slots, this one stands its section down.
 
 ### Spellcasting
 
-A dual-class caster's **spellcasting proficiency** is the better of the two classes, so a
-Fighter/Wizard is trained in spell attack rolls and spell DC rather than untrained.
+Spellcasting proficiency is the best of the classes, so a Fighter/Wizard is trained in spell attack
+rolls and spell DC rather than untrained.
 
-**Each class needs its own spellcasting entry, added by hand.** This is how Pathfinder 2e works for
+**Each class needs its own spellcasting entry, added by hand.** That is how Pathfinder 2e works for
 everyone, not something the module takes away: the system has never created a spellcasting entry
-from a class, first or second. No class feature grants one, and the way you make one is the dialog
-on the Spellcasting tab. So add a second entry there, with the second class's tradition, prepared or
-spontaneous category, and key attribute, the same way you made the first.
-
-Both entries then work independently, which is what the rule asks for: a Sorcerer/Wizard keeps
-spontaneous and prepared casting apart and gets the full benefit of each.
+from a class, and the way you make one is the dialog on the Spellcasting tab. Add a second one there
+with that class's tradition, prepared or spontaneous category, and key attribute. Both then work
+independently, so a Sorcerer/Wizard keeps spontaneous and prepared casting apart.
 
 Focus points need nothing. Both classes' focus spells feed one shared pool, capped at three, which
 the system already enforces.
 
 ### Class features
 
-Both classes grant their features, at each class's own levels, and both are removed again if the
-character's level drops. **Sync Class Features**, in the menu on any extra class cell, re-checks that
-class and grants anything missing; it is safe to run at any time and does nothing when there is
-nothing to add. Use it after giving a class to a character that is already past level 1.
+Every class grants its features at its own levels, and they are removed again if the character's
+level drops. **Sync Class Features**, in the menu on any extra class cell, re-checks that class and
+grants anything missing. It is safe to run at any time and does nothing when there is nothing to
+add. Use it after giving a class to a character that is already past level 1.
 
 ### Levelling past 1st
 
-A character cannot leave 1st level short of the classes it is entitled to: two normally, three if a
-third is allowed for them. Each class brings 1st-level features, proficiencies and a key attribute
-boost that the character is meant to have from the start, and if you level without picking one, none
-of that ever arrives. Nothing on the sheet looks wrong either, because a character missing all of it
-looks exactly like an ordinary character with fewer classes.
+A character cannot leave 1st level short of the classes it is entitled to. Each class brings
+1st-level features, proficiencies and a key attribute boost meant to be there from the start, and
+levelling without one means none of that ever arrives, with nothing on the sheet looking wrong.
 
 **A player is stopped; a GM is warned and allowed through.** A GM has reasons for a one-class
-character in a dual-class world - an NPC built on a character sheet, or a character partway through
-being fixed - and no way to say so to a hard block. The warning names how many classes the character
-has and how many it needs.
+character in a dual-class world, such as an NPC built on a character sheet, and no way to say so to
+a hard block. The warning names how many classes the character has and how many it needs.
 
-The check is on leaving 1st level, not on every level change. A character already past 1st with one
-class may have been imported or predate the variant being switched on, and blocking every update to
-it would be obstructive.
+The check is on leaving 1st level only. A character already past 1st with one class may have been
+imported or may predate the variant being switched on.
 
 ### Skill proficiencies
 
 A panel at the top of the Proficiencies tab counts proficiency points. **Show the Skill
 Proficiencies Panel** controls it, on by default, and it does not need Dual Class switched on: a
 single-class character forgets an unspent skill increase just as easily, and the rank caps apply to
-everyone. Install the module, leave Dual Class off, and this is all you get. A rank is worth its own
-number - trained 1, expert 2, master 3, legendary 4 - so what a character holds is the sum of their
-ranks. What they are owed is the ranks everything granted them, plus their free picks, plus their
-skill increases.
+everyone.
 
-**A source is worth the ranks it adds**, not one point flat. Most add one, but Skilled Human confers
-expert from 5th level in a single rule, the scaling dedications (Acrobat, Fan Dancer, Twilight
-Speaker) confer master at 7th and legendary at 15th, and Skill Mastery's two rules confer expert and
-master. The panel reads the rank each one confers, including the ones written as a level expression,
-so a feat that hands you two ranks does not leave you looking like you spent an increase on it.
+A rank is worth its own number, trained 1 through legendary 4, so what you hold is the sum of your
+ranks. What you are owed is:
 
-Where a skill has more than one source, the first pays for every rank it confers and each later one
-pays for the single step it adds. That is not a shortcut: these feats carry a prerequisite of the
-rank below, so a feat granting master requires expert, and the character reached expert by spending
-an increase the budget has already counted. Paying the whole gap again would invent unspent
-increases. The one case it understates is a source that grants a high rank with no prerequisite on a
-skill something else already trains, which is rare and fails quietly.
+- the skills each class trains automatically
+- the **larger** of the classes' additional skill counts, never the sum, plus your Intelligence, as
+  free picks
+- the background's
+- anything a heritage, ancestry feat, class feature or archetype feat grants
+- one per skill increase, unioned across classes since increases are once per level: a Fighter/Rogue
+  gets the Rogue's schedule from 2nd, not the Fighter's odd levels from 3rd
 
-`upgrade` is what these rules use, meaning "at least this rank", so two of them on one skill are
-never added together. The breakdown lists each skill with its own points beside it, so the figures
-add up to the total in front of them.
+**A source is worth however many ranks it hands you.** Making you trained is one point; expert
+outright is two, master three, legendary four. Most hand over one, but Skilled Human makes you
+expert from 5th level in a single grant, the scaling dedications (Acrobat, Fan Dancer, Twilight
+Speaker) reach master at 7th and legendary at 15th, and Skill Mastery's two grants are an expert and
+a master. Where several sources feed one skill, the first pays for every rank and each later one
+pays only for the step it adds, since those feats require the rank below. A source granting a high
+rank with no prerequisite, on a skill something else already trains, is the one case this
+understates.
 
-The build gives you the skills each class trains automatically, the **larger** of the classes'
-additional skill counts (never the sum) plus the Intelligence modifier as free picks, the
-background's, and anything granted by a heritage, ancestry feat, class feature or archetype feat.
-Those last ones are found by reading the rule that grants them, including the ones the player has to
-answer. Some leave the skill blank and let you pick it, like Skilled Human or the Natural Skill
-ancestry feat. Most dedications go further and leave the whole target blank. Either way the panel
-reads the answer you gave rather than guessing.
+Two sources training the same skill count twice, the second listed as **redirected**: the rules
+reallocate a duplicate "trained" to a skill of your choice rather than wasting it.
 
-Two sources training the same skill still count twice, because the rules say the second one is not
-wasted: *"Each time after the first that you'd become trained in a given skill, you instead allocate
-the trained proficiency to any other skill of your choice."* You end up with two trained skills, so
-the budget holds two points, and the extra one is listed as **redirected**.
+Granted skills are read from the rule that grants them, including the ones you answer yourself.
+Skilled Human and the Natural Skill ancestry feat leave the skill blank for you to pick; most
+dedications leave the whole target blank. Either way the panel reads your answer.
+
+**What it flags:**
+
+- **Unspent increases.** Nothing else on the sheet records that you owe yourself one.
+- **Ranks above what your level allows.** Expert from your first skill increase, master at 7th,
+  legendary at 15th. Only the expert gate moves by class: Rogue and Investigator start at 2nd.
+- **Over budget**, phrased as a rank nothing accounts for rather than an error, since a feat
+  granting a rank outright is the likelier cause.
+
+If something trains every skill, the arithmetic stops meaning anything and the panel says all
+sixteen are trained instead of a number.
+
+### Lores
+
+Lores get their own line, and **only their ranks above trained are counted**. Becoming trained in a
+Lore is free here, because nothing in the data says where a Lore came from: a background's Lore, one
+a GM hands out and one bought with a skill increase are the same item with the same flags. The rank
+is the only thing that separates them.
+
+That leaves two cases:
+
+- A skill increase spent becoming trained in a **new** Lore is not counted, so it still shows as
+  unspent.
+- **Additional Lore** raises its Lore at 3rd, 7th and 15th with no skill increase and no rule
+  elements to read, so a character with it reads over budget by up to 3.
+
+Rank caps apply to Lores on the same gates as everything else, since a cap is about level alone.
 
 ### GM grants
 
 **Grant a skill with an item and it is counted.** Anything the character holds that carries an
-`ActiveEffectLike` rule writing `system.skills.<skill>.rank` is read as a source, whatever type of
+`ActiveEffectLike` rule writing `system.skills.<skill>.rank` is read as a source, whatever kind of
 item it is: a feat, a class feature, a heritage, or an effect you build yourself and drop on the
-sheet. The rank you write is the rank the panel credits, so an effect granting expert adds two
-points to the budget and two to the spend, and the character's unspent increases do not move.
+sheet. The rank you write is the rank credited, so an effect granting expert adds two points to the
+budget and two to the spend, leaving unspent increases where they were.
 
-**Setting a rank by hand is not counted**, because there is nothing left to read: a rank edited
-directly on the sheet is indistinguishable from one the player bought. It is charged to the
-character's own points, so it eats unspent increases without saying so and only reads as over budget
-once those run out. Verified on a level 8 character with 2 unspent: granting trained by hand took it
-to 1 unspent, and granting master took it to 1 over. That silent case is the reason to grant an item
-rather than make an edit.
-
-The same holds for Lores, with one difference: see the Lore paragraph below, where becoming trained
-is free and only ranks above trained are counted.
-
-**Lore skills get their own line, and only their ranks above trained are counted.** Becoming trained
-in a Lore is free here, because nothing in the data says where a Lore came from. Adding a background
-creates no Lore item, so the Lore its own field promises is made by hand, and a background's Lore,
-one the GM hands out and one bought with a skill increase are the same item with the same flags. The
-rank is what separates them: several things hand out a trained Lore, and a skill increase is what
-raises one past trained, so each rank above trained is a point on the top line.
-
-That leaves two cases. A skill increase spent becoming trained in a **new** Lore is not counted, so
-it still shows as unspent. And **Additional Lore** raises its Lore at 3rd, 7th and 15th without a
-skill increase, which the system does not automate - the feat carries no rule elements, so those
-ranks are set by hand and read exactly like bought ones. A character with it reads over budget by up
-to 3.
-
-Rank caps apply to Lores on the same gates as everything else, since a cap is about level alone.
-
-Skill increases are had once per level, so the levels are unioned across classes rather than added.
-A Fighter/Rogue gets the Rogue's schedule, one every level from 2nd, not the Fighter's odd levels
-from 3rd.
-
-**Unspent increases are the line worth watching.** Nothing else on the sheet records that you owe
-yourself one, so they are easy to forget at level up. Being over budget is reported as a rank
-nothing accounts for rather than as an error, because a feat that grants a rank outright is the
-likelier cause than a mistake.
-
-If something on the character trains every skill, the free picks have nothing left to buy and the
-arithmetic stops meaning anything, so the panel says all sixteen are trained instead of showing a
-number.
-
-**Ranks above what your level allows are listed separately**, and that check is exact. Expert comes
-from the first level you gain a skill increase, master at 7th, legendary at 15th. Only the expert
-gate moves by class: Rogue and Investigator are the only classes whose increases start at 2nd, and
-their own entries defer to 7th and 15th unchanged.
+**Setting a rank by hand is not counted.** A rank edited directly on the sheet cannot be told from
+one the player bought, so it is charged to the character: it eats unspent increases without saying
+so, and only reads as over budget once those run out. Grant an item rather than make an edit.
 
 ## Which class is which
 
-The first class is the primary one. It decides three things and nothing else.
+The first class is the primary one. It decides three things and nothing else:
 
-**The name shown in the Class slot**, with the other classes following it in order.
-
-**The character's single key attribute.** This is narrower than it sounds, and it is not the boosts:
-every class's key attribute boost applies whoever is primary, so a Fighter/Wizard is boosted in
-Strength **and** Intelligence either way. Pathfinder 2e separately keeps one field for *the*
-character's key attribute, with no room in it for two answers, and that field takes the primary's.
-Little reads it, the Resolve Points maximum under the Stamina variant being one.
-
-**Which class DC the sheet shows as *the* class DC.** All of them are still rolled, and each uses
-its own class's key attribute rather than the primary's, so making the Wizard primary does not move
-the Fighter's class DC onto Intelligence.
+- **The name shown in the Class slot**, with the other classes following it in order.
+- **The character's single key attribute.** This is not the boosts: every class's key attribute
+  boost applies whoever is primary. Pathfinder 2e separately keeps one field for *the* character's
+  key attribute, with no room in it for two answers, and that field takes the primary's. Little
+  reads it, the Resolve Points maximum under the Stamina variant being one.
+- **Which class DC is flagged primary**, which is worth very little, as above.
 
 The published rule does not settle what to do when two classes disagree on a key attribute, so the
-choice is left explicit: **Make primary**, in the menu on any extra class cell, swaps that class
-with the current primary and leaves the other classes where they are.
+choice is left explicit: **Make primary**, in the menu on any extra class cell, swaps that class with
+the current primary and leaves the other classes where they are.
 
 ## Compatibility
 
 Verified against Foundry v14 and Pathfinder 2e 8.4.1 and 8.5.0. The manifest declares 8.4.1 as the
-minimum rather than a lower version nobody has run it on; Pathfinder 2e 8.4.1 itself requires
-Foundry 14.361, so there is no older combination to support.
+minimum rather than a lower version nobody has run it on; Pathfinder 2e 8.4.1 itself requires Foundry
+14.361, so there is no older combination to support.
 
 Pathfinder 2e deletes a character's existing class whenever a new one is added, and there is no
 setting to turn that off. This module gets two classes onto one sheet by holding on to the class the
@@ -328,12 +277,11 @@ future release changes that, the module notices and tells you: an error on scree
 log, and details in the console. Even so, **after any system update, add a second class to a test
 character and check the first one is still there.**
 
-If another module adds a general-purpose second ladder of class feat slots, it is suppressed for
-characters this module already gives per-class ladders to, so the sheet does not offer the same
-slots twice.
-
-The Free Archetype variant is unaffected and adds its own archetype ladder as usual, so a
-dual-class character running Free Archetype has three ladders.
+- If another module adds a general-purpose second ladder of class feat slots, it is suppressed for
+  characters this module already gives per-class ladders to, so the sheet does not offer the same
+  slots twice.
+- The Free Archetype variant is unaffected and adds its own archetype ladder as usual, so a
+  dual-class character running Free Archetype has three ladders.
 
 ## Status
 
