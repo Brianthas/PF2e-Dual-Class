@@ -71,8 +71,19 @@ The higher of the two classes' Hit Points per level, never the sum and never a m
 
 ### Class DCs
 
-Each class gets its own class DC at its own key attribute, and both can be rolled. One is marked
-primary: it is the one the sheet shows as *the* class DC, and it comes from the first class.
+Each class gets its own class DC at its own key attribute. They are listed together on the
+Proficiencies tab under **Class DCs**, one row each with its own number and rank, and every row can
+be rolled.
+
+One of them is marked primary, and it is the first class's. On the sheet that only decides order:
+the primary sits at the top of that list and the others below it. What it really decides is what
+happens off the sheet, when something asks for *the* character's class DC rather than for a
+particular class's. An inline DC in an item's description, a rule element, an effect: all of those
+read one value, and they get the primary's, not the highest. A Fighter/Sorcerer with a Fighter DC of
+20 and a Sorcerer DC of 21 hands out **20** while both stay visible and rollable on the sheet.
+
+That is the whole reason **Make primary** exists. If the character's abilities key off the Sorcerer,
+make the Sorcerer primary and everything asking for one class DC starts getting the Sorcerer's.
 
 ### Key attribute boosts
 
