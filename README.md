@@ -99,9 +99,13 @@ rule that makes 18 to 20 cost two boosts.
 
 The Attribute Boosts window gets a row per class, each wired to its own class item, because the
 system's single row writes every choice to the first class. The rows sit where the boosts are
-actually applied, after Background and before the free boosts. That ordering matters: a class boost
-lands before the free ones, so if it takes an attribute to +4 the free boosts that follow are worth
-a half step, the same as they would be for a single-class character.
+actually applied, after Background and before the free boosts.
+
+That ordering matters because Pathfinder 2e walks the boosts in that order and a boost landing on an
+attribute already at +4 is worth half a step rather than a whole one. Where the class boosts sit
+therefore changes what the free boosts after them are worth. The class boosts themselves never take
+an attribute past +4, since one that would is dropped rather than halved, as above; the half step
+can still reach a free boost the player puts on an attribute the class boosts already filled.
 
 ### Feat ladders
 
