@@ -194,15 +194,25 @@ number - trained 1, expert 2, master 3, legendary 4 - and every source is worth 
 it trains a new skill or raises one already trained. So the total is an identity at any level:
 
 ```text
-sum of your ranks = initially trained skills + skill increases so far
+sum of your ranks = everything that granted you one + skill increases so far
 ```
 
-Initially trained is the skills each class trains automatically, plus the **larger** of the classes'
-additional skill counts (never the sum), plus the Intelligence modifier, plus the background's, plus
-any trained by a heritage, ancestry feat or class feature. Those last ones are found by reading the
-rule that grants them, including the common case where the player chooses which skill - Skilled
-Human, the Natural Skill ancestry feat, a Rogue's racket - where the choice is resolved from the
-item's own answer rather than guessed at.
+**Every source is worth one point**, whatever it does with it. A class's automatic skill, a
+background's, a heritage's, a dedication's granted skill, and Skill Mastery's expert step all cost
+the same, and each shows up in the spend as one more rank somewhere. Counting sources rather than
+distinct skills is what makes a rank *increase* from a feat count at all.
+
+The build gives you the skills each class trains automatically, the **larger** of the classes'
+additional skill counts (never the sum) plus the Intelligence modifier as free picks, the
+background's, and anything granted by a heritage, ancestry feat, class feature or archetype feat.
+Those last ones are found by reading the rule that grants them, including the two shapes where the
+player chooses - the skill (Skilled Human, the Natural Skill ancestry feat) and the whole rule
+target (most dedications).
+
+Two sources training the same skill count twice, because the rules say the second one is not
+wasted: *"Each time after the first that you'd become trained in a given skill, you instead allocate
+the trained proficiency to any other skill of your choice."* You end up with two trained skills, so
+the budget holds two points. The breakdown lists the skill twice for the same reason.
 
 Skill increases are had once per level, so the levels are unioned across classes rather than added.
 A Fighter/Rogue gets the Rogue's schedule, one every level from 2nd, not the Fighter's odd levels

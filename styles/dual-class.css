@@ -36,5 +36,21 @@
   margin-top: 0.15em;
 }
 
+/* Two weights below the headline. A note is quieter than the numbers it follows; a warning takes
+   the header red, which is the colour this sheet already uses for something needing attention. */
+.pf2edc-skill-count .pf2edc-skill-note {
+  color: var(--color-text-subtle, #555);
+  font-weight: normal;
+}
+
+.pf2edc-skill-count .pf2edc-skill-warn {
+  color: var(--color-pf-primary, #5e0000);
+}
+
+/* The breakdown's counts carry the weight, so the skill names beside them stay quiet. */
+.pf2edc-skill-count-detail strong {
+  color: var(--color-text-primary, #222);
+}
+
 /* The second class cell fills the empty slot in the sheet's abcd grid. It is a copy of the Class
    cell, so it inherits the sheet's styling and needs nothing of its own. */

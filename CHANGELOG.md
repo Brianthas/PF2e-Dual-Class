@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.2
+
+- Fixed the skill panel calling a legitimate character over budget when a feat granted a skill.
+  Dedications are the common case: Rogue Dedication's rule names the skill through a placeholder
+  that stands for the whole path rather than for the skill inside it, and the scan only recognised
+  the latter. A dedication that trained a skill therefore raised what was spent without raising the
+  budget.
+- Fixed a rank *increase* from a feat not counting. Skill Mastery raises one skill from expert to
+  master and another from trained to expert, which is two points, but the panel counted distinct
+  skills rather than sources and so counted at most one, or none when the skills were already
+  listed. Every granting rule is now worth one point, the same as a skill increase.
+- Two sources training the same skill now count as two points rather than one, which is what the
+  rules say: "Each time after the first that you'd become trained in a given skill, you instead
+  allocate the trained proficiency to any other skill of your choice." The second grant is not
+  wasted, so the budget should not lose it.
+- The panel reads more plainly: counts in bold, one labelled figure per source, and the verdict on
+  the same line as the numbers.
+
 ## 0.4.1
 
 - The skill panel has its own setting, **Show the Skill Proficiencies Panel**, on by default, and no

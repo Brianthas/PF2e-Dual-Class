@@ -104,37 +104,61 @@ function countedClasses(actor) {
  */
 function grantedByRules(actor) {
   const core = CONFIG.PF2E.skills ?? {};
-  const granted = new Set();
+  const granted = [];
   const skillPath = /^system\.skills\.(.+)\.rank$/;
   // The flag can be nested - Clan Lore writes `rulesSelections.clan.skillOne` - so everything after
   // `rulesSelections.` is captured and walked rather than treated as a single key.
   const selectionFlag = /rulesSelections\.([A-Za-z0-9_.]+)\}?$/;
+  // A path that is nothing but a placeholder, which resolves to a whole path rather than a slug.
+  const wholePathFlag = /^\{item\|flags\.[A-Za-z0-9_.]*rulesSelections\.([A-Za-z0-9_.]+)\}$/;
+
+  /** Follow `a.b.c` through the item's own ChoiceSet answers. */
+  const resolveFlag = (item, dotted) => {
+    let value = item.flags?.pf2e?.rulesSelections;
+    for (const part of dotted.split(".")) value = value?.[part];
+    return typeof value === "string" ? value : null;
+  };
 
   for (const item of actor.items) {
     for (const rule of item.system?.rules ?? []) {
       if (rule.key !== "ActiveEffectLike" || typeof rule.path !== "string") continue;
-      const match = skillPath.exec(rule.path);
+
+      // Three shapes, and each of the first two alone would miss most of them.
+      //
+      //   system.skills.deception.rank                                  named outright
+      //   system.skills.{item|flags...rulesSelections.skill}.rank       skill chosen, path fixed
+      //   {item|flags...rulesSelections.rogueDedication}                whole path chosen
+      //
+      // The third is the one that hid: Rogue Dedication's rule is nothing but a placeholder, which
+      // resolves to a complete path like `system.skills.stealth.rank`. Matching on the path shape
+      // never saw it, so a dedication that trained a skill did not move the budget and a legitimate
+      // character read as over budget. Dedications are the common case for this, not an oddity.
+      let path = rule.path;
+      if (path.startsWith("{")) {
+        const flag = wholePathFlag.exec(path);
+        const resolved = flag ? resolveFlag(item, flag[1]) : null;
+        if (!resolved) continue;
+        path = resolved;
+      }
+
+      const match = skillPath.exec(path);
       if (!match) continue;
 
       let slug = match[1];
-
-      // Two shapes, and only checking for the first would miss most of them. A heritage like
-      // Kanchil names the skill outright. The ones that let the player choose - Skilled Human, the
-      // Natural Skill ancestry feat - write a placeholder resolved from the item's own ChoiceSet
-      // answer, `system.skills.{item|flags.system.rulesSelections.skill}.rank`. The answer itself is
-      // stored under the item's `pf2e` flags, so the flag name is taken from the placeholder and
-      // looked up there rather than the path being resolved by hand.
       if (slug.startsWith("{")) {
         const flag = selectionFlag.exec(slug);
-        let value = flag ? item.flags?.pf2e?.rulesSelections : null;
-        for (const part of flag?.[1].split(".") ?? []) value = value?.[part];
-        slug = typeof value === "string" ? value : null;
+        slug = flag ? resolveFlag(item, flag[1]) : null;
       }
 
       // An unanswered choice resolves to nothing, and the skill it would have trained is untrained
       // for the same reason, so skipping it keeps both sides of the count consistent.
       // Lore rules name a lore slug rather than a core skill, and lores are not counted here.
-      if (typeof slug === "string" && slug in core) granted.add(slug);
+      if (typeof slug !== "string" || !(slug in core)) continue;
+
+      // One record per rule, not per skill. A rule that raises a rank the character already has is
+      // worth a point exactly like one that trains a new skill: Skill Mastery's expert step costs
+      // the same as a heritage's "become trained", and counting distinct skills loses it entirely.
+      granted.push({ skill: slug, source: item.name, rank: Number(rule.value) || 1 });
     }
   }
   return granted;
@@ -147,25 +171,25 @@ function grantedByRules(actor) {
 export function tallyTrainedSkills(actor) {
   const classes = countedClasses(actor);
 
-  // Each class trains its own list, and they are unioned rather than added: a skill two classes both
-  // train is one trained skill, not two.
-  const automatic = new Set();
-  for (const classItem of classes) {
-    for (const skill of classItem.system.trainedSkills.value) automatic.add(skill);
-  }
+  // Counted per source, not per distinct skill. Two classes that both train Survival are two
+  // points, because the rules say so: "Each time after the first that you'd become trained in a
+  // given skill, you instead allocate the trained proficiency to any other skill of your choice."
+  // The second grant is not wasted, it becomes a free pick, so the budget still has two points in
+  // it. Unioning them lost one.
+  const automatic = classes.flatMap((c) => c.system.trainedSkills.value);
 
   // "Apply the larger number of additional skills" - the larger, never the sum.
   const additional = Math.max(...classes.map((c) => c.system.trainedSkills.additional), 0);
   const intMod = actor.system.abilities.int.mod;
   const free = Math.max(0, additional + intMod);
 
-  const background = new Set(actor.background?.system.trainedSkills.value ?? []);
+  const background = actor.background?.system.trainedSkills.value ?? [];
   const granted = grantedByRules(actor);
 
-  // A skill trained by more than one source is still one trained skill, so the fixed part of the
-  // expected total is the size of the union rather than the sum of the parts.
-  const named = new Set([...automatic, ...background, ...granted]);
-  const expected = named.size + free;
+  // Every source is one point, whatever it does with it. A class list, a background, a heritage's
+  // "become trained", a dedication's granted skill and Skill Mastery's expert step all cost the
+  // same, and all show up in the spend as one more rank somewhere.
+  const expected = automatic.length + background.length + granted.length + free;
 
   const coreSkills = Object.keys(CONFIG.PF2E.skills ?? {});
   const actual = coreSkills.filter((key) => (actor.system.skills[key]?.rank ?? 0) >= 1).length;
@@ -188,9 +212,13 @@ export function tallyTrainedSkills(actor) {
   const budget = expected + increases;
 
   return {
-    automatic: [...automatic],
-    background: [...background],
-    granted: [...granted],
+    // Listed per source, duplicates included, so the count beside the list always equals its
+    // length. Deduplicating read as a bug: a character whose Skill Mastery raised one skill twice
+    // showed "6 granted" above five names. A repeated name is the honest answer, and it is also the
+    // useful one, since each occurrence really is another point.
+    automatic,
+    background,
+    granted: granted.map((g) => g.skill),
     additional,
     intMod,
     free,
@@ -202,9 +230,28 @@ export function tallyTrainedSkills(actor) {
     unspent: budget - spent,
     caps: capViolations(actor, coreSkills, increaseLevels),
     coreCount: coreSkills.length,
-    everySkillGranted: coreSkills.length > 0 && coreSkills.every((key) => named.has(key)),
+    everySkillGranted: everythingCovered(coreSkills, automatic, background, granted),
     classes: classes.map((c) => c.name)
   };
+}
+
+/**
+ * Whether every skill in the game is already covered by the build.
+ *
+ * Something can train all sixteen - a homebrew feature doing it as one upgrade per skill is the case
+ * this was found on. There is then nothing for the free picks to buy, and counting produces a number
+ * wrong in a confusing way: the character looks permanently short by exactly those picks. Where
+ * everything is covered the panel says so instead of counting.
+ *
+ * Keyed on the outcome rather than on recognising any particular feature, so anything with that
+ * effect gets the same answer.
+ *
+ * @returns {boolean}
+ */
+function everythingCovered(coreSkills, automatic, background, granted) {
+  if (coreSkills.length === 0) return false;
+  const covered = new Set([...automatic, ...background, ...granted.map((g) => g.skill)]);
+  return coreSkills.every((key) => covered.has(key));
 }
 
 /**
@@ -277,73 +324,81 @@ function buildPanel(tally) {
     return wrapper;
   }
 
+  // The headline: two numbers and a verdict, readable without reading the breakdown under it.
   line.innerHTML = game.i18n.format("PF2EDC.Skills.Points", {
     spent: `<strong class="pf2edc-count">${tally.spent}</strong>`,
     budget: `<strong>${tally.budget}</strong>`
   });
-  wrapper.append(line);
-
-  // The line a player actually acts on. Unspent increases are invisible on the sheet otherwise:
-  // nothing marks a skill increase as owed, so they are simply forgotten at level-up.
-  if (tally.unspent !== 0) {
-    const balance = document.createElement("div");
-    balance.className = "pf2edc-skill-count-line";
-    balance.textContent = tally.unspent > 0
-      ? game.i18n.format("PF2EDC.Skills.Unspent", { count: tally.unspent })
-      : game.i18n.format("PF2EDC.Skills.Over", { count: -tally.unspent });
-    wrapper.append(balance);
+  if (tally.unspent > 0) {
+    line.innerHTML += ` <span class="pf2edc-skill-note">${game.i18n.format("PF2EDC.Skills.Unspent", {
+      count: `<strong>${tally.unspent}</strong>`
+    })}</span>`;
+  } else if (tally.unspent < 0) {
+    line.innerHTML += ` <span class="pf2edc-skill-warn">${game.i18n.format("PF2EDC.Skills.Over", {
+      count: `<strong>${-tally.unspent}</strong>`
+    })}</span>`;
   }
+  wrapper.append(line);
 
   if (tally.caps.length) {
     const caps = document.createElement("div");
-    caps.className = "pf2edc-skill-count-line";
-    caps.dataset.state = "wrong";
-    caps.textContent = game.i18n.format("PF2EDC.Skills.OverCap", {
+    caps.className = "pf2edc-skill-count-line pf2edc-skill-warn";
+    caps.innerHTML = game.i18n.format("PF2EDC.Skills.OverCap", {
       skills: tally.caps
-        .map((c) => `${skillLabel(c.skill)} (${rankLabel(c.rank)}, needs level ${c.needs})`)
+        .map((c) => `<strong>${escapeHtml(skillLabel(c.skill))}</strong> ${escapeHtml(rankLabel(c.rank))} `
+          + game.i18n.format("PF2EDC.Skills.NeedsLevel", { level: c.needs }))
         .join(", ")
     });
     wrapper.append(caps);
   }
 
+  // The breakdown, one labelled figure per source, so the headline can be audited without arithmetic.
   const parts = [];
   if (tally.automatic.length) {
-    // "Fighter train Stealth" is wrong with one class and right with three, so the verb follows the
-    // count rather than the panel assuming it is always looking at a multi-class character.
-    const key = tally.classes.length > 1 ? "PF2EDC.Skills.FromClasses" : "PF2EDC.Skills.FromClass";
-    parts.push(game.i18n.format(key, {
-      classes: tally.classes.join(" / "),
-      skills: tally.automatic.map(skillLabel).join(", ")
-    }));
+    parts.push(entry(tally.classes.join(" / "), tally.automatic));
   }
   if (tally.background.length) {
-    parts.push(game.i18n.format("PF2EDC.Skills.FromBackground", {
-      skills: tally.background.map(skillLabel).join(", ")
-    }));
+    parts.push(entry(game.i18n.localize("PF2EDC.Skills.Background"), tally.background));
   }
   if (tally.granted.length) {
-    parts.push(game.i18n.format("PF2EDC.Skills.Granted", {
-      skills: tally.granted.map(skillLabel).join(", ")
-    }));
+    parts.push(entry(game.i18n.localize("PF2EDC.Skills.GrantedLabel"), tally.granted));
   }
-  parts.push(game.i18n.format("PF2EDC.Skills.FreePicks", {
-    free: tally.free,
+  parts.push(`<strong>${tally.free}</strong> ${escapeHtml(game.i18n.format("PF2EDC.Skills.FreePicks", {
     additional: tally.additional,
     int: tally.intMod >= 0 ? `+${tally.intMod}` : String(tally.intMod)
-  }));
-  parts.push(game.i18n.format("PF2EDC.Skills.Increases", { count: tally.increases }));
+  }))}`);
+  parts.push(`<strong>${tally.increases}</strong> ${escapeHtml(game.i18n.localize("PF2EDC.Skills.Increases"))}`);
 
   const detail = document.createElement("div");
   detail.className = "pf2edc-skill-count-detail";
-  detail.textContent = parts.join(" · ");
+  detail.innerHTML = parts.join(" &middot; ");
   wrapper.append(detail);
 
   const note = document.createElement("div");
-  note.className = "pf2edc-skill-count-detail";
+  note.className = "pf2edc-skill-count-detail pf2edc-skill-note";
   note.textContent = game.i18n.localize("PF2EDC.Skills.HowCounted");
   wrapper.append(note);
 
   return wrapper;
+}
+
+/**
+ * "**2** Fighter: Acrobatics, Athletics" - the count in bold, then who gave them and which.
+ *
+ * One entry per source, so a skill granted twice appears twice and the count always equals the
+ * list's length. Two classes that both train Survival read as "2 Fighter / Ranger: Survival,
+ * Survival", which is right: the second grant is a second point, spent on a skill of the player's
+ * choosing.
+ */
+function entry(label, skills) {
+  return `<strong>${skills.length}</strong> ${escapeHtml(label)}: ${escapeHtml(skills.map(skillLabel).join(", "))}`;
+}
+
+/** Skill and class names come from content and go into innerHTML, so they are escaped. */
+function escapeHtml(text) {
+  const node = document.createElement("div");
+  node.textContent = String(text);
+  return node.innerHTML;
 }
 
 /** A proficiency rank as the sheet names it. */

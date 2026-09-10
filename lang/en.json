@@ -51,19 +51,18 @@
     },
     "Skills": {
       "Header": "Skill Proficiencies",
-      "Points": "{spent} spent of {budget}",
-      "Unspent": "{count} unspent - a skill increase you have not used yet",
-      "Over": "{count} over budget - check for a rank nothing accounts for",
+      "Points": "{spent} of {budget} points spent",
+      "Unspent": "· {count} unspent",
+      "Over": "· {count} over budget",
       "OverCap": "Too high for this level: {skills}",
-      "Increases": "{count} skill increases so far",
-      "FromClasses": "{classes} train {skills}",
-      "FromClass": "{classes} trains {skills}",
-      "FreePicks": "{free} free picks ({additional} + Int {int})",
-      "FromBackground": "background trains {skills}",
-      "Granted": "granted {skills}",
+      "NeedsLevel": "needs level {level}",
+      "Increases": "skill increases",
+      "FreePicks": "free picks ({additional} + Int {int})",
+      "Background": "background",
+      "GrantedLabel": "granted",
       "AllTrained": "{actual} of {total} skills trained - all of them",
       "AllTrainedWhy": "Something on this character trains every skill, so the class skill picks have nothing left to spend on and there is no count worth showing.",
-      "HowCounted": "Trained counts 1, expert 2, master 3, legendary 4. Each initially trained skill and each skill increase is worth one."
+      "HowCounted": "Trained 1 · Expert 2 · Master 3 · Legendary 4. Every trained skill and every skill increase is worth one point."
     },
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",
