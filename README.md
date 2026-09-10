@@ -154,10 +154,10 @@ more class, which is why it is off unless a GM turns it on.
 
 ### Ancestry Paragon
 
-**Enable Ancestry Paragon** is a separate world setting for the variant rule of the same name: an
-ancestry feat at 1st level and at every odd level after, eleven in total instead of five. It is
-independent of dual class and applies to every character with a class, single-classed or not, so a
-world can run either variant without the other.
+**Enable Ancestry Paragon** is a separate world setting for the variant rule of the same name: the
+character starts with **two** ancestry feats and gains another at every odd level after, eleven in
+total instead of five. It is independent of dual class and applies to every character with a class,
+single-classed or not, so a world can run either variant without the other.
 
 The extra slots go into the system's own **Ancestry Feats** group rather than a second ladder
 beside it, and the heading reads **Ancestry Feats (Paragon)** while the setting is on. If another
