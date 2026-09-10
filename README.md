@@ -214,13 +214,20 @@ wasted: *"Each time after the first that you'd become trained in a given skill, 
 the trained proficiency to any other skill of your choice."* You end up with two trained skills, so
 the budget holds two points. The breakdown lists the skill twice for the same reason.
 
-**Lore skills sit outside the count, on both sides.** A background keeps its Lore in a field of its
-own rather than with its trained skill, and a rule that grants one names a Lore slug, so no Lore ever
-reaches the budget; the spend adds up the sixteen core skills only. Where that shows is a skill
-increase spent on a Lore, which stays in the budget while the rank it bought is not counted, so the
-panel still reports it as unspent. Counting Lores instead would mean recognising every feat and
-background that grants one, and any that were missed would read as being over budget, which is the
-more misleading of the two answers.
+**Lore skills get their own line, and only their ranks above trained are counted.** Becoming trained
+in a Lore is free here, because nothing in the data says where a Lore came from. Adding a background
+creates no Lore item, so the Lore its own field promises is made by hand, and a background's Lore,
+one the GM hands out and one bought with a skill increase are the same item with the same flags. The
+rank is what separates them: several things hand out a trained Lore, and a skill increase is what
+raises one past trained, so each rank above trained is a point on the top line.
+
+Two cases that leaves. A skill increase spent becoming trained in a **new** Lore is not counted, so
+it still shows as unspent. And **Additional Lore** raises its Lore at 3rd, 7th and 15th without a
+skill increase, which the system does not automate - the feat carries no rule elements, so those
+ranks are set by hand and read exactly like bought ones. A character with it reads over budget by up
+to 3.
+
+Rank caps apply to Lores on the same gates as everything else, since a cap is about level alone.
 
 Skill increases are had once per level, so the levels are unioned across classes rather than added.
 A Fighter/Rogue gets the Rogue's schedule, one every level from 2nd, not the Fighter's odd levels

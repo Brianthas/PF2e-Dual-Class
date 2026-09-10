@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.3
+
+- **A skill increase spent on a Lore now counts.** Lores were outside the count entirely, so raising
+  one left the increase sitting in the budget and the panel reported a point as unspent that had been
+  spent. Ranks above trained are now points, the same as any other rank.
+- Lores are listed on their own line with how many of their points are counted, because they are
+  counted on a different rule to everything above them.
+- Becoming trained in a Lore is still free, and that is deliberate rather than an omission. Nothing
+  in the data says where a Lore came from: adding a background creates no Lore item, so the Lore it
+  promises is made by hand, and a background's Lore, one a GM hands out and one bought with an
+  increase are the same item with the same flags. The rank is the only thing that separates them.
+- Two cases this does not catch, both stated in the README rather than guessed at. An increase spent
+  becoming trained in a new Lore still reads as unspent. And Additional Lore raises its Lore at 3rd,
+  7th and 15th with no increase and no rule elements to read, so a character with it reads over
+  budget by up to 3.
+- Rank caps now cover Lores. A Lore above what the character's level allows is listed beside the core
+  skills, since a cap depends on level alone.
+
 ## 0.4.2
 
 - Fixed the skill panel calling a legitimate character over budget when a feat granted a skill.

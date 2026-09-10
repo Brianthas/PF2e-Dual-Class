@@ -165,6 +165,38 @@ function grantedByRules(actor) {
 }
 
 /**
+ * The character's Lore skills, and the ranks of them that cost a skill increase.
+ *
+ * Lores are counted apart from the sixteen core skills, and only above trained, because nothing in
+ * the data says where a Lore came from. Checked live: adding a background to a character creates no
+ * Lore item at all, so the Lore its `trainedSkills.lore` field promises is hand-made by the player,
+ * and a background's Lore, a Lore the GM hands out and a Lore bought with a skill increase are the
+ * same object with the same flags. There is nothing to tell them apart by.
+ *
+ * The rank is the one thing that does separate them. Becoming trained in a Lore is something several
+ * sources hand out for free, so it is not counted. Raising one past trained is, in practice, a skill
+ * increase, so each rank above trained is one point.
+ *
+ * Two known errors, both accepted rather than engineered around:
+ *
+ * - A skill increase spent becoming trained in a brand new Lore is not counted, so it reads as still
+ *   unspent. Same direction as the panel's other gaps, and quiet.
+ * - Additional Lore raises its Lore at 3rd, 7th and 15th without a skill increase, and PF2e does not
+ *   automate it: the feat carries no rule elements at all, and across the 6284 feats in the SRD pack
+ *   exactly one rule element touches a Lore path. Its ranks are hand-set and indistinguishable from
+ *   bought ones, so a character with it reads over budget by up to 3.
+ *
+ * @param {ActorPF2e} actor
+ * @returns {{slug: string, label: string, rank: number}[]}
+ */
+function loreSkills(actor) {
+  return Object.entries(actor.system.skills ?? {})
+    .filter(([, skill]) => skill?.lore)
+    .map(([slug, skill]) => ({ slug, label: skill.label ?? slug, rank: skill.rank ?? 0 }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
  * Work out the expected and actual trained skill counts.
  * @param {ActorPF2e} actor
  */
@@ -194,12 +226,16 @@ export function tallyTrainedSkills(actor) {
   const coreSkills = Object.keys(CONFIG.PF2E.skills ?? {});
   const actual = coreSkills.filter((key) => (actor.system.skills[key]?.rank ?? 0) >= 1).length;
 
+  const lores = loreSkills(actor);
+  // Only the ranks above trained. See `loreSkills` for why the trained step is free.
+  const loreSpent = lores.reduce((sum, lore) => sum + Math.max(0, lore.rank - 1), 0);
+
   // The points model. A rank is worth its own number - trained 1, expert 2, master 3, legendary 4 -
   // which is exactly PF2e's stored rank, so the total spent is the sum of the ranks. Every source
   // contributes one point: an initially trained skill is one, and a skill increase is one whether it
   // trains something new or raises something already trained. So the budget is a count of sources
   // and the spend is a sum of ranks, and the two are directly comparable at any level.
-  const spent = coreSkills.reduce((sum, key) => sum + (actor.system.skills[key]?.rank ?? 0), 0);
+  const spent = coreSkills.reduce((sum, key) => sum + (actor.system.skills[key]?.rank ?? 0), 0) + loreSpent;
 
   // Skill increases are on the once-per-level list, so two classes do not grant two at the same
   // level: the levels are unioned across classes, the same as the feat ladders. Rogue and
@@ -228,7 +264,9 @@ export function tallyTrainedSkills(actor) {
     increases,
     budget,
     unspent: budget - spent,
-    caps: capViolations(actor, coreSkills, increaseLevels),
+    lores,
+    loreSpent,
+    caps: capViolations(actor, coreSkills, increaseLevels, lores),
     coreCount: coreSkills.length,
     everySkillGranted: everythingCovered(coreSkills, automatic, background, granted),
     classes: classes.map((c) => c.name)
@@ -269,20 +307,30 @@ function everythingCovered(coreSkills, automatic, background, granted) {
  * Reported rather than blocked. A rank above the cap is usually a hand-built character rather than
  * a rules error, and something on the sheet may have granted it outright.
  *
+ * Lores are checked on the same gates. A Lore is a skill, so the level at which a skill increase can
+ * make one an expert is the level at which it can make any skill an expert, and a Lore at master on
+ * a 3rd-level character is as impossible as Athletics at master. The counting rules differ for Lores
+ * because their *source* is unknowable; their caps do not, because a cap is about level alone.
+ *
  * @param {ActorPF2e} actor
  * @param {string[]} coreSkills
  * @param {number[]} increaseLevels
- * @returns {{skill: string, rank: number, needs: number}[]}
+ * @param {{slug: string, label: string, rank: number}[]} lores
+ * @returns {{label: string, rank: number, needs: number}[]}
  */
-function capViolations(actor, coreSkills, increaseLevels) {
+function capViolations(actor, coreSkills, increaseLevels, lores) {
   const expertFrom = increaseLevels.length ? increaseLevels[0] : Infinity;
   const needed = { 2: expertFrom, 3: MASTER_LEVEL, 4: LEGENDARY_LEVEL };
 
+  const checked = [
+    ...coreSkills.map((key) => ({ label: skillLabel(key), rank: actor.system.skills[key]?.rank ?? 0 })),
+    ...lores.map((lore) => ({ label: lore.label, rank: lore.rank }))
+  ];
+
   const found = [];
-  for (const key of coreSkills) {
-    const rank = actor.system.skills[key]?.rank ?? 0;
+  for (const { label, rank } of checked) {
     const needs = needed[rank];
-    if (needs !== undefined && actor.level < needs) found.push({ skill: key, rank, needs });
+    if (needs !== undefined && actor.level < needs) found.push({ label, rank, needs });
   }
   return found;
 }
@@ -345,7 +393,7 @@ function buildPanel(tally) {
     caps.className = "pf2edc-skill-count-line pf2edc-skill-warn";
     caps.innerHTML = game.i18n.format("PF2EDC.Skills.OverCap", {
       skills: tally.caps
-        .map((c) => `<strong>${escapeHtml(skillLabel(c.skill))}</strong> ${escapeHtml(rankLabel(c.rank))} `
+        .map((c) => `<strong>${escapeHtml(c.label)}</strong> ${escapeHtml(rankLabel(c.rank))} `
           + game.i18n.format("PF2EDC.Skills.NeedsLevel", { level: c.needs }))
         .join(", ")
     });
@@ -373,6 +421,32 @@ function buildPanel(tally) {
   detail.className = "pf2edc-skill-count-detail";
   detail.innerHTML = parts.join(" &middot; ");
   wrapper.append(detail);
+
+  // Lores get their own line rather than joining the breakdown above, because they are counted on a
+  // different rule and putting them in the same list would imply they are not.
+  if (tally.lores.length) {
+    const lore = document.createElement("div");
+    lore.className = "pf2edc-skill-count-detail";
+    const listed = tally.lores
+      .map((l) => (l.rank > 1
+        ? `${escapeHtml(l.label)} (${escapeHtml(rankLabel(l.rank))})`
+        : escapeHtml(l.label)))
+      .join(", ");
+    const key = tally.lores.length === 1 ? "PF2EDC.Skills.LoreOne" : "PF2EDC.Skills.Lores";
+    lore.innerHTML = game.i18n.format(key, {
+      count: `<strong>${tally.lores.length}</strong>`,
+      list: listed
+    });
+    lore.innerHTML += ` &middot; ${game.i18n.format("PF2EDC.Skills.LoreCounted", {
+      count: `<strong>${tally.loreSpent}</strong>`
+    })}`;
+    wrapper.append(lore);
+
+    const why = document.createElement("div");
+    why.className = "pf2edc-skill-count-detail pf2edc-skill-note";
+    why.textContent = game.i18n.localize("PF2EDC.Skills.LoreNote");
+    wrapper.append(why);
+  }
 
   const note = document.createElement("div");
   note.className = "pf2edc-skill-count-detail pf2edc-skill-note";
