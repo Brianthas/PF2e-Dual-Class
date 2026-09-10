@@ -2,64 +2,45 @@
 
 ## 0.4.4
 
-- **A source is now worth the ranks it adds, not one point flat.** This was wrong on common
-  content. Skilled Human grants expert from 5th level in a single rule, the scaling dedications
-  grant master at 7th and legendary at 15th, and Skill Mastery's two rules grant expert and master.
-  Each was counted as one point while the rank it conferred was counted in full, so the character
-  was charged skill increases for ranks a feat had already given them. Surveyed the compendia to
-  size it: of the 479 rules that write a skill rank, 401 grant a single rank and 78 grant two, three
-  or four, thirteen of those through a level expression the panel now evaluates.
-- Two rules on one skill are no longer added together. They use `upgrade`, which means "at least
-  this rank", so the higher one subsumes the lower and the skill is paid for once. Where a skill has
-  several sources, the first pays for every rank it confers and each later one pays for the step it
-  adds, because those feats require the rank below and the character bought that rank with an
-  increase the budget already counts.
-- The test suite covers the new arithmetic. Each case is written so the model it replaced gives a
-  different answer, and two of them caught expectations that were wrong before the code was.
-- A second source training a skill the character already has still counts, and is now shown as
-  **redirected** rather than folded into the list, since the point is spent on a different skill.
-- The breakdown lists each granted skill with its own points, so the figures add up to the total in
-  front of them. It listed sources before, which cannot add up once one source grants two ranks.
+Released as 0.4.2, 0.4.3 and 0.4.4 on the same afternoon, collected here as one entry. It is a
+single change: the skill panel now counts what actually granted a rank, and the intermediate
+versions are steps toward that rather than separate features.
+
+- **A source is worth the ranks it adds, not one point flat.** Skilled Human confers expert from 5th
+  level in one rule, the scaling dedications confer master at 7th and legendary at 15th, and Skill
+  Mastery's two rules confer expert and master. Each counted as a single point while the ranks it
+  conferred counted in full, so a character was charged skill increases for ranks a feat had already
+  given them. Surveyed the compendia to size it: of the 479 rules writing a skill rank, 401 confer
+  one and 78 confer two, three or four, thirteen of those through a level expression the panel now
+  evaluates.
+- Where a skill has several sources, the first pays for every rank it confers and each later one
+  pays for the step it adds. These rules use `upgrade`, meaning "at least this rank", so two of them
+  on one skill are never added together; and the later ones carry a prerequisite of the rank below,
+  which the character reached with an increase the budget already counts.
+- **Skills granted through a placeholder are counted.** Most rules name the skill inside the path;
+  a dedication's names the whole path through a placeholder that resolves to one. Only the first
+  shape was recognised, so a dedication that trained a skill raised what was spent without raising
+  the budget and called a legitimate character over budget.
+- A second source training a skill the character already has counts as a second point, which is what
+  the rules say: "Each time after the first that you'd become trained in a given skill, you instead
+  allocate the trained proficiency to any other skill of your choice." It is shown as **redirected**,
+  since the point is spent on a different skill.
+- **A skill increase spent on a Lore counts.** Lores were outside the count, so raising one left the
+  increase in the budget and reported a spent point as unspent. Ranks above trained are now points.
+  Becoming trained in a Lore stays free, deliberately: adding a background creates no Lore item, so
+  the Lore it promises is made by hand, and a background's Lore, one a GM hands out and one bought
+  with an increase are the same item with the same flags. The rank is the only thing separating
+  them. Two cases that leaves are in the README - an increase spent training a new Lore, and
+  Additional Lore, which confers ranks at 3rd, 7th and 15th with no rule elements to read.
+- Rank caps cover Lores, since a cap depends on level alone.
 - **GM grants have a documented route.** A grant made as an item is counted, whatever type of item
   it is, and the rank written is the rank credited. A rank set by hand on the sheet cannot be told
   from one the player bought, so it is charged to the character: it eats unspent increases quietly
   and only reads as over budget once they run out. The README says which to use.
-
-## 0.4.3
-
-- **A skill increase spent on a Lore now counts.** Lores were outside the count entirely, so raising
-  one left the increase sitting in the budget and the panel reported a point as unspent that had been
-  spent. Ranks above trained are now points, the same as any other rank.
-- Lores are listed on their own line with how many of their points are counted, because they are
-  counted on a different rule to everything above them.
-- Becoming trained in a Lore is still free, and that is deliberate rather than an omission. Nothing
-  in the data says where a Lore came from: adding a background creates no Lore item, so the Lore it
-  promises is made by hand, and a background's Lore, one a GM hands out and one bought with an
-  increase are the same item with the same flags. The rank is the only thing that separates them.
-- Two cases this does not catch, both stated in the README rather than guessed at. An increase spent
-  becoming trained in a new Lore still reads as unspent. And Additional Lore raises its Lore at 3rd,
-  7th and 15th with no increase and no rule elements to read, so a character with it reads over
-  budget by up to 3.
-- Rank caps now cover Lores. A Lore above what the character's level allows is listed beside the core
-  skills, since a cap depends on level alone.
-
-## 0.4.2
-
-- Fixed the skill panel calling a legitimate character over budget when a feat granted a skill.
-  Dedications are the common case: Rogue Dedication's rule names the skill through a placeholder
-  that stands for the whole path rather than for the skill inside it, and the scan only recognised
-  the latter. A dedication that trained a skill therefore raised what was spent without raising the
-  budget.
-- Fixed a rank *increase* from a feat not counting. Skill Mastery raises one skill from expert to
-  master and another from trained to expert, which is two points, but the panel counted distinct
-  skills rather than sources and so counted at most one, or none when the skills were already
-  listed. Every granting rule is now worth one point, the same as a skill increase.
-- Two sources training the same skill now count as two points rather than one, which is what the
-  rules say: "Each time after the first that you'd become trained in a given skill, you instead
-  allocate the trained proficiency to any other skill of your choice." The second grant is not
-  wasted, so the budget should not lose it.
-- The panel reads more plainly: counts in bold, one labelled figure per source, and the verdict on
-  the same line as the numbers.
+- The panel reads more plainly, and the breakdown lists each granted skill with its own points so
+  the figures add up to the total in front of them.
+- Tests cover the arithmetic. Each case is written so the model it replaced gives a different
+  answer, and two of them caught expectations that were wrong before the code was.
 
 ## 0.4.1
 
