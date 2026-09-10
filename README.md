@@ -214,6 +214,14 @@ wasted: *"Each time after the first that you'd become trained in a given skill, 
 the trained proficiency to any other skill of your choice."* You end up with two trained skills, so
 the budget holds two points. The breakdown lists the skill twice for the same reason.
 
+**Lore skills sit outside the count, on both sides.** A background keeps its Lore in a field of its
+own rather than with its trained skill, and a rule that grants one names a Lore slug, so no Lore ever
+reaches the budget; the spend adds up the sixteen core skills only. Where that shows is a skill
+increase spent on a Lore, which stays in the budget while the rank it bought is not counted, so the
+panel still reports it as unspent. Counting Lores instead would mean recognising every feat and
+background that grants one, and any that were missed would read as being over budget, which is the
+more misleading of the two answers.
+
 Skill increases are had once per level, so the levels are unioned across classes rather than added.
 A Fighter/Rogue gets the Rogue's schedule, one every level from 2nd, not the Fighter's odd levels
 from 3rd.
@@ -222,6 +230,10 @@ from 3rd.
 yourself one, so they are easy to forget at level up. Being over budget is reported as a rank
 nothing accounts for rather than as an error, because a feat that grants a rank outright is the
 likelier cause than a mistake.
+
+If something on the character trains every skill, the free picks have nothing left to buy and the
+arithmetic stops meaning anything, so the panel says all sixteen are trained instead of showing a
+number.
 
 **Ranks above what your level allows are listed separately**, and that check is exact. Expert comes
 from the first level you gain a skill increase, master at 7th, legendary at 15th. Only the expert
