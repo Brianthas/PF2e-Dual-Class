@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- **Natural Ambition now offers every class's feats, not just the first one's.** Its picker narrows
+  the compendium with `item:trait:{actor|system.details.class.trait}`, and that path holds a single
+  trait, so a Fighter/Sorcerer was shown Fighter feats and nothing else. The filter is widened at
+  query time to accept any of the character's class traits. Measured on a level 8 Fighter/Sorcerer:
+  10 choices before, 18 after, split 10 Fighter and 8 Sorcerer.
+- Nothing is written to do it. The widened filter is handed to the query and discarded, so the feat
+  keeps the rules it shipped with and turning the module off changes nothing.
+- The published rule says "a 1st-level class feat" without contemplating two classes, so treating
+  that as either class is a ruling rather than a correction. It follows what the module does
+  everywhere else.
+
 ## 0.4.4
 
 Released as 0.4.2, 0.4.3 and 0.4.4 on the same afternoon, collected here as one entry. It is a

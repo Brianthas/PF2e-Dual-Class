@@ -9,6 +9,7 @@ import { registerSheet, removeSecondClass } from "./sheet.mjs";
 import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
 import { registerMismatchWarning } from "./mismatch.mjs";
 import { registerLevelGate } from "./level-gate.mjs";
+import { registerClassChoices } from "./class-choices.mjs";
 
 /**
  * Registration timing.
@@ -43,7 +44,8 @@ Hooks.once("init", () => {
   const patched = {
     coexistence: registerCoexistence(),
     merge: registerMerge(),
-    ladders: registerLadders()
+    ladders: registerLadders(),
+    classChoices: registerClassChoices()
   };
   registerBoostRows();
   registerSheet();

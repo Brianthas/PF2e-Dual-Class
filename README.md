@@ -112,6 +112,11 @@ why a 1st-level Fighter/Sorcerer sees only one.
 - **The ladders label slots, they do not police them.** The system checks a feat's category, not its
   class, so any class feat drops into either ladder. A mismatch warns and lets it through. Archetype
   and dedication feats belong in both and are never flagged.
+- **A feat that grants "a class feat" offers all of your classes.** Natural Ambition and anything
+  written like it narrow the picker to one class trait, which is the primary's. With this module on,
+  the picker accepts any of the character's classes, so a Fighter/Sorcerer sees both lists. The
+  published rule does not contemplate two classes, so this is a ruling, and it matches the rest of
+  the module: both classes are real.
 
 ### A third class
 
