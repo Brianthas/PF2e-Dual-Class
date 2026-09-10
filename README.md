@@ -212,11 +212,8 @@ Proficiencies Panel** controls it, on by default, and it does not need Dual Clas
 single-class character forgets an unspent skill increase just as easily, and the rank caps apply to
 everyone. Install the module, leave Dual Class off, and this is all you get. A rank is worth its own
 number - trained 1, expert 2, master 3, legendary 4 - so what a character holds is the sum of their
-ranks, and what they are owed is:
-
-```text
-the ranks everything granted you + your free picks + your skill increases
-```
+ranks. What they are owed is the ranks everything granted them, plus their free picks, plus their
+skill increases.
 
 **A source is worth the ranks it adds**, not one point flat. Most add one, but Skilled Human confers
 expert from 5th level in a single rule, the scaling dedications (Acrobat, Fan Dancer, Twilight
@@ -238,9 +235,10 @@ add up to the total in front of them.
 The build gives you the skills each class trains automatically, the **larger** of the classes'
 additional skill counts (never the sum) plus the Intelligence modifier as free picks, the
 background's, and anything granted by a heritage, ancestry feat, class feature or archetype feat.
-Those last ones are found by reading the rule that grants them, including the two shapes where the
-player chooses - the skill (Skilled Human, the Natural Skill ancestry feat) and the whole rule
-target (most dedications).
+Those last ones are found by reading the rule that grants them, including the ones the player has to
+answer. Some leave the skill blank and let you pick it, like Skilled Human or the Natural Skill
+ancestry feat. Most dedications go further and leave the whole target blank. Either way the panel
+reads the answer you gave rather than guessing.
 
 Two sources training the same skill still count twice, because the rules say the second one is not
 wasted: *"Each time after the first that you'd become trained in a given skill, you instead allocate
@@ -259,8 +257,8 @@ points to the budget and two to the spend, and the character's unspent increases
 directly on the sheet is indistinguishable from one the player bought. It is charged to the
 character's own points, so it eats unspent increases without saying so and only reads as over budget
 once those run out. Verified on a level 8 character with 2 unspent: granting trained by hand took it
-to 1 unspent, and granting master took it to 1 over. That silent case is the reason to make a grant
-an item rather than an edit.
+to 1 unspent, and granting master took it to 1 over. That silent case is the reason to grant an item
+rather than make an edit.
 
 The same holds for Lores, with one difference: see the Lore paragraph below, where becoming trained
 is free and only ranks above trained are counted.
@@ -272,7 +270,7 @@ one the GM hands out and one bought with a skill increase are the same item with
 rank is what separates them: several things hand out a trained Lore, and a skill increase is what
 raises one past trained, so each rank above trained is a point on the top line.
 
-Two cases that leaves. A skill increase spent becoming trained in a **new** Lore is not counted, so
+That leaves two cases. A skill increase spent becoming trained in a **new** Lore is not counted, so
 it still shows as unspent. And **Additional Lore** raises its Lore at 3rd, 7th and 15th without a
 skill increase, which the system does not automate - the feat carries no rule elements, so those
 ranks are set by hand and read exactly like bought ones. A character with it reads over budget by up
