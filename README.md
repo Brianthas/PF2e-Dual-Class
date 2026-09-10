@@ -46,8 +46,8 @@ allowed a third class needs three; another character in the same world still nee
 [Levelling past 1st](#levelling-past-1st) for what a GM can do instead, and for why characters
 already above 1st level are left alone.
 
-The character sheet then shows **Class** and **Second Class**, and the Attribute Boosts window shows
-a key attribute row for each.
+The character sheet then shows **Class** and **Second Class**, plus **Third Class** where one is
+allowed, and the Attribute Boosts window shows a key attribute row for each.
 
 ## What it does
 
@@ -163,9 +163,9 @@ the system already enforces.
 ### Class features
 
 Both classes grant their features, at each class's own levels, and both are removed again if the
-character's level drops. **Sync Class Features**, in the Second Class slot's menu, re-checks and
-grants anything missing; it is safe to run at any time and does nothing when there is nothing to
-add. Use it after giving a second class to a character that is already past level 1.
+character's level drops. **Sync Class Features**, in the menu on any extra class cell, re-checks that
+class and grants anything missing; it is safe to run at any time and does nothing when there is
+nothing to add. Use it after giving a class to a character that is already past level 1.
 
 ### Levelling past 1st
 
@@ -279,10 +279,23 @@ their own entries defer to 7th and 15th unchanged.
 
 ## Which class is which
 
-The first class is the primary one. It sets the character's single key attribute, the class DC the
-sheet treats as *the* one, and the name shown in the Class slot. The published rule does not settle
-what to do when two classes disagree on a key attribute, so the choice is left explicit: **Make
-primary** in the Second Class menu swaps them.
+The first class is the primary one. It decides three things and nothing else.
+
+**The name shown in the Class slot**, with the other classes following it in order.
+
+**The character's single key attribute.** This is narrower than it sounds, and it is not the boosts:
+every class's key attribute boost applies whoever is primary, so a Fighter/Wizard is boosted in
+Strength **and** Intelligence either way. Pathfinder 2e separately keeps one field for *the*
+character's key attribute, with no room in it for two answers, and that field takes the primary's.
+Little reads it, the Resolve Points maximum under the Stamina variant being one.
+
+**Which class DC the sheet shows as *the* class DC.** All of them are still rolled, and each uses
+its own class's key attribute rather than the primary's, so making the Wizard primary does not move
+the Fighter's class DC onto Intelligence.
+
+The published rule does not settle what to do when two classes disagree on a key attribute, so the
+choice is left explicit: **Make primary**, in the menu on any extra class cell, swaps that class
+with the current primary and leaves the other classes where they are.
 
 ## Compatibility
 
