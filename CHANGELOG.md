@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.5
 
 - **Natural Ambition now offers every class's feats, not just the first one's.** Its picker narrows
   the compendium with `item:trait:{actor|system.details.class.trait}`, and that path holds a single
