@@ -2,7 +2,7 @@
   "id": "pf2e-dual-class-items",
   "title": "Dual Class Items (PF2e)",
   "description": "Runs the Dual-Class Characters variant rule on two real class items instead of a merged one: both classes' proficiencies at the higher rank, the better Hit Points, both class DCs, both key attribute boosts, and a separate feat ladder for each class. Ancestry Paragon is included as a setting of its own, for worlds running that variant with or without dual class.",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
