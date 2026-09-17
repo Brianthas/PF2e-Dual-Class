@@ -287,6 +287,18 @@ character and check the first one is still there.**
   slots twice.
 - The Free Archetype variant is unaffected and adds its own archetype ladder as usual, so a
   dual-class character running Free Archetype has three ladders.
+- **PF2e Leveler** plans and levels a dual-class character on the same model, two class items,
+  once its own **Enable Dual Class Support** setting is on. Two things bridge the gap. Its character
+  wizard creates both classes in one write, which the system's purge leaves alone and this module
+  never saw; classes created together are now recorded as dual class as they arrive, with the one
+  the system makes the character's class (the last in the write) as the first class. And it files
+  the second class's feats into a campaign feat section named `xdy_dualclass`, `dualclass` or
+  `dual_class`, which the world has to have (PF2e's Campaign Feat Sections setting); a feat placed
+  there moves into this module's ladder for the second class when that ladder has a slot at the
+  level, and otherwise shows under Bonus Feats, as any feat in that section already did (the
+  bullet above). Use this module's Ancestry Paragon, not Leveler's. Not bridged: on every level-up Leveler
+  asks the second class for its features again without checking whether any are owed, so a class
+  with a choice at that level prompts for it a second time and discards the answer.
 
 ## Status
 

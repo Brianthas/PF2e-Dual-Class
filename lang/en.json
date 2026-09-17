@@ -70,7 +70,11 @@
     },
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",
-      "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. This module only handles two."
+      "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. This module only handles two.",
+      "AdoptedBatch": "{actor} was created with several classes: {primary} is the first class and {classes} recorded as extra."
+    },
+    "PlannerSlots": {
+      "Refiled": "{feat} moved to the {class} class feat slot for level {level}."
     },
     "LevelGate": {
       "Missing": "{actor} has {have} of {need} classes ({classes}).",

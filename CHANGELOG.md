@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- **A character created with both classes in one write is recognised.** A builder such as PF2e
+  Leveler creates both class items in a single call. The system's purge only removes classes the
+  character already holds, so both survived and this module never saw them: no flag, so no Hit
+  Point rule, no proficiency merge, no ladders, and no sign on the sheet. Classes that arrive
+  together are now recorded as they arrive, with the one the system made the character's class
+  (the last in the write) as the first class. Measured on a Monk and Guardian created that way:
+  flag written, class Hit Points 12.
+- **Second-class feats a planner files into a generic dual-class section move into that class's
+  ladder.** PF2e Leveler writes them to `xdy_dualclass-<level>` (or `dualclass-`, `dual_class-`)
+  when the world has such a section. A feat arriving there moves to `dc-class-<slug>-<level>` if
+  the second class has a class feat slot at that level. Otherwise it keeps the planner's id, and
+  the sheet shows it under Bonus Feats as before, since the generic section is already removed
+  from a dual-class character's sheet. Measured on a Monk second class: levels 1 and 2 moved,
+  level 3 kept its id.
+
 ## 0.4.5
 
 - **Natural Ambition now offers every class's feats, not just the first one's.** Its picker narrows

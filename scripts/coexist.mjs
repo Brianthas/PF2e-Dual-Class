@@ -157,7 +157,11 @@ export function registerCoexistence() {
       }
 
       const existing = actor.itemTypes.class.map((c) => c.id);
-      if (existing.length === 0) return wrapped(data, operation);
+      if (existing.length === 0) {
+        const created = await wrapped(data, operation);
+        await adoptBatchClasses(actor, created);
+        return created;
+      }
 
       // A class dropped straight onto the sheet, rather than added through the Second Class control,
       // arms nothing - and the system's purge then replaces the class the character already has,
@@ -249,6 +253,38 @@ async function flagNewClassAsSecondary(actor, created) {
   // `getExtraClassIds` reads the old one, and this writes the new one on the next class change.
   const ids = [...getExtraClassIds(actor).filter((id) => id !== newClass.id), newClass.id];
   await actor.setFlag(MODULE_ID, EXTRA_CLASSES_FLAG, ids);
+}
+
+/**
+ * Record the extras when several classes arrive in one create on a character that had none.
+ *
+ * A character builder can create both classes in a single `createEmbeddedDocuments` call. The
+ * purge only deletes classes the actor already holds, so on a fresh character both survive with no
+ * help from the bypass above, and this module never heard about them: the character then has two
+ * class items and no flag, every rule here stays off for it, and the sheet gives no sign. Measured
+ * 2026-09-16 on 8.5.0 with a Wizard and a Fighter created in one batch: both present, flag absent.
+ *
+ * The primary is whichever class PF2e itself made `actor.class` after the create (the last class in
+ * the batch, same measurement), and the rest become extras in batch order. Taking the system's own
+ * pick keeps `getPrimaryClass` and the system's `_preUpdate` grant naming the same item.
+ *
+ * @param {ActorPF2e} actor
+ * @param {ItemPF2e[]} created
+ */
+async function adoptBatchClasses(actor, created) {
+  const classes = (created ?? []).filter((i) => i?.type === "class");
+  if (classes.length < 2) return;
+
+  const primary = actor.class;
+  const extras = classes.filter((c) => c.id !== primary?.id);
+  if (extras.length === 0) return;
+
+  await actor.setFlag(MODULE_ID, EXTRA_CLASSES_FLAG, extras.map((c) => c.id));
+  notifyDualClass("info", game.i18n.format("PF2EDC.Coexist.AdoptedBatch", {
+    actor: actor.name,
+    primary: primary?.name ?? "",
+    classes: extras.map((c) => c.name).join(", ")
+  }));
 }
 
 /**

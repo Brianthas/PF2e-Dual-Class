@@ -10,6 +10,7 @@ import { registerSkillCounter, tallyTrainedSkills } from "./skills.mjs";
 import { registerMismatchWarning } from "./mismatch.mjs";
 import { registerLevelGate } from "./level-gate.mjs";
 import { registerClassChoices } from "./class-choices.mjs";
+import { registerPlannerSlots } from "./planner-slots.mjs";
 
 /**
  * Registration timing.
@@ -52,6 +53,7 @@ Hooks.once("init", () => {
   registerSkillCounter();
   registerMismatchWarning();
   registerLevelGate();
+  registerPlannerSlots();
 
   const failed = Object.entries(patched).filter(([, ok]) => !ok).map(([name]) => name);
   if (failed.length) console.error(`${MODULE_ID} | init: failed to patch ${failed.join(", ")}`);
