@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.4.6
+
+Verified through PF2e Leveler's own character wizard and level planner on 2026-09-17: a Human
+Guardian/Monk built in the wizard came out with both classes recorded, class Hit Points 12, the
+Monk's key boost applied, and its level 1 Monk feat in the Monk ladder; a planned level 2 applied
+from the sheet's level field put the Monk feat at `dc-class-monk-2` with no extra prompts.
 
 - **A character created with both classes in one write is recognised.** A builder such as PF2e
   Leveler creates both class items in a single call. The system's purge only removes classes the

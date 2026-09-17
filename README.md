@@ -296,9 +296,10 @@ character and check the first one is still there.**
   `dual_class`, which the world has to have (PF2e's Campaign Feat Sections setting); a feat placed
   there moves into this module's ladder for the second class when that ladder has a slot at the
   level, and otherwise shows under Bonus Feats, as any feat in that section already did (the
-  bullet above). Use this module's Ancestry Paragon, not Leveler's. Not bridged: on every level-up Leveler
-  asks the second class for its features again without checking whether any are owed, so a class
-  with a choice at that level prompts for it a second time and discards the answer.
+  bullet above). Use this module's Ancestry Paragon, not Leveler's. Not bridged: on every level-up
+  Leveler asks the second class for its features again without checking whether any are owed, so
+  a class with a choice at that level prompts for it a second time and discards the answer. A fix
+  is proposed upstream as pf2e-leveler pull request 107.
 
 ## Status
 
