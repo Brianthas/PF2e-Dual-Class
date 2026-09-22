@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.7
+
+Verified on Foundry 14.368 with PF2e 8.5.1: Fighter then Monk added to a classless level 1
+character through the system's own item creation, both class items present in `_source` afterwards
+with features from both, the higher rank kept for every proficiency, two class DCs and the Monk's own
+feat ladder. No code change; the manifest records the version.
+
 ## 0.4.6
 
 Verified through PF2e Leveler's own character wizard and level planner on 2026-09-17: a Human
