@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- A feat section marked `additive: true` is never stood down. The check that removes another
+  package's generic class or Ancestry Paragon section matches on the categories a section accepts,
+  so it would also remove a section granting extra feats on top of every ladder, such as a feature
+  that grants extra class feats to a dual-class character, whenever that package's wrapper runs
+  outside this one's. With the two packages it was written for, this one's runs outside and
+  nothing was lost; the mark keeps it that way if the order changes.
+
 ## 0.4.7
 
 Verified on Foundry 14.368 with PF2e 8.5.1: Fighter then Monk added to a classless level 1

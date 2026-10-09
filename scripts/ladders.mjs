@@ -199,6 +199,12 @@ function removeGenericClassSections(sections) {
  * group off the sheet for the whole prepare with nothing logged anywhere. Only stand down a category
  * this module is itself supplying the slots for, and check what else is using it first.
  *
+ * A section marked `additive: true` is never removed. The mark means its slots come on top of every
+ * other ladder, from a feature that grants extra feats of that category, so it cannot be a duplicate
+ * of the slots this module supplies. Such a section only reaches this check when its package's
+ * wrapper runs outside this one; with the package it was added for, this wrapper runs outside and
+ * removes nothing of it, so the mark keeps the result independent of wrapper order.
+ *
  * @param {object[]} sections The live world-global section array.
  * @param {string[]} supported The exact category list to match.
  * @returns {object[]} The removed sections, for the caller to restore.
@@ -206,6 +212,7 @@ function removeGenericClassSections(sections) {
 function removeSectionsFor(sections, supported) {
   const removed = [];
   for (let i = sections.length - 1; i >= 0; i -= 1) {
+    if (sections[i]?.additive === true) continue;
     const s = sections[i]?.supported;
     if (Array.isArray(s) && s.length === supported.length && s.every((v) => supported.includes(v))) {
       removed.push(...sections.splice(i, 1));
