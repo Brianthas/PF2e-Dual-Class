@@ -284,7 +284,8 @@ character and check the first one is still there.**
 
 - If another module adds a general-purpose second ladder of class feat slots, it is suppressed for
   characters this module already gives per-class ladders to, so the sheet does not offer the same
-  slots twice.
+  slots twice. A section marked `additive: true` grants slots on top of every ladder and is left
+  alone.
 - The Free Archetype variant is unaffected and adds its own archetype ladder as usual, so a
   dual-class character running Free Archetype has three ladders.
 - **PF2e Leveler** plans and levels a dual-class character on the same model, two class items,

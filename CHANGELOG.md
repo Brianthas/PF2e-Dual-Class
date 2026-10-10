@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.8
 
 - A feat section marked `additive: true` is never stood down. The check that removes another
   package's generic class or Ancestry Paragon section matches on the categories a section accepts,
