@@ -51,6 +51,34 @@ const PANEL_CLASS = "pf2edc-skill-count";
 const MASTER_LEVEL = 7;
 const LEGENDARY_LEVEL = 15;
 
+/**
+ * Feats and class features that grant skill increases of their own, by slug, with the levels each
+ * increase arrives at.
+ *
+ * None of these carries a rule element for it, so there is nothing on the item to read and the
+ * levels are written here from Archives of Nethys. Found by searching the description of every feat
+ * and class feature in the compendia for an additional skill increase; these four are every hit in
+ * the system's packs.
+ *
+ * - Additional Lore (Player Core): "At 3rd, 7th, and 15th levels, you gain an additional skill
+ *   increase you can apply only to the chosen Lore subcategory." Selectable more than once, and each
+ *   copy gains its own.
+ * - Stylish Tricks (Player Core 2, Swashbuckler 3rd): "At 3rd level, 7th level, and 15th level, you
+ *   gain an additional skill increase you can apply only to Acrobatics or the skill from your
+ *   swashbuckler's style."
+ * - Thaumaturgic Expertise (Thaumaturge 9th) and Thaumaturgic Mastery (17th): "You also gain an
+ *   additional skill increase, which you can apply only to Arcana, Nature, Occultism, or Religion."
+ *
+ * The restriction on where each increase goes is not checked. The budget rises by one per increase,
+ * and the panel names the source so the player can see what it is for.
+ */
+const EXTRA_INCREASES = {
+  "additional-lore": [3, 7, 15],
+  "stylish-tricks": [3, 7, 15],
+  "thaumaturgic-expertise": [9],
+  "thaumaturgic-mastery": [17]
+};
+
 export function registerSkillCounter() {
   Hooks.on("renderActorSheetPF2e", onRender);
   Hooks.on("renderCharacterSheetPF2e", onRender);
@@ -252,14 +280,13 @@ export function foldGrants(grants) {
  * sources hand out for free, so it is not counted. Raising one past trained is, in practice, a skill
  * increase, so each rank above trained is one point.
  *
- * Two known errors, both accepted rather than engineered around:
+ * One known error, accepted rather than engineered around: a skill increase spent becoming trained
+ * in a brand new Lore is not counted, so it reads as still unspent. Same direction as the panel's
+ * other gaps, and quiet.
  *
- * - A skill increase spent becoming trained in a brand new Lore is not counted, so it reads as still
- *   unspent. Same direction as the panel's other gaps, and quiet.
- * - Additional Lore raises its Lore at 3rd, 7th and 15th without a skill increase, and PF2e does not
- *   automate it: the feat carries no rule elements at all, and across the 6284 feats in the SRD pack
- *   exactly one rule element touches a Lore path. Its ranks are hand-set and indistinguishable from
- *   bought ones, so a character with it reads over budget by up to 3.
+ * Additional Lore's ranks are hand-set and indistinguishable from bought ones, so they are counted
+ * here like any other, and the increases that pay for them are added to the budget by
+ * `extraIncreases`.
  *
  * @param {ActorPF2e} actor
  * @returns {{slug: string, label: string, rank: number}[]}
@@ -269,6 +296,29 @@ function loreSkills(actor) {
     .filter(([, skill]) => skill?.lore)
     .map(([slug, skill]) => ({ slug, label: skill.label ?? slug, rank: skill.rank ?? 0 }))
     .sort((a, b) => a.label.localeCompare(b.label));
+}
+
+/**
+ * The skill increases granted by feats and class features in `EXTRA_INCREASES`, at or below the
+ * character's level.
+ *
+ * Counted per item, so two copies of Additional Lore are two sets of increases. Matched on slug,
+ * falling back to the name the way PF2e's own code does, so a hand-made copy without a slug still
+ * counts.
+ *
+ * @param {ActorPF2e} actor
+ * @returns {{source: string, count: number}[]}
+ */
+function extraIncreases(actor) {
+  const found = [];
+  for (const item of actor.itemTypes.feat) {
+    const slug = item.slug ?? game.pf2e.system.sluggify(item.name);
+    const levels = EXTRA_INCREASES[slug];
+    if (!levels) continue;
+    const count = levels.filter((level) => level <= actor.level).length;
+    if (count > 0) found.push({ source: item.name, count });
+  }
+  return found;
 }
 
 /**
@@ -324,7 +374,11 @@ export function tallyTrainedSkills(actor) {
     .sort((a, b) => a - b);
   const increases = increaseLevels.filter((level) => level <= actor.level).length;
 
-  const budget = expected + increases;
+  // Not on the once-per-level list: these come from a feat or feature, on top of the class's own.
+  const extras = extraIncreases(actor);
+  const extraCount = extras.reduce((sum, e) => sum + e.count, 0);
+
+  const budget = expected + increases + extraCount;
 
   return {
     // Listed per skill with the points it was granted, so the figures visibly add up to the bold
@@ -344,6 +398,8 @@ export function tallyTrainedSkills(actor) {
     actual,
     spent,
     increases,
+    extras,
+    extraCount,
     budget,
     unspent: budget - spent,
     lores,
@@ -502,6 +558,11 @@ function buildPanel(tally) {
     int: tally.intMod >= 0 ? `+${tally.intMod}` : String(tally.intMod)
   }))}`);
   parts.push(`<strong>${tally.increases}</strong> ${escapeHtml(game.i18n.localize("PF2EDC.Skills.Increases"))}`);
+  if (tally.extraCount) {
+    const listed = tally.extras.map((e) => `${escapeHtml(e.source)} ${e.count}`).join(", ");
+    parts.push(`<strong>${tally.extraCount}</strong> `
+      + `${escapeHtml(game.i18n.localize("PF2EDC.Skills.ExtraIncreases"))}: ${listed}`);
+  }
 
   const detail = document.createElement("div");
   detail.className = "pf2edc-skill-count-detail";

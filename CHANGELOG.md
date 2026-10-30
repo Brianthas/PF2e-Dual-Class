@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.9
+
+- **Extra skill increases from feats and class features count.** Additional Lore grants one at 3rd,
+  7th and 15th for its Lore, per copy taken; Stylish Tricks one at 3rd, 7th and 15th; Thaumaturgic
+  Expertise one at 9th and Thaumaturgic Mastery one at 17th. None carries a rule element, so the
+  skill panel left them out of the budget and a character spending them read over budget. They are
+  now added and listed by source.
+
 ## 0.4.8
 
 - A feat section marked `additive: true` is never stood down. The check that removes another

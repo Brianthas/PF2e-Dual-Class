@@ -198,6 +198,10 @@ ranks. What you are owed is:
 - anything a heritage, ancestry feat, class feature or archetype feat grants
 - one per skill increase, unioned across classes since increases are once per level: a Fighter/Rogue
   gets the Rogue's schedule from 2nd, not the Fighter's odd levels from 3rd
+- one per extra skill increase a feat or class feature grants: Additional Lore and the
+  Swashbuckler's Stylish Tricks at 3rd, 7th and 15th, the Thaumaturge's Thaumaturgic Expertise at 9th
+  and Thaumaturgic Mastery at 17th. Each copy of Additional Lore counts. Where the increase may be
+  spent is not checked; the panel lists each source
 
 **A source is worth however many ranks it hands you.** Making you trained is one point; expert
 outright is two, master three, legendary four. Most hand over one, but Skilled Human makes you
@@ -233,12 +237,8 @@ Lore is free here, because nothing in the data says where a Lore came from: a ba
 a GM hands out and one bought with a skill increase are the same item with the same flags. The rank
 is the only thing that separates them.
 
-That leaves two cases:
-
-- A skill increase spent becoming trained in a **new** Lore is not counted, so it still shows as
-  unspent.
-- **Additional Lore** raises its Lore at 3rd, 7th and 15th with no skill increase and no rule
-  elements to read, so a character with it reads over budget by up to 3.
+That leaves one case: a skill increase spent becoming trained in a **new** Lore is not counted, so it
+still shows as unspent.
 
 Rank caps apply to Lores on the same gates as everything else, since a cap is about level alone.
 

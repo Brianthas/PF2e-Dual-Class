@@ -57,6 +57,7 @@
       "OverCap": "Too high for this level: {skills}",
       "NeedsLevel": "needs level {level}",
       "Increases": "skill increases",
+      "ExtraIncreases": "extra skill increases from feats and features",
       "FreePicks": "free picks ({additional} + Int {int})",
       "GrantedLabel": "granted",
       "Redirected": "redirected, from a second source training a skill you already had",

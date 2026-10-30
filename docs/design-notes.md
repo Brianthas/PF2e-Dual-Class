@@ -277,9 +277,15 @@ skill.
 live: adding a background to a character creates no Lore item at all, so the Lore its
 `trainedSkills.lore` field promises is made by hand. A background's Lore, one a GM hands out and one
 bought with an increase are the same item carrying the same flags. The rank is the only signal, so
-the trained step is free and each rank above it is a point. Additional Lore breaks this and is
-accepted: it carries no rule elements at all, and across the 6284 feats in the SRD pack exactly one
-rule element touches a Lore path.
+the trained step is free and each rank above it is a point.
+
+**Extra skill increases from a feat or feature are a table, not a read.** Additional Lore, Stylish
+Tricks and Thaumaturgic Expertise and Mastery each grant skill increases on top of the class's own,
+and none carries a rule element for it, so there is nothing on the item to read. A description
+search across the 7930 feats and class features in the installed packs found these four in the
+system's packs; the only other hits were homebrew in another module. `EXTRA_INCREASES` in `scripts/skills.mjs` holds their levels, taken from Archives of Nethys,
+and the budget adds one per increase at or below the character's level. The restriction on where
+each may be spent is not checked.
 
 **A hand-set rank cannot be distinguished from a bought one**, so it is charged to the character.
 Measured on a level 8 character holding 2 unspent points: granting trained by hand read 1 unspent,
