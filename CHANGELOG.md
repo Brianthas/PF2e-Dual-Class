@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.10
+
+Verified on Foundry 14.369 with PF2e 8.6.1: a Monk dropped onto a Fighter kept the Fighter; deleting
+the Fighter item left the Monk's features in place; a Fighter added through the Second Class control
+kept the Monk's features and got its own class feat group, placed after the Monk's; Remove Second
+Class removed the Fighter and its granted items and left the Monk's. Each read back from the actor's
+stored items. No behaviour change; the manifest records the version, and stale code comments are
+corrected.
+
 ## 0.4.9
 
 - **Extra skill increases from feats and class features count.** Additional Lore grants one at 3rd,
