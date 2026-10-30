@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.4.10
+## 1.0.0
+
+First stable release. Same behaviour as 0.4.9.
 
 Verified on Foundry 14.369 with PF2e 8.6.1: a Monk dropped onto a Fighter kept the Fighter; deleting
 the Fighter item left the Monk's features in place; a Fighter added through the Second Class control
