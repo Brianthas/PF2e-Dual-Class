@@ -12,14 +12,14 @@ import { armSecondClass } from "./coexist.mjs";
 import { syncSecondaryClassFeatures } from "./features.mjs";
 
 /**
- * The second class slot on the character sheet.
+ * The extra class cells on the character sheet.
  *
- * PF2e lays the Ancestry, Heritage, Background, Class and Deity cells out in a `.abcd` grid, which
- * leaves one empty cell. The second class goes there, built from a copy of the Class cell so it
- * inherits the sheet's own styling.
+ * PF2e lays the Ancestry, Heritage, Background, Class and Deity cells out in a `.abcd` grid. One cell
+ * per class the character may hold beyond the first is inserted directly after Class, each built from
+ * a copy of the Class cell so it inherits the sheet's own styling.
  *
- * The cell is only added for characters that already have a class, since a second class before a
- * first is not a state worth supporting.
+ * The cells are shown whenever the module is on, including on a character with no class yet, so a GM
+ * building a new character can see the variant is running.
  */
 
 const CELL_CLASS = "pf2edc-second-class";

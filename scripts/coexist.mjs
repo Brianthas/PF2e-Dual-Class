@@ -22,11 +22,13 @@ import { registerLibWrapper, notifyDualClass, getExtraClassIds } from "./util.mj
  * ids to keep for the duration of the call, and one on `deleteEmbeddedDocuments` that removes those
  * ids from the deletion list while that record is live.
  *
- * ## Why it is armed rather than always on
+ * ## Armed and unarmed adds
  *
- * Preserving the old class on every class drop would break replacing a class, which is what a drop
- * normally means. So the bypass only applies after the sheet's "add a second class" control has
- * armed it for that actor. Anyone who never touches that control sees PF2e's stock behaviour.
+ * The sheet's Second Class control arms the next class add on that actor, and an armed add always
+ * keeps the existing classes. A class dropped straight onto the sheet is unarmed, and it also keeps
+ * the existing class while the character is under `maxClasses`, with a message saying so: in a world
+ * running this variant a second class drop is almost never meant as a replacement. Once the
+ * character is at its limit, an unarmed add replaces as the system normally does, with a warning.
  *
  * ## What is fragile here
  *

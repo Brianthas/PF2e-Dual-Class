@@ -35,27 +35,28 @@ export const MAX_CLASSES = { dual: 2, triple: 3 };
 export const THIRD_CLASS_FLAG = "allowThirdClass";
 
 /**
- * Prefixes for the feat sections this module adds.
+ * Prefix for the class feat section this module adds for each extra class.
  *
  * A section id becomes the prefix of every slot id inside it: `FeatGroup` builds each slot as
- * `${group.id}-${level}` (pf2e.mjs:33227-33235), so `dc-class-wizard` yields `dc-class-wizard-1`,
- * `dc-class-wizard-2` and so on. Those slot ids are written to `system.location` on any feat placed
- * in them, which makes them persisted data: renaming a prefix orphans every feat already slotted
- * under the old one.
+ * `${group.id}-${level}`, so `dc-class-wizard` yields `dc-class-wizard-1`, `dc-class-wizard-2` and
+ * so on. Those slot ids are written to `system.location` on any feat placed in them, which makes
+ * them persisted data: renaming the prefix orphans every feat already slotted under the old one.
+ *
+ * Class feats are the only kind with a section of their own. Skill, general and ancestry feats are
+ * merged into the system's own groups (`ladders.mjs`), and no released version ever gave them a
+ * section, so no stored feat carries any other prefix.
  */
 export const SECTION_PREFIX = {
-  CLASS: "dc-class",
-  SKILL: "dc-skill",
-  GENERAL: "dc-general",
-  ANCESTRY: "dc-ancestry"
+  CLASS: "dc-class"
 };
 
 /**
- * The Ancestry Paragon section. Not one of the per-class prefixes above: it has nothing to do with
- * a second class, and its id carries no class slug because there is only ever one of it.
+ * The id prefix for Ancestry Paragon's second slot at 1st level, which is `dc-paragon-1`.
  *
- * Deliberately not `dc-ancestry-paragon`, which would collide with the `dc-ancestry` prefix used for
- * a second class's extra ancestry feat levels and make the two indistinguishable by id.
+ * The paragon slots live in the system's own Ancestry Feats group, built as slot objects by
+ * `paragonSlots` in `ladders.mjs`. A plain level number becomes the id `ancestry-<level>`, so a
+ * second slot at level 1 needs an id of its own or the two share one slot. That id is persisted in
+ * `system.location` like any slot id.
  */
 export const PARAGON_SECTION = "dc-paragon";
 
@@ -64,9 +65,8 @@ export const PARAGON_SECTION = "dc-paragon";
  *
  * The rule gives two ancestry feats at 1st level and one at every odd level thereafter, eleven in
  * total (Gamemastery Guide p. 194, https://2e.aonprd.com/Rules.aspx?ID=1336). A class item's own
- * ancestry ladder is 1, 5, 9, 13 and 17, so these six are what the variant adds on top - including
- * a second slot at level 1, which is why it has to be its own group: slots are keyed
- * `<group>-<level>` (pf2e.mjs:33519), so two slots at level 1 cannot live in one group.
+ * ancestry ladder is 1, 5, 9, 13 and 17, so these six are what the variant adds on top, including a
+ * second slot at level 1 (see `PARAGON_SECTION`).
  */
 export const PARAGON_LEVELS = [1, 3, 7, 11, 15, 19];
 
