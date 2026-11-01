@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Two messages read wrongly for some classes. The misplaced-feat warning said "is a {class} feat",
+  which gave "a Alchemist feat"; it now says the feat belongs to that class. The note shown when
+  a character is created with several classes was missing a verb.
+
 ## 1.0.0
 
 First stable release. Same behaviour as 0.4.9.

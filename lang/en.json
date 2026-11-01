@@ -47,7 +47,7 @@
       "Removed": "Removed {class} and the features it granted."
     },
     "Mismatch": {
-      "Warning": "{feat} is a {belongs} feat but was placed in the {placed} feat slots. It still counts; move it if that was not intended."
+      "Warning": "{feat} belongs to {belongs} but was placed in the {placed} feat slots. It still counts; move it if that was not intended."
     },
     "Skills": {
       "Header": "Skill Proficiencies",
@@ -72,7 +72,7 @@
     "Coexist": {
       "KeptFirstClass": "{actor} kept {class} as its first class. Remove a class from the items list if you meant to replace it rather than add one.",
       "UnarmedManyClasses": "{actor} already has {count} classes, so adding another replaces them. This module only handles two.",
-      "AdoptedBatch": "{actor} was created with several classes: {primary} is the first class and {classes} recorded as extra."
+      "AdoptedBatch": "{actor} was created with several classes: {primary} is the first class, with {classes} recorded as extra."
     },
     "PlannerSlots": {
       "Refiled": "{feat} moved to the {class} class feat slot for level {level}."
