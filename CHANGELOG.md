@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1
 
 - Two messages read wrongly for some classes. The misplaced-feat warning said "is a {class} feat",
   which gave "a Alchemist feat"; it now says the feat belongs to that class. The note shown when
